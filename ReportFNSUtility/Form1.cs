@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,6 +22,10 @@ namespace ReportFNSUtility
         {
             openFileDialog1.ShowDialog();
             textBox1.Text = openFileDialog1.FileName;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
         }
     }
 }
