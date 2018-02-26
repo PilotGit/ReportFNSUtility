@@ -11,6 +11,7 @@ namespace ReportFNSUtility
     {
         String path;
         BinaryReader reader;
+        ReportFS reportFS;
 
         public ReadReport(string path)
         {
@@ -20,8 +21,12 @@ namespace ReportFNSUtility
 
         public int Read()
         {
-            ReportHeader reportHeader = new ReportHeader(reader);
+            reportFS = new ReportFS(reader);
             return 0;
+        }
+        ~ReadReport()
+        {
+            reader.Close();
         }
     }
 }

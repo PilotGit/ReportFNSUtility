@@ -17,7 +17,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Фискальные даннные длительного хранения
         /// </summary>
-        STLV[] fDLongStorage;
+        List<STLV> fDLongStorage = new List<STLV>();
 
         /// <summary>
         /// Уонструктор формирующий получающий данные из файлового потока отчёта
@@ -26,6 +26,16 @@ namespace ReportFNSUtility
         public ReportFS(BinaryReader reader)
         {
             header = new ReportHeader(reader);
+            while (reader.BaseStream.Position != reader.BaseStream.Length)
+            {
+                UInt16 tag = reader.ReadUInt16();
+                UInt16 len = reader.ReadUInt16();
+                byte[] buf = new byte[len];
+                reader.Read(buf, 0, len);
+                TLS tlsTmp = new TLS(tag, len);
+                tlsTmp.ReadValue(buf);
+                fDLongStorage.Add(tlsTmp);
+            }
         }
     }
 
@@ -127,36 +137,36 @@ namespace ReportFNSUtility
         /// <summary>
         /// Тег STLV или TLV структуры
         /// </summary>
-        Int16 tag;
+        UInt16 tag;
         /// <summary>
         /// Длинна структуры.
         /// </summary>
-        Int16 len;
+        UInt16 len;
 
         /// <summary>
         /// Массив тегов TLV структур где значение строка
         /// </summary>
-        Int16[] tlString = { };
+        public UInt16[] tlString = { };
         /// <summary>
         /// Массив тегов TLV структур где значение число
         /// </summary>
-        Int16[] tlInt = { };
+        public UInt16[] tlInt = { };
         /// <summary>
         /// Массив тегов TLV структур где значение массив битов
         /// </summary>
-        Int16[] tlBit = { };
+        public UInt16[] tlBit = { };
         /// <summary>
         /// Массив тегов TLV структур где значение дата и время
         /// </summary>
-        Int16[] tlUnixTime = { };
+        public UInt16[] tlUnixTime = { };
         /// <summary>
         /// Массив тегов TLV структур где значение массив байтов
         /// </summary>
-        Int16[] tlByteMass = { };
+        public UInt16[] tlByteMass = { };
         /// <summary>
         /// Массив тегов STLV структур
         /// </summary>
-        Int16[] stlv = { };
+        public UInt16[] stlv = {101,111,102,121,103,131,104,141,105,106,107,1,11,2,21,3,31,4,41,5,6,7,1059 };
 
         /// <summary>
         /// тип структуры true-считывание из ККТ, false-расшифровка файла.  
@@ -166,7 +176,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Свойство для доступа к длинне STLV или TLV структуре
         /// </summary>
-        public Int16 Len
+        public UInt16 Len
         {
             get => len;
             set
@@ -184,14 +194,14 @@ namespace ReportFNSUtility
         /// <summary>
         /// текущая позиция считывания относительного этого блока (Необходим для проверки превышения длинны)
         /// </summary>
-        protected Int16 currentByte = 0;
+        protected UInt16 currentByte = 0;
 
         /// <summary>
         /// Конструктор используемы при считыывании данных из файла
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="len">Длинна</param>
-        public STLV(short tag, short len)
+        public STLV(UInt16 tag, UInt16 len)
         {
             this.tag = tag;
             this.len = len;
@@ -202,7 +212,7 @@ namespace ReportFNSUtility
         /// конструктор используемый для считывания данных из ККТ
         /// </summary>
         /// <param name="tag">Тег</param>
-        public STLV(short tag)
+        public STLV(UInt16 tag)
         {
             this.tag = tag;
             type = true;
@@ -222,14 +232,13 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="len">Длинна</param>
-        public TLV(short tag, short len) : base(tag, len)
+        public TLV(UInt16 tag, UInt16 len) : base(tag, len)
         {
-
         }
 
-        public int ReadValue()
+        public int ReadValue(byte[] data)
         {
-            value = /*Считываниезначения из файла value длинны len*/value;
+            value = data;
             return 0;
         }
 
@@ -238,7 +247,7 @@ namespace ReportFNSUtility
         /// конструктор используемый для считывания данных из ККТ
         /// </summary>
         /// <param name="tag">Тег</param>
-        public TLV(short tag) : base(tag)
+        public TLV(UInt16 tag) : base(tag)
         {
         }
 
@@ -252,21 +261,42 @@ namespace ReportFNSUtility
         /// <summary>
         /// Структуры в составе STLV структур
         /// </summary>
-        STLV[] value;
+        List<STLV> value = new List<STLV>();
 
         /// <summary>
         /// Конструктор используемы при считыывании данных из файла
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="len">Длинна</param>
-        public TLS(short tag, short len) : base(tag, len)
+        public TLS(UInt16 tag, UInt16 len) : base(tag, len)
         {
 
         }
 
-        public int ReadValue()
+
+        public int ReadValue(byte[] data)
         {
-            value = /*Считываниезначения из файла*/value;
+            MemoryStream memoryStream = new MemoryStream(data);
+            BinaryReader reader = new BinaryReader(memoryStream);
+            while (reader.BaseStream.Position != reader.BaseStream.Length)
+            {
+                UInt16 tag = reader.ReadUInt16();
+                UInt16 len = reader.ReadUInt16();
+                byte[] buf = new byte[len];
+                reader.Read(buf, 0, len);
+                STLV tlsTmp;
+                if (Array.IndexOf(this.stlv, tag) != -1)
+                {
+                     tlsTmp = new TLS(tag, len);
+                    (tlsTmp as TLS).ReadValue(buf);
+                }
+                else
+                {
+                     tlsTmp = new TLV(tag, len);
+                    (tlsTmp as TLV).ReadValue(buf);
+                }
+                value.Add(tlsTmp);
+            }
             return 0;
         }
 
@@ -274,7 +304,7 @@ namespace ReportFNSUtility
         /// конструктор используемый для считывания данных из ККТ
         /// </summary>
         /// <param name="tag">Тег</param>
-        public TLS(short tag) : base(tag)
+        public TLS(UInt16 tag) : base(tag)
         {
 
         }
