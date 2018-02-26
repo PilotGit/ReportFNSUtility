@@ -26,6 +26,8 @@ namespace ReportFNSUtility
 
         private void button2_Click(object sender, EventArgs e)
         {
+            ReadReport readReport = new ReadReport(textBox1.Text);
+            readReport.Read();
         }
     }
 }
