@@ -28,16 +28,18 @@ namespace ReportFNSUtility
         {
             header = new ReportHeader(reader);
             TreeNodeCollection nodes = ReadReport.form.treeView1.Nodes;
+            var progressBar = ReadReport.form.progressBar1;
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
+                progressBar.Value = (int)(reader.BaseStream.Position / reader.BaseStream.Length) * 100;
                 UInt16 tag = reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 nodes.Add($"({tag})[{len}]");
                 byte[] buf = new byte[len];
                 reader.Read(buf, 0, len);
                 TLS tlsTmp = new TLS(tag, len);
-                tlsTmp.ReadValue(buf,nodes[fDLongStorage.Count].Nodes);
                 fDLongStorage.Add(tlsTmp);
+                tlsTmp.ReadValue(buf,nodes[fDLongStorage.Count].Nodes);
             }
         }
     }
@@ -254,7 +256,7 @@ namespace ReportFNSUtility
         {
             value = data;
 
-            node.Name = node.Name + data;
+            //node.Text = node.Text + data;
             return 0;
         }
 
