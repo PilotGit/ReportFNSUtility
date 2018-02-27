@@ -9,6 +9,9 @@ using System.Windows.Forms;
 
 namespace ReportFNSUtility
 {
+    /// <summary>
+    /// Отчёт о считывнии данных из ФН
+    /// </summary>
     class ReportFS
     {
         /// <summary>
@@ -43,7 +46,9 @@ namespace ReportFNSUtility
             progressBar.Value = 100;
         }
     }
-
+    /// <summary>
+    /// Заголовок отчёта о считывании данных из ФН
+    /// </summary>
     class ReportHeader
     {
         /// <summary>
@@ -86,13 +91,13 @@ namespace ReportFNSUtility
         /// <summary>
         /// Конструктор получающий все значения
         /// </summary>
-        /// <param name="name"></param>
-        /// <param name="programm"></param>
-        /// <param name="numberKKT"></param>
-        /// <param name="numberFS"></param>
-        /// <param name="versionFFD"></param>
-        /// <param name="countShift"></param>
-        /// <param name="fiscalDoc"></param>
+        /// <param name="name">Наименование файла выгрузки </param>
+        /// <param name="programm">программа выгрузки</param>
+        /// <param name="numberKKT">Номер ККТ</param>
+        /// <param name="numberFS">Номер фискального накопителя</param>
+        /// <param name="versionFFD">Версия ФФД</param>
+        /// <param name="countShift">Количество смен</param>
+        /// <param name="fiscalDoc">Количество фискальных документов</param>
         public ReportHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)
         {
             this.name = name;
@@ -150,14 +155,6 @@ namespace ReportFNSUtility
     /// </summary>
     class STLV
     {
-        /// <summary>
-        /// Тег STLV или TLV структуры
-        /// </summary>
-        UInt16 tag;
-        /// <summary>
-        /// Длинна структуры.
-        /// </summary>
-        UInt16 len;
 
         /// <summary>
         /// Массив тегов TLV структур где значение строка
@@ -194,6 +191,15 @@ namespace ReportFNSUtility
         protected bool type = true;
 
         /// <summary>
+        /// Тег STLV или TLV структуры
+        /// </summary>
+        UInt16 tag;
+        /// <summary>
+        /// Длинна структуры.
+        /// </summary>
+        UInt16 len;
+
+        /// <summary>
         /// Свойство для доступа к длинне STLV или TLV структуре
         /// </summary>
         public UInt16 Len
@@ -212,6 +218,9 @@ namespace ReportFNSUtility
             }
         }
 
+        /// <summary>
+        /// Тег STLV или TLV структуры
+        /// </summary>
         public ushort Tag { get => tag; }
 
         /// <summary>
@@ -248,6 +257,9 @@ namespace ReportFNSUtility
     /// </summary>
     class TLV : STLV
     {
+        /// <summary>
+        /// Значение в TLV структуре
+        /// </summary>
         byte[] value;
 
         /// <summary>
@@ -259,14 +271,20 @@ namespace ReportFNSUtility
         {
             value = new byte[Len];
         }
-
+        /// <summary>
+        /// Считывает значение из потока и добавляет ветвь, если былапередана коллекция ветвей
+        /// </summary>
+        /// <param name="reader">Бинарный поток чтения</param>
+        /// <param name="node">Коллекция ветвей, в которую будет добавлена новая ветвь</param>
+        /// <returns></returns>
         public int ReadValue(BinaryReader reader, TreeNodeCollection node = null)
         {
-            Encoding encoding = Encoding.GetEncoding(866);
             reader.Read(value, 0, Len);
+            //Если была передана коллекция ветвей илёт добавление ветки
             if (node != null)
             {
-                if (Array.IndexOf(tlByteMass, Tag) != -1)
+                Encoding encoding = Encoding.GetEncoding(866);
+                if (Array.IndexOf(tlByteMass, Tag) != -1)       //Сверка тега с массивом тегов для преобразования в массив битов
                 {
                     string s = "";
                     foreach (var item in value)
@@ -275,35 +293,44 @@ namespace ReportFNSUtility
                     }
                     node.Add($"({Tag})[{Len}] {s}");
                 }
-                if (Array.IndexOf(tlString, Tag) != -1)
+                if (Array.IndexOf(tlString, Tag) != -1)         //Сверка тега с массивом тегов для преобразования в строку
                 {
-                    node.Add( $"({Tag})[{Len}] {encoding.GetString(value)}");
+                    node.Add($"({Tag})[{Len}] {encoding.GetString(value)}");
                 }
-                if (Array.IndexOf(tlUnixTime, Tag) != -1)
+                if (Array.IndexOf(tlUnixTime, Tag) != -1)       //Сверка тега с массивом тегов для преобразования в дату и время
                 {
                     DateTime date = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) + TimeSpan.FromSeconds(BitConverter.ToUInt32(value, 0));
-                    node.Add( $"({Tag})[{Len}]  {(date).ToString("dd:MM:yyyy HH:mm:ss")}");
+                    node.Add($"({Tag})[{Len}]  {(date).ToString("dd:MM:yyyy HH:mm:ss")}");
                 }
-                if (Array.IndexOf(tlInt, Tag) != -1)
+                if (Array.IndexOf(tlInt, Tag) != -1)            //Сверка тега с массивом тегов для преобразования в целое число
                 {
                     switch (Len)
                     {
-                        case 1: node.Add( $"({Tag})[{Len}]  {value[0]}"); break;
-                        case 2: node.Add( $"({Tag})[{Len}]  {BitConverter.ToUInt16(value, 0)}"); break;
-                        case 4: node.Add( $"({Tag})[{Len}]  {BitConverter.ToUInt32(value, 0)}"); break;
-                        case 8: node.Add( $"({Tag})[{Len}]  {BitConverter.ToUInt64(value, 0)}"); break;
+                        case 1: node.Add($"({Tag})[{Len}]  {value[0]}"); break;
+                        case 2: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt16(value, 0)}"); break;
+                        case 4: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt32(value, 0)}"); break;
+                        case 8: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(value, 0)}"); break;
                         default:
                             break;
                     }
                 }
-                if (Array.IndexOf(tlDouble, Tag) != -1)
+                if (Array.IndexOf(tlDouble, Tag) != -1)         //Сверка тега с массивом тегов для преобразования в дробное число с 2 знаками после зпт
                 {
-                    //byte[] data = { 0, value[0], value[1], value[2] };
-                    node.Add( $"({Tag})[{Len}]  {BitConverter.ToUInt16(value, 0) / 100d}");
+                    switch (Len)
+                    {
+                        case 1: node.Add($"({Tag})[{Len}]  {value[0] / 100d}"); break;
+                        case 2: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt16(value, 0) / 100d}"); break;
+                        case 3: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt32(new byte[] { 0, value[0], value[1], value[2] }, 0) / 100d}"); break;
+                        case 4: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt32(value, 0) / 100d}"); break;
+                        case 5: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(new byte[] { 0, 0, 0, value[0], value[1], value[2], value[3], value[4] }, 0) / 100d}"); break;
+                        case 6: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(new byte[] { 0, 0, value[0], value[1], value[2], value[3], value[4], value[5] }, 0) / 100d}"); break;
+                        case 7: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(new byte[] { 0, value[0], value[1], value[2], value[3], value[4], value[5], value[6] }, 0) / 100d}"); break;
+                        case 8: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(value, 0) / 100d}"); break;
+                    }
                 }
-                if (Array.IndexOf(tlBit, Tag) != -1)
+                if (Array.IndexOf(tlBit, Tag) != -1)            //Сверка тега с массивом тегов для преобразования в массив битов
                 {
-                    node.Add( $"({Tag})[{Len}]  {Convert.ToString(value[0])}");
+                    node.Add($"({Tag})[{Len}]  {Convert.ToString(value[0])}");
                 }
             }
             return 0;
@@ -340,7 +367,12 @@ namespace ReportFNSUtility
 
         }
 
-
+        /// <summary>
+        /// Считыват значение из переданного потока чтения длины этого объекта, добавляя ветвь в дерево
+        /// </summary>
+        /// <param name="reader">Поток чтения</param>
+        /// <param name="nodes">Коллеция ветвей в которую будут добавлены новые ветви</param>
+        /// <returns></returns>
         public int ReadValue(BinaryReader reader, TreeNodeCollection nodes)
         {
             long endPosition = reader.BaseStream.Position + Len;
@@ -358,7 +390,7 @@ namespace ReportFNSUtility
                 else
                 {
                     tlsTmp = new TLV(tag, len);
-                    if (Form1.form.checkBox1.Checked)
+                    if (Form1.form.ChB_VisibleValue.Checked)
                     {
                         (tlsTmp as TLV).ReadValue(reader, nodes);
                     }

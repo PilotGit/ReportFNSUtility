@@ -24,13 +24,13 @@ namespace ReportFNSUtility
         private void button1_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-                textBox1.Text = openFileDialog1.FileName;
+                TB_Patch.Text = openFileDialog1.FileName;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             treeView1.Nodes.Clear();
-            ReadReport readReport = new ReadReport(textBox1.Text);
+            ReadReport readReport = new ReadReport(TB_Patch.Text);
             readReport.Read();
         }
 
@@ -41,7 +41,7 @@ namespace ReportFNSUtility
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox1.Checked)
+            if (ChB_VisibleValue.Checked)
             {
                 if (MessageBox.Show("Процедура займёт значительное количество\n" +
                     "времени при большом объёме данных.\n" +
@@ -49,7 +49,7 @@ namespace ReportFNSUtility
                     "Предупреждение",
                     MessageBoxButtons.YesNo) == DialogResult.No)
                 {
-                    checkBox1.Checked = false;
+                    ChB_VisibleValue.Checked = false;
                 }
             }
         }
