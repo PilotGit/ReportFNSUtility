@@ -169,7 +169,7 @@
             // 
             this.openFileDialog1.DefaultExt = "bin";
             this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.Filter = "bin|*.bin|fnc|*.fnc";
+            this.openFileDialog1.Filter = "Бинарный файл|*.bin; *.fnc";
             // 
             // progressBar1
             // 

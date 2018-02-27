@@ -260,7 +260,7 @@ namespace ReportFNSUtility
             value = new byte[Len];
         }
 
-        public int ReadValue(BinaryReader reader, TreeNode node = null)
+        public int ReadValue(BinaryReader reader, TreeNodeCollection node = null)
         {
             Encoding encoding = Encoding.GetEncoding(866);
             reader.Read(value, 0, Len);
@@ -268,29 +268,30 @@ namespace ReportFNSUtility
             {
                 if (Array.IndexOf(tlByteMass, Tag) != -1)
                 {
+                    string s = "";
                     foreach (var item in value)
                     {
-                        node.Text = node.Text + " " + $"{item:X} ";
+                        s += $"{item:X} ";
                     }
-
+                    node.Add($"({Tag})[{Len}] {s}");
                 }
                 if (Array.IndexOf(tlString, Tag) != -1)
                 {
-                    node.Text = node.Text + " " + encoding.GetString(value);
+                    node.Add( $"({Tag})[{Len}] {encoding.GetString(value)}");
                 }
                 if (Array.IndexOf(tlUnixTime, Tag) != -1)
                 {
                     DateTime date = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) + TimeSpan.FromSeconds(BitConverter.ToUInt32(value, 0));
-                    node.Text = node.Text + " " + (date).ToString("dd:MM:yyyy HH:mm:ss");
+                    node.Add( $"({Tag})[{Len}]  {(date).ToString("dd:MM:yyyy HH:mm:ss")}");
                 }
                 if (Array.IndexOf(tlInt, Tag) != -1)
                 {
                     switch (Len)
                     {
-                        case 1: node.Text = node.Text + " " + value[0]; break;
-                        case 2: node.Text = node.Text + " " + BitConverter.ToUInt16(value, 0); break;
-                        case 4: node.Text = node.Text + " " + BitConverter.ToUInt32(value, 0); break;
-                        case 8: node.Text = node.Text + " " + BitConverter.ToUInt64(value, 0); break;
+                        case 1: node.Add( $"({Tag})[{Len}]  {value[0]}"); break;
+                        case 2: node.Add( $"({Tag})[{Len}]  {BitConverter.ToUInt16(value, 0)}"); break;
+                        case 4: node.Add( $"({Tag})[{Len}]  {BitConverter.ToUInt32(value, 0)}"); break;
+                        case 8: node.Add( $"({Tag})[{Len}]  {BitConverter.ToUInt64(value, 0)}"); break;
                         default:
                             break;
                     }
@@ -298,11 +299,11 @@ namespace ReportFNSUtility
                 if (Array.IndexOf(tlDouble, Tag) != -1)
                 {
                     //byte[] data = { 0, value[0], value[1], value[2] };
-                    node.Text = node.Text + " " + BitConverter.ToUInt16(value, 0) / 100d;
+                    node.Add( $"({Tag})[{Len}]  {BitConverter.ToUInt16(value, 0) / 100d}");
                 }
                 if (Array.IndexOf(tlBit, Tag) != -1)
                 {
-                    node.Text = node.Text + " " + Convert.ToString(value[0]);
+                    node.Add( $"({Tag})[{Len}]  {Convert.ToString(value[0])}");
                 }
             }
             return 0;
@@ -359,8 +360,7 @@ namespace ReportFNSUtility
                     tlsTmp = new TLV(tag, len);
                     if (Form1.form.checkBox1.Checked)
                     {
-                        nodes.Add($"({tag})[{len}]");
-                        (tlsTmp as TLV).ReadValue(reader, nodes[value.Count]);
+                        (tlsTmp as TLV).ReadValue(reader, nodes);
                     }
                     else
                     {
