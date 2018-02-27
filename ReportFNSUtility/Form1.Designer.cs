@@ -189,7 +189,7 @@
             this.Controls.Add(this.GB_PreviewReport);
             this.Controls.Add(this.GB_Connect);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "ReportFNSUtility";
             this.GB_Connect.ResumeLayout(false);
             this.GB_Connect.PerformLayout();
             this.GB_PreviewReport.ResumeLayout(false);
