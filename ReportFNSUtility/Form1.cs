@@ -27,7 +27,13 @@ namespace ReportFNSUtility
         private void button2_Click(object sender, EventArgs e)
         {
             ReadReport readReport = new ReadReport(textBox1.Text);
+            ReadReport.form = this;
             readReport.Read();
+        }
+
+        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+
         }
     }
 }

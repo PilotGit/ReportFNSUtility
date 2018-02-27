@@ -12,6 +12,8 @@ namespace ReportFNSUtility
         String path;
         BinaryReader reader;
         ReportFS reportFS;
+        public static Form1 form=null;
+
 
         public ReadReport(string path)
         {

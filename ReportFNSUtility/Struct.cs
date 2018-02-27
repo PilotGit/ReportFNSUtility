@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ReportFNSUtility
 {
@@ -26,14 +27,16 @@ namespace ReportFNSUtility
         public ReportFS(BinaryReader reader)
         {
             header = new ReportHeader(reader);
+            TreeNodeCollection nodes = ReadReport.form.treeView1.Nodes;
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
                 UInt16 tag = reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
+                nodes.Add($"({tag})[{len}]");
                 byte[] buf = new byte[len];
                 reader.Read(buf, 0, len);
                 TLS tlsTmp = new TLS(tag, len);
-                tlsTmp.ReadValue(buf);
+                tlsTmp.ReadValue(buf,nodes[fDLongStorage.Count].Nodes);
                 fDLongStorage.Add(tlsTmp);
             }
         }
@@ -115,9 +118,9 @@ namespace ReportFNSUtility
             reader.Read(programm, 0, lenProgramm);
             this.programm = encoding.GetString(programm);
             //Считывание номера ККТ
-            byte[] NumberKKT = new byte[lenNumberKKT];
-            reader.Read(NumberKKT, 0, lenNumberKKT);
-            this.numberKKT = encoding.GetString(NumberKKT);
+            byte[] numberKKT = new byte[lenNumberKKT];
+            reader.Read(numberKKT, 0, lenNumberKKT);
+            this.numberKKT = encoding.GetString(numberKKT);
             //Считывание номер фискального накопителя
             byte[] numberFS = new byte[lenNumberFS];
             reader.Read(numberFS, 0, lenNumberFS);
@@ -127,6 +130,17 @@ namespace ReportFNSUtility
             this.countShift = reader.ReadUInt32();
             this.countfiscalDoc = reader.ReadUInt32();
             this.hesh = reader.ReadUInt32();
+            ReadReport.form.treeView1.Nodes.Add("Header");
+            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.name);
+            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.programm);
+            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.numberKKT);
+            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
+            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
+            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.versionFFD.ToString());
+            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.countShift.ToString());
+            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.countfiscalDoc.ToString());
+            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.hesh.ToString());
+
         }
     }
     /// <summary>
@@ -236,9 +250,11 @@ namespace ReportFNSUtility
         {
         }
 
-        public int ReadValue(byte[] data)
+        public int ReadValue(byte[] data, TreeNode node)
         {
             value = data;
+
+            node.Name = node.Name + data;
             return 0;
         }
 
@@ -274,7 +290,7 @@ namespace ReportFNSUtility
         }
 
 
-        public int ReadValue(byte[] data)
+        public int ReadValue(byte[] data, TreeNodeCollection nodes)
         {
             MemoryStream memoryStream = new MemoryStream(data);
             BinaryReader reader = new BinaryReader(memoryStream);
@@ -285,15 +301,17 @@ namespace ReportFNSUtility
                 byte[] buf = new byte[len];
                 reader.Read(buf, 0, len);
                 STLV tlsTmp;
+                    nodes.Add($"({tag})[{len}]");
                 if (Array.IndexOf(this.stlv, tag) != -1)
                 {
-                     tlsTmp = new TLS(tag, len);
-                    (tlsTmp as TLS).ReadValue(buf);
+
+                    tlsTmp = new TLS(tag, len);
+                    (tlsTmp as TLS).ReadValue(buf,nodes[value.Count].Nodes);
                 }
                 else
                 {
                      tlsTmp = new TLV(tag, len);
-                    (tlsTmp as TLV).ReadValue(buf);
+                    (tlsTmp as TLV).ReadValue(buf, nodes[value.Count]);
                 }
                 value.Add(tlsTmp);
             }
