@@ -26,6 +26,7 @@ namespace ReportFNSUtility
 
         private void button2_Click(object sender, EventArgs e)
         {
+            treeView1.Nodes.Clear();
             ReadReport readReport = new ReadReport(textBox1.Text);
             ReadReport.form = this;
             readReport.Read();
@@ -34,6 +35,21 @@ namespace ReportFNSUtility
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
 
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                if(MessageBox.Show("Процедура займёт значительное количество\n" +
+                    "времени при большом объёме данных.\n" +
+                    "Вы уверены что хотите применить это свойство?",
+                    "Предупреждение",
+                    MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    checkBox1.Checked = false;
+                }
+            }
         }
     }
 }

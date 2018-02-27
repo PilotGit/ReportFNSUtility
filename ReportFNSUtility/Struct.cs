@@ -258,7 +258,7 @@ namespace ReportFNSUtility
             reader.Read(value, 0, Len);
             if (node != null)
             {
-                //node.Text = node.Text + value.ToString();
+                node.Text = node.Text + value.ToString();
             }
             return 0;
         }
@@ -312,8 +312,15 @@ namespace ReportFNSUtility
                 else
                 {
                     tlsTmp = new TLV(tag, len);
-                    //(tlsTmp as TLV).ReadValue(reader, nodes[value.Count]);
-                    (tlsTmp as TLV).ReadValue(reader);
+                    if (ReadReport.form.checkBox1.Checked)
+                    {
+                        nodes.Add($"({tag})[{len}]");
+                        (tlsTmp as TLV).ReadValue(reader, nodes[value.Count]);
+                    }
+                    else
+                    {
+                        (tlsTmp as TLV).ReadValue(reader);
+                    }
                 }
                 value.Add(tlsTmp);
             }
