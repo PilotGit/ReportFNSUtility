@@ -31,14 +31,14 @@ namespace ReportFNSUtility
             var progressBar = ReadReport.form.progressBar1;
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
-                progressBar.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length)*100) ;
+                progressBar.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100);
                 progressBar.Refresh();
                 UInt16 tag = reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 nodes.Add($"({tag})[{len}]");
                 TLS tlsTmp = new TLS(tag, len);
                 fDLongStorage.Add(tlsTmp);
-                tlsTmp.ReadValue(reader,nodes[fDLongStorage.Count].Nodes);
+                tlsTmp.ReadValue(reader, nodes[fDLongStorage.Count].Nodes);
             }
             progressBar.Value = 100;
         }
@@ -182,7 +182,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Массив тегов STLV структур
         /// </summary>
-        public UInt16[] stlv = {101,111,102,121,103,131,104,141,105,106,107,1,11,2,21,3,31,4,41,5,6,7,1059 };
+        public UInt16[] stlv = { 101, 111, 102, 121, 103, 131, 104, 141, 105, 106, 107, 1, 11, 2, 21, 3, 31, 4, 41, 5, 6, 7, 1059 };
 
         /// <summary>
         /// тип структуры true-считывание из ККТ, false-расшифровка файла.  
@@ -253,11 +253,13 @@ namespace ReportFNSUtility
             value = new byte[Len];
         }
 
-        public int ReadValue(BinaryReader reader, TreeNode node)
+        public int ReadValue(BinaryReader reader, TreeNode node = null)
         {
-            reader.Read(value,0,Len);
-
-            node.Text = node.Text + value.ToString();
+            reader.Read(value, 0, Len);
+            if (node != null)
+            {
+                //node.Text = node.Text + value.ToString();
+            }
             return 0;
         }
 
@@ -301,16 +303,17 @@ namespace ReportFNSUtility
                 UInt16 tag = reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 STLV tlsTmp;
-                    nodes.Add($"({tag})[{len}]");
                 if (Array.IndexOf(this.stlv, tag) != -1)
                 {
+                    nodes.Add($"({tag})[{len}]");
                     tlsTmp = new TLS(tag, len);
-                    (tlsTmp as TLS).ReadValue(reader,nodes[value.Count].Nodes);
+                    (tlsTmp as TLS).ReadValue(reader, nodes[value.Count].Nodes);
                 }
                 else
                 {
-                     tlsTmp = new TLV(tag, len);
-                    (tlsTmp as TLV).ReadValue(reader, nodes[value.Count]);
+                    tlsTmp = new TLV(tag, len);
+                    //(tlsTmp as TLV).ReadValue(reader, nodes[value.Count]);
+                    (tlsTmp as TLV).ReadValue(reader);
                 }
                 value.Add(tlsTmp);
             }

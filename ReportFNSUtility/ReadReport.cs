@@ -13,23 +13,26 @@ namespace ReportFNSUtility
         String path;
         BinaryReader reader;
         ReportFS reportFS;
-        public static Form1 form=null;
+        public static Form1 form = null;
 
 
         public ReadReport(string path)
         {
             this.path = path;
-            reader = new BinaryReader(new FileStream(path,FileMode.Open));
+            reader = new BinaryReader(new FileStream(path, FileMode.Open));
         }
 
         public int Read()
         {
             reportFS = new ReportFS(reader);
+
+            var baseStream = reader.BaseStream;
+            reader.Close();
+            baseStream.Close();
             return 0;
         }
         ~ReadReport()
         {
-            reader.Close();
         }
     }
 }
