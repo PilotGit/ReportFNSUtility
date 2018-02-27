@@ -20,8 +20,8 @@ namespace ReportFNSUtility
 
         private void button1_Click(object sender, EventArgs e)
         {
-            openFileDialog1.ShowDialog();
-            textBox1.Text = openFileDialog1.FileName;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                textBox1.Text = openFileDialog1.FileName;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -41,7 +41,7 @@ namespace ReportFNSUtility
         {
             if (checkBox1.Checked)
             {
-                if(MessageBox.Show("Процедура займёт значительное количество\n" +
+                if (MessageBox.Show("Процедура займёт значительное количество\n" +
                     "времени при большом объёме данных.\n" +
                     "Вы уверены что хотите применить это свойство?",
                     "Предупреждение",
