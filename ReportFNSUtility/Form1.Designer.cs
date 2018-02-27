@@ -30,7 +30,6 @@
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -41,6 +40,14 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.set_file = new System.Windows.Forms.Button();
+            this.file_way = new System.Windows.Forms.TextBox();
+            this.file_wayDialog = new System.Windows.Forms.Button();
+            this.file_nameDialog = new System.Windows.Forms.Button();
+            this.file_name = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -49,6 +56,13 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.file_nameDialog);
+            this.groupBox1.Controls.Add(this.file_name);
+            this.groupBox1.Controls.Add(this.file_wayDialog);
+            this.groupBox1.Controls.Add(this.file_way);
+            this.groupBox1.Controls.Add(this.set_file);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.comboBox2);
@@ -68,15 +82,6 @@
             this.label2.Size = new System.Drawing.Size(49, 13);
             this.label2.TabIndex = 3;
             this.label2.Text = "Частота";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 19);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(32, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Порт";
             // 
             // comboBox2
             // 
@@ -180,6 +185,75 @@
             this.progressBar1.Size = new System.Drawing.Size(977, 21);
             this.progressBar1.TabIndex = 2;
             // 
+            // set_file
+            // 
+            this.set_file.Location = new System.Drawing.Point(10, 233);
+            this.set_file.Name = "set_file";
+            this.set_file.Size = new System.Drawing.Size(220, 23);
+            this.set_file.TabIndex = 4;
+            this.set_file.Text = "Формировать отчет";
+            this.set_file.UseVisualStyleBackColor = true;
+            this.set_file.Click += new System.EventHandler(this.set_file_Click);
+            // 
+            // file_way
+            // 
+            this.file_way.Location = new System.Drawing.Point(10, 207);
+            this.file_way.Name = "file_way";
+            this.file_way.Size = new System.Drawing.Size(184, 20);
+            this.file_way.TabIndex = 5;
+            // 
+            // file_wayDialog
+            // 
+            this.file_wayDialog.Location = new System.Drawing.Point(200, 207);
+            this.file_wayDialog.Name = "file_wayDialog";
+            this.file_wayDialog.Size = new System.Drawing.Size(30, 20);
+            this.file_wayDialog.TabIndex = 6;
+            this.file_wayDialog.Text = "🔍";
+            this.file_wayDialog.UseVisualStyleBackColor = true;
+            // 
+            // file_nameDialog
+            // 
+            this.file_nameDialog.Location = new System.Drawing.Point(200, 163);
+            this.file_nameDialog.Name = "file_nameDialog";
+            this.file_nameDialog.Size = new System.Drawing.Size(30, 20);
+            this.file_nameDialog.TabIndex = 8;
+            this.file_nameDialog.Text = "🔍";
+            this.file_nameDialog.UseVisualStyleBackColor = true;
+            // 
+            // file_name
+            // 
+            this.file_name.Location = new System.Drawing.Point(10, 163);
+            this.file_name.Name = "file_name";
+            this.file_name.Size = new System.Drawing.Size(184, 20);
+            this.file_name.TabIndex = 7;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 19);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(32, 13);
+            this.label1.TabIndex = 2;
+            this.label1.Text = "Порт";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 147);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(64, 13);
+            this.label3.TabIndex = 9;
+            this.label3.Text = "Имя файла";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 191);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(74, 13);
+            this.label4.TabIndex = 10;
+            this.label4.Text = "Путь к файлу";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -202,7 +276,6 @@
 
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.GroupBox groupBox2;
@@ -213,6 +286,14 @@
         public System.Windows.Forms.TreeView treeView1;
         public System.Windows.Forms.ProgressBar progressBar1;
         public System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button file_nameDialog;
+        private System.Windows.Forms.TextBox file_name;
+        private System.Windows.Forms.Button file_wayDialog;
+        private System.Windows.Forms.TextBox file_way;
+        private System.Windows.Forms.Button set_file;
+        private System.Windows.Forms.Label label1;
     }
 }
 
