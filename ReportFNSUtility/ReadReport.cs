@@ -7,6 +7,7 @@ using System.IO;
 
 namespace ReportFNSUtility
 {
+
     class ReadReport
     {
         String path;
