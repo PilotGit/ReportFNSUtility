@@ -27,8 +27,8 @@ namespace ReportFNSUtility
         public ReportFS(BinaryReader reader)
         {
             header = new ReportHeader(reader);
-            TreeNodeCollection nodes = ReadReport.form.treeView1.Nodes;
-            var progressBar = ReadReport.form.progressBar1;
+            TreeNodeCollection nodes = Form1.form.treeView1.Nodes;
+            var progressBar = Form1.form.progressBar1;
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
                 progressBar.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100);
@@ -132,16 +132,16 @@ namespace ReportFNSUtility
             this.countShift = reader.ReadUInt32();
             this.countfiscalDoc = reader.ReadUInt32();
             this.hesh = reader.ReadUInt32();
-            ReadReport.form.treeView1.Nodes.Add("Header");
-            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.name);
-            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.programm);
-            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.numberKKT);
-            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
-            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
-            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.versionFFD.ToString());
-            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.countShift.ToString());
-            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.countfiscalDoc.ToString());
-            ReadReport.form.treeView1.Nodes[0].Nodes.Add(this.hesh.ToString());
+            Form1.form.treeView1.Nodes.Add("Header");
+            Form1.form.treeView1.Nodes[0].Nodes.Add(this.name);
+            Form1.form.treeView1.Nodes[0].Nodes.Add(this.programm);
+            Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberKKT);
+            Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
+            Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
+            Form1.form.treeView1.Nodes[0].Nodes.Add(this.versionFFD.ToString());
+            Form1.form.treeView1.Nodes[0].Nodes.Add(this.countShift.ToString());
+            Form1.form.treeView1.Nodes[0].Nodes.Add(this.countfiscalDoc.ToString());
+            Form1.form.treeView1.Nodes[0].Nodes.Add(this.hesh.ToString());
 
         }
     }
@@ -262,7 +262,7 @@ namespace ReportFNSUtility
             reader.Read(value, 0, Len);
             if (node != null)
             {
-                //node.Text = node.Text + value.ToString();
+                node.Text = node.Text + value.ToString();
             }
             return 0;
         }
@@ -316,8 +316,15 @@ namespace ReportFNSUtility
                 else
                 {
                     tlsTmp = new TLV(tag, len);
-                    //(tlsTmp as TLV).ReadValue(reader, nodes[value.Count]);
-                    (tlsTmp as TLV).ReadValue(reader);
+                    if (Form1.form.checkBox1.Checked)
+                    {
+                        nodes.Add($"({tag})[{len}]");
+                        (tlsTmp as TLV).ReadValue(reader, nodes[value.Count]);
+                    }
+                    else
+                    {
+                        (tlsTmp as TLV).ReadValue(reader);
+                    }
                 }
                 value.Add(tlsTmp);
             }
