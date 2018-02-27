@@ -10,10 +10,18 @@ namespace ReportFNSUtility
 
     class ReadReport
     {
+        /// <summary>
+        /// Путь к файлу отчёта
+        /// </summary>
         String path;
+        /// <summary>
+        /// Двоичный reader потока файла отчёта
+        /// </summary>
         BinaryReader reader;
+        /// <summary>
+        /// Отчёт о счиывании данных с фискального накопителя
+        /// </summary>
         ReportFS reportFS;
-        public static Form1 form = null;
 
 
         public ReadReport(string path)

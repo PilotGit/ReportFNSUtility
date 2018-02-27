@@ -13,9 +13,12 @@ namespace ReportFNSUtility
 {
     public partial class Form1 : Form
     {
+
+        public static Form1 form = null;
         public Form1()
         {
             InitializeComponent();
+            Form1.form = this;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -28,7 +31,6 @@ namespace ReportFNSUtility
         {
             treeView1.Nodes.Clear();
             ReadReport readReport = new ReadReport(textBox1.Text);
-            ReadReport.form = this;
             readReport.Read();
         }
 
