@@ -162,7 +162,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Массив тегов TLV структур где значение строка
         /// </summary>
-        public UInt16[] tlString = {1000, 1048, 1018, 1037, 1036, 1013, 1021, 1203, 1009, 1187, 1060, 1117, 1017, 1046, 1188, 1041, 1226 };
+        public UInt16[] tlString = { 1000, 1048, 1018, 1037, 1036, 1013, 1021, 1203, 1009, 1187, 1060, 1117, 1017, 1046, 1188, 1041, 1226 };
         /// <summary>
         /// Массив тегов TLV структур где значение число
         /// </summary>
@@ -182,7 +182,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Массив тегов TLV структур где значение массив байтов
         /// </summary>
-        public UInt16[] tlByteMass = { 1077, 304, 301, 1078, 1162,300 };
+        public UInt16[] tlByteMass = { 1077, 304, 301, 1078, 1162, 300 };
         /// <summary>
         /// Массив тегов STLV структур
         /// </summary>
@@ -211,6 +211,9 @@ namespace ReportFNSUtility
                 }
             }
         }
+
+        public ushort Tag { get => tag; }
+
         /// <summary>
         /// текущая позиция считывания относительного этого блока (Необходим для проверки превышения длинны)
         /// </summary>
@@ -259,10 +262,48 @@ namespace ReportFNSUtility
 
         public int ReadValue(BinaryReader reader, TreeNode node = null)
         {
+            Encoding encoding = Encoding.GetEncoding(866);
             reader.Read(value, 0, Len);
             if (node != null)
             {
-                node.Text = node.Text + value.ToString();
+                if (Array.IndexOf(tlByteMass, Tag) != -1)
+                {
+                    foreach (var item in value)
+                    {
+                        node.Text = node.Text + " " + $"{item:X} ";
+                    }
+
+                }
+                if (Array.IndexOf(tlString, Tag) != -1)
+                {
+                    node.Text = node.Text + " " + encoding.GetString(value);
+                }
+                if (Array.IndexOf(tlUnixTime, Tag) != -1)
+                {
+                    DateTime date = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) + TimeSpan.FromSeconds(BitConverter.ToUInt32(value, 0));
+                    node.Text = node.Text + " " + (date).ToString("dd:MM:yyyy HH:mm:ss");
+                }
+                if (Array.IndexOf(tlInt, Tag) != -1)
+                {
+                    switch (Len)
+                    {
+                        case 1: node.Text = node.Text + " " + value[0]; break;
+                        case 2: node.Text = node.Text + " " + BitConverter.ToUInt16(value, 0); break;
+                        case 4: node.Text = node.Text + " " + BitConverter.ToUInt32(value, 0); break;
+                        case 8: node.Text = node.Text + " " + BitConverter.ToUInt64(value, 0); break;
+                        default:
+                            break;
+                    }
+                }
+                if (Array.IndexOf(tlDouble, Tag) != -1)
+                {
+                    //byte[] data = { 0, value[0], value[1], value[2] };
+                    node.Text = node.Text + " " + BitConverter.ToUInt16(value, 0) / 100d;
+                }
+                if (Array.IndexOf(tlBit, Tag) != -1)
+                {
+                    node.Text = node.Text + " " + Convert.ToString(value[0]);
+                }
             }
             return 0;
         }
