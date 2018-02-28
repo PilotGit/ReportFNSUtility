@@ -55,7 +55,7 @@ namespace ReportFNSUtility
             }
         }
 
-        private void set_file_Click(object sender, EventArgs e)
+        private void B_startParse_Click(object sender, EventArgs e)
         {
 
         }
