@@ -29,6 +29,12 @@
         private void InitializeComponent()
         {
             this.GB_Connect = new System.Windows.Forms.GroupBox();
+            this.L_fileWay = new System.Windows.Forms.Label();
+            this.L_fileName = new System.Windows.Forms.Label();
+            this.TB_fileName = new System.Windows.Forms.TextBox();
+            this.B_fileWayDialog = new System.Windows.Forms.Button();
+            this.TB_fileWay = new System.Windows.Forms.TextBox();
+            this.B_startParse = new System.Windows.Forms.Button();
             this.L_Rate = new System.Windows.Forms.Label();
             this.L_Port = new System.Windows.Forms.Label();
             this.CB_Rate = new System.Windows.Forms.ComboBox();
@@ -41,12 +47,6 @@
             this.TB_Patch = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.L_fileWay = new System.Windows.Forms.Label();
-            this.L_fileName = new System.Windows.Forms.Label();
-            this.TB_fileName = new System.Windows.Forms.TextBox();
-            this.B_fileWayDialog = new System.Windows.Forms.Button();
-            this.TB_fileWay = new System.Windows.Forms.TextBox();
-            this.B_startParse = new System.Windows.Forms.Button();
             this.GB_Connect.SuspendLayout();
             this.GB_PreviewReport.SuspendLayout();
             this.SuspendLayout();
@@ -71,6 +71,57 @@
             this.GB_Connect.TabIndex = 0;
             this.GB_Connect.TabStop = false;
             this.GB_Connect.Text = "Подключение к ККТ";
+            // 
+            // L_fileWay
+            // 
+            this.L_fileWay.AutoSize = true;
+            this.L_fileWay.Location = new System.Drawing.Point(7, 217);
+            this.L_fileWay.Name = "L_fileWay";
+            this.L_fileWay.Size = new System.Drawing.Size(74, 13);
+            this.L_fileWay.TabIndex = 17;
+            this.L_fileWay.Text = "Путь к файлу";
+            // 
+            // L_fileName
+            // 
+            this.L_fileName.AutoSize = true;
+            this.L_fileName.Location = new System.Drawing.Point(7, 173);
+            this.L_fileName.Name = "L_fileName";
+            this.L_fileName.Size = new System.Drawing.Size(64, 13);
+            this.L_fileName.TabIndex = 16;
+            this.L_fileName.Text = "Имя файла";
+            // 
+            // TB_fileName
+            // 
+            this.TB_fileName.Location = new System.Drawing.Point(10, 189);
+            this.TB_fileName.Name = "TB_fileName";
+            this.TB_fileName.Size = new System.Drawing.Size(184, 20);
+            this.TB_fileName.TabIndex = 14;
+            // 
+            // B_fileWayDialog
+            // 
+            this.B_fileWayDialog.Location = new System.Drawing.Point(200, 233);
+            this.B_fileWayDialog.Name = "B_fileWayDialog";
+            this.B_fileWayDialog.Size = new System.Drawing.Size(30, 20);
+            this.B_fileWayDialog.TabIndex = 13;
+            this.B_fileWayDialog.Text = "🔍";
+            this.B_fileWayDialog.UseVisualStyleBackColor = true;
+            // 
+            // TB_fileWay
+            // 
+            this.TB_fileWay.Location = new System.Drawing.Point(10, 233);
+            this.TB_fileWay.Name = "TB_fileWay";
+            this.TB_fileWay.Size = new System.Drawing.Size(184, 20);
+            this.TB_fileWay.TabIndex = 12;
+            // 
+            // B_startParse
+            // 
+            this.B_startParse.Location = new System.Drawing.Point(10, 259);
+            this.B_startParse.Name = "B_startParse";
+            this.B_startParse.Size = new System.Drawing.Size(220, 23);
+            this.B_startParse.TabIndex = 11;
+            this.B_startParse.Text = "Формировать отчет";
+            this.B_startParse.UseVisualStyleBackColor = true;
+            this.B_startParse.Click += new System.EventHandler(this.B_startParse_Click);
             // 
             // L_Rate
             // 
@@ -191,56 +242,6 @@
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(977, 21);
             this.progressBar1.TabIndex = 2;
-            // 
-            // L_fileWay
-            // 
-            this.L_fileWay.AutoSize = true;
-            this.L_fileWay.Location = new System.Drawing.Point(7, 217);
-            this.L_fileWay.Name = "L_fileWay";
-            this.L_fileWay.Size = new System.Drawing.Size(74, 13);
-            this.L_fileWay.TabIndex = 17;
-            this.L_fileWay.Text = "Путь к файлу";
-            // 
-            // L_fileName
-            // 
-            this.L_fileName.AutoSize = true;
-            this.L_fileName.Location = new System.Drawing.Point(7, 173);
-            this.L_fileName.Name = "L_fileName";
-            this.L_fileName.Size = new System.Drawing.Size(64, 13);
-            this.L_fileName.TabIndex = 16;
-            this.L_fileName.Text = "Имя файла";
-            // 
-            // TB_fileName
-            // 
-            this.TB_fileName.Location = new System.Drawing.Point(10, 189);
-            this.TB_fileName.Name = "TB_fileName";
-            this.TB_fileName.Size = new System.Drawing.Size(184, 20);
-            this.TB_fileName.TabIndex = 14;
-            // 
-            // B_fileWayDialog
-            // 
-            this.B_fileWayDialog.Location = new System.Drawing.Point(200, 233);
-            this.B_fileWayDialog.Name = "B_fileWayDialog";
-            this.B_fileWayDialog.Size = new System.Drawing.Size(30, 20);
-            this.B_fileWayDialog.TabIndex = 13;
-            this.B_fileWayDialog.Text = "🔍";
-            this.B_fileWayDialog.UseVisualStyleBackColor = true;
-            // 
-            // TB_fileWay
-            // 
-            this.TB_fileWay.Location = new System.Drawing.Point(10, 233);
-            this.TB_fileWay.Name = "TB_fileWay";
-            this.TB_fileWay.Size = new System.Drawing.Size(184, 20);
-            this.TB_fileWay.TabIndex = 12;
-            // 
-            // B_startParse
-            // 
-            this.B_startParse.Location = new System.Drawing.Point(10, 259);
-            this.B_startParse.Name = "B_startParse";
-            this.B_startParse.Size = new System.Drawing.Size(220, 23);
-            this.B_startParse.TabIndex = 11;
-            this.B_startParse.Text = "Формировать отчет";
-            this.B_startParse.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
