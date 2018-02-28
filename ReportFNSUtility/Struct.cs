@@ -142,7 +142,6 @@ namespace ReportFNSUtility
             Form1.form.treeView1.Nodes[0].Nodes.Add(this.programm);
             Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberKKT);
             Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
-            Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
             Form1.form.treeView1.Nodes[0].Nodes.Add(this.versionFFD.ToString());
             Form1.form.treeView1.Nodes[0].Nodes.Add(this.countShift.ToString());
             Form1.form.treeView1.Nodes[0].Nodes.Add(this.countfiscalDoc.ToString());
