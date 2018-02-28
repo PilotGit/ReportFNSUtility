@@ -41,22 +41,26 @@
             this.TB_Patch = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.set_file = new System.Windows.Forms.Button();
-            this.file_way = new System.Windows.Forms.TextBox();
-            this.file_wayDialog = new System.Windows.Forms.Button();
-            this.file_nameDialog = new System.Windows.Forms.Button();
-            this.file_name = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
+            this.L_fileWay = new System.Windows.Forms.Label();
+            this.L_fileName = new System.Windows.Forms.Label();
+            this.TB_fileName = new System.Windows.Forms.TextBox();
+            this.B_fileWayDialog = new System.Windows.Forms.Button();
+            this.TB_fileWay = new System.Windows.Forms.TextBox();
+            this.B_startParse = new System.Windows.Forms.Button();
+            this.GB_Connect.SuspendLayout();
+            this.GB_PreviewReport.SuspendLayout();
             this.SuspendLayout();
             // 
             // GB_Connect
             // 
             this.GB_Connect.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
+            this.GB_Connect.Controls.Add(this.L_fileWay);
+            this.GB_Connect.Controls.Add(this.L_fileName);
+            this.GB_Connect.Controls.Add(this.TB_fileName);
+            this.GB_Connect.Controls.Add(this.B_fileWayDialog);
+            this.GB_Connect.Controls.Add(this.TB_fileWay);
+            this.GB_Connect.Controls.Add(this.B_startParse);
             this.GB_Connect.Controls.Add(this.L_Rate);
             this.GB_Connect.Controls.Add(this.L_Port);
             this.GB_Connect.Controls.Add(this.CB_Rate);
@@ -188,74 +192,55 @@
             this.progressBar1.Size = new System.Drawing.Size(977, 21);
             this.progressBar1.TabIndex = 2;
             // 
-            // set_file
+            // L_fileWay
             // 
-            this.set_file.Location = new System.Drawing.Point(10, 233);
-            this.set_file.Name = "set_file";
-            this.set_file.Size = new System.Drawing.Size(220, 23);
-            this.set_file.TabIndex = 4;
-            this.set_file.Text = "Формировать отчет";
-            this.set_file.UseVisualStyleBackColor = true;
-            this.set_file.Click += new System.EventHandler(this.set_file_Click);
+            this.L_fileWay.AutoSize = true;
+            this.L_fileWay.Location = new System.Drawing.Point(7, 217);
+            this.L_fileWay.Name = "L_fileWay";
+            this.L_fileWay.Size = new System.Drawing.Size(74, 13);
+            this.L_fileWay.TabIndex = 17;
+            this.L_fileWay.Text = "Путь к файлу";
             // 
-            // file_way
+            // L_fileName
             // 
-            this.file_way.Location = new System.Drawing.Point(10, 207);
-            this.file_way.Name = "file_way";
-            this.file_way.Size = new System.Drawing.Size(184, 20);
-            this.file_way.TabIndex = 5;
+            this.L_fileName.AutoSize = true;
+            this.L_fileName.Location = new System.Drawing.Point(7, 173);
+            this.L_fileName.Name = "L_fileName";
+            this.L_fileName.Size = new System.Drawing.Size(64, 13);
+            this.L_fileName.TabIndex = 16;
+            this.L_fileName.Text = "Имя файла";
             // 
-            // file_wayDialog
+            // TB_fileName
             // 
-            this.file_wayDialog.Location = new System.Drawing.Point(200, 207);
-            this.file_wayDialog.Name = "file_wayDialog";
-            this.file_wayDialog.Size = new System.Drawing.Size(30, 20);
-            this.file_wayDialog.TabIndex = 6;
-            this.file_wayDialog.Text = "🔍";
-            this.file_wayDialog.UseVisualStyleBackColor = true;
+            this.TB_fileName.Location = new System.Drawing.Point(10, 189);
+            this.TB_fileName.Name = "TB_fileName";
+            this.TB_fileName.Size = new System.Drawing.Size(184, 20);
+            this.TB_fileName.TabIndex = 14;
             // 
-            // file_nameDialog
+            // B_fileWayDialog
             // 
-            this.file_nameDialog.Location = new System.Drawing.Point(200, 163);
-            this.file_nameDialog.Name = "file_nameDialog";
-            this.file_nameDialog.Size = new System.Drawing.Size(30, 20);
-            this.file_nameDialog.TabIndex = 8;
-            this.file_nameDialog.Text = "🔍";
-            this.file_nameDialog.UseVisualStyleBackColor = true;
+            this.B_fileWayDialog.Location = new System.Drawing.Point(200, 233);
+            this.B_fileWayDialog.Name = "B_fileWayDialog";
+            this.B_fileWayDialog.Size = new System.Drawing.Size(30, 20);
+            this.B_fileWayDialog.TabIndex = 13;
+            this.B_fileWayDialog.Text = "🔍";
+            this.B_fileWayDialog.UseVisualStyleBackColor = true;
             // 
-            // file_name
+            // TB_fileWay
             // 
-            this.file_name.Location = new System.Drawing.Point(10, 163);
-            this.file_name.Name = "file_name";
-            this.file_name.Size = new System.Drawing.Size(184, 20);
-            this.file_name.TabIndex = 7;
+            this.TB_fileWay.Location = new System.Drawing.Point(10, 233);
+            this.TB_fileWay.Name = "TB_fileWay";
+            this.TB_fileWay.Size = new System.Drawing.Size(184, 20);
+            this.TB_fileWay.TabIndex = 12;
             // 
-            // label1
+            // B_startParse
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(7, 19);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(32, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Порт";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 147);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(64, 13);
-            this.label3.TabIndex = 9;
-            this.label3.Text = "Имя файла";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 191);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(74, 13);
-            this.label4.TabIndex = 10;
-            this.label4.Text = "Путь к файлу";
+            this.B_startParse.Location = new System.Drawing.Point(10, 259);
+            this.B_startParse.Name = "B_startParse";
+            this.B_startParse.Size = new System.Drawing.Size(220, 23);
+            this.B_startParse.TabIndex = 11;
+            this.B_startParse.Text = "Формировать отчет";
+            this.B_startParse.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -289,15 +274,13 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         public System.Windows.Forms.TreeView treeView1;
         public System.Windows.Forms.ProgressBar progressBar1;
-        public System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button file_nameDialog;
-        private System.Windows.Forms.TextBox file_name;
-        private System.Windows.Forms.Button file_wayDialog;
-        private System.Windows.Forms.TextBox file_way;
-        private System.Windows.Forms.Button set_file;
-        private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.CheckBox ChB_VisibleValue;
+        private System.Windows.Forms.Label L_fileWay;
+        private System.Windows.Forms.Label L_fileName;
+        private System.Windows.Forms.TextBox TB_fileName;
+        private System.Windows.Forms.Button B_fileWayDialog;
+        private System.Windows.Forms.TextBox TB_fileWay;
+        private System.Windows.Forms.Button B_startParse;
     }
 }
 
