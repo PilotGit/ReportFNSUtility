@@ -189,6 +189,9 @@ namespace ReportFNSUtility
         /// </summary>
         protected bool type = true;
 
+        /// <summary>
+        /// STLV структура в которой находится этот объект
+        /// </summary>
         STLV parent;
 
         /// <summary>
@@ -210,9 +213,16 @@ namespace ReportFNSUtility
             {
                 if (this.type)
                 {
-                    if (parent != null)
-                        parent.Len += value;
-                    this.len = value;
+                    try
+                    {
+                        if (parent != null)
+                            parent.Len += value;
+                        this.len = value;
+                    }
+                    catch
+                    {
+                        throw new Exception("Милорд, мы не смогли посчитать наши запасы.");
+                    }
                 }
                 else
                 {
