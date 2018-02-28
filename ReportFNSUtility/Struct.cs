@@ -39,7 +39,7 @@ namespace ReportFNSUtility
                 UInt16 tag = reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 nodes.Add($"({tag})[{len}]");
-                TLS tlsTmp = new TLS(tag, len);
+                TLS tlsTmp = new TLS(tag, len, null);
                 fDLongStorage.Add(tlsTmp);
                 tlsTmp.ReadValue(reader, nodes[fDLongStorage.Count].Nodes);
             }
@@ -190,6 +190,8 @@ namespace ReportFNSUtility
         /// </summary>
         protected bool type = true;
 
+        STLV parent;
+
         /// <summary>
         /// Тег STLV или TLV структуры
         /// </summary>
@@ -209,6 +211,8 @@ namespace ReportFNSUtility
             {
                 if (this.type)
                 {
+                    if (parent != null)
+                        parent.Len += value;
                     this.len = value;
                 }
                 else
@@ -233,10 +237,12 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="len">Длинна</param>
-        public STLV(UInt16 tag, UInt16 len)
+        /// <param name="parent">STLV структура в которою происходит добавление</param>
+        public STLV(UInt16 tag, UInt16 len, STLV parent)
         {
             this.tag = tag;
             this.len = len;
+            this.parent = parent;
             type = false;
         }
 
@@ -244,9 +250,11 @@ namespace ReportFNSUtility
         /// конструктор используемый для считывания данных из ККТ
         /// </summary>
         /// <param name="tag">Тег</param>
-        public STLV(UInt16 tag)
+        /// <param name="parent">STLV структура в которою происходит добавление</param>
+        public STLV(UInt16 tag, STLV parent)
         {
             this.tag = tag;
+            this.parent = parent;
             type = true;
         }
 
@@ -267,7 +275,8 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="len">Длинна</param>
-        public TLV(UInt16 tag, UInt16 len) : base(tag, len)
+        /// <param name="parent">STLV структура в которою добавляется эта TLV структура</param>
+        public TLV(UInt16 tag, UInt16 len, STLV parent) : base(tag, len, parent)
         {
             value = new byte[Len];
         }
@@ -289,20 +298,20 @@ namespace ReportFNSUtility
                     string s = "";
                     foreach (var item in value)
                     {
-                        s += $"{item:X} ";
+                        s += $"{item:X2} ";
                     }
                     node.Add($"({Tag})[{Len}] {s}");
                 }
-                if (Array.IndexOf(tlString, Tag) != -1)         //Сверка тега с массивом тегов для преобразования в строку
+                else if (Array.IndexOf(tlString, Tag) != -1)         //Сверка тега с массивом тегов для преобразования в строку
                 {
                     node.Add($"({Tag})[{Len}] {encoding.GetString(value)}");
                 }
-                if (Array.IndexOf(tlUnixTime, Tag) != -1)       //Сверка тега с массивом тегов для преобразования в дату и время
+                else if (Array.IndexOf(tlUnixTime, Tag) != -1)       //Сверка тега с массивом тегов для преобразования в дату и время
                 {
                     DateTime date = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) + TimeSpan.FromSeconds(BitConverter.ToUInt32(value, 0));
                     node.Add($"({Tag})[{Len}]  {(date).ToString("dd:MM:yyyy HH:mm:ss")}");
                 }
-                if (Array.IndexOf(tlInt, Tag) != -1)            //Сверка тега с массивом тегов для преобразования в целое число
+                else if (Array.IndexOf(tlInt, Tag) != -1)            //Сверка тега с массивом тегов для преобразования в целое число
                 {
                     switch (Len)
                     {
@@ -314,7 +323,7 @@ namespace ReportFNSUtility
                             break;
                     }
                 }
-                if (Array.IndexOf(tlDouble, Tag) != -1)         //Сверка тега с массивом тегов для преобразования в дробное число с 2 знаками после зпт
+                else if (Array.IndexOf(tlDouble, Tag) != -1)         //Сверка тега с массивом тегов для преобразования в дробное число с 2 знаками после зпт
                 {
                     switch (Len)
                     {
@@ -328,23 +337,41 @@ namespace ReportFNSUtility
                         case 8: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(value, 0) / 100d}"); break;
                     }
                 }
-                if (Array.IndexOf(tlBit, Tag) != -1)            //Сверка тега с массивом тегов для преобразования в массив битов
+                else if (Array.IndexOf(tlBit, Tag) != -1)            //Сверка тега с массивом тегов для преобразования в массив битов
                 {
                     node.Add($"({Tag})[{Len}]  {Convert.ToString(value[0])}");
+                }
+                else
+                {
+                    node.Add($"({Tag})[{Len}]");
                 }
             }
             return 0;
         }
 
-
         /// <summary>
         /// конструктор используемый для считывания данных из ККТ
         /// </summary>
         /// <param name="tag">Тег</param>
-        public TLV(UInt16 tag) : base(tag)
+        /// <param name="parent">STLV структура в которою добавляется эта TLV структура</param>
+        public TLV(UInt16 tag,STLV parent) : base(tag, parent)
         {
+            if (parent != null)
+                parent.Len += 4;
         }
 
+        /// <summary>
+        /// Присваивает значение TLV структуре
+        /// </summary>
+        /// <param name="value">Значение в виде массива байтов</param>
+        /// <returns>0-операция завершилась успешно</returns>
+        public int AddValue(byte[] value)
+        {
+            this.value = value;
+            Len = (UInt16)value.Length;
+            return 0;
+        }
+        
     }
 
     /// <summary>
@@ -362,7 +389,8 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="len">Длинна</param>
-        public TLS(UInt16 tag, UInt16 len) : base(tag, len)
+        /// <param name="parent">STLV структура в которою добавляется эта STLV структура</param>
+        public TLS(UInt16 tag, UInt16 len, STLV parent) : base(tag, len, parent)
         {
 
         }
@@ -384,12 +412,12 @@ namespace ReportFNSUtility
                 if (Array.IndexOf(this.stlv, tag) != -1)
                 {
                     nodes.Add($"({tag})[{len}]");
-                    tlsTmp = new TLS(tag, len);
+                    tlsTmp = new TLS(tag, len, this);
                     (tlsTmp as TLS).ReadValue(reader, nodes[value.Count].Nodes);
                 }
                 else
                 {
-                    tlsTmp = new TLV(tag, len);
+                    tlsTmp = new TLV(tag, len, this);
                     if (Form1.form.ChB_VisibleValue.Checked)
                     {
                         (tlsTmp as TLV).ReadValue(reader, nodes);
@@ -408,9 +436,36 @@ namespace ReportFNSUtility
         /// конструктор используемый для считывания данных из ККТ
         /// </summary>
         /// <param name="tag">Тег</param>
-        public TLS(UInt16 tag) : base(tag)
+        /// <param name="parent">STLV структура в которою добавляется эта STLV структура</param>
+        public TLS(UInt16 tag, STLV parent) : base(tag, parent)
         {
+            if(parent!=null)
+                parent.Len+=4;
+        }
 
+        /// <summary>
+        /// Добавить значение в STLV структуру
+        /// </summary>
+        /// <param name="tag">Тег добавляемой структуры</param>
+        /// <returns>Добавленная структура типа STLV</returns>
+        public STLV AddValue(UInt16 tag)
+        {
+            try
+            {
+                if (Array.IndexOf(this.stlv, tag) != -1)
+                {
+                    value.Add(new TLS(tag, this));
+                }
+                else
+                {
+                    value.Add(new TLV(tag, this));
+                }
+            }
+            catch
+            {
+                throw new Exception("Произошла непредвиденная ошибка при добавлении значения в структуру отчёта.");
+            }
+            return value.Last();
         }
     }
 }
