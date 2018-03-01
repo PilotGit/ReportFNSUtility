@@ -21,7 +21,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Фискальные даннные длительного хранения
         /// </summary>
-        List<STLV> fDLongStorage = new List<STLV>();
+        List<Structurs> fDLongStorage = new List<Structurs>();
 
         /// <summary>
         /// Уонструктор формирующий получающий данные из файлового потока отчёта
@@ -39,11 +39,53 @@ namespace ReportFNSUtility
                 UInt16 tag = reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 nodes.Add($"({tag})[{len}]");
-                TLS tlsTmp = new TLS(tag, len, null);
+                STLV tlsTmp = new STLV(tag, len, null);
                 fDLongStorage.Add(tlsTmp);
                 tlsTmp.ReadValue(reader, nodes[fDLongStorage.Count].Nodes);
             }
             progressBar.Value = 100;
+        }
+
+        /// <summary>
+        /// Конструктор без параметров
+        /// </summary>
+        public ReportFS()
+        {
+
+        }
+
+        /// <summary>
+        /// Создаёт заголовок с заданными значениями
+        /// </summary>
+        /// <param name="name">Наименование файла выгрузки </param>
+        /// <param name="programm">программа выгрузки</param>
+        /// <param name="numberKKT">Номер ККТ</param>
+        /// <param name="numberFS">Номер фискального накопителя</param>
+        /// <param name="versionFFD">Версия ФФД</param>
+        /// <param name="countShift">Количество смен</param>
+        /// <param name="fiscalDoc">Количество фискальных документов</param>
+        public int InitHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)
+        {
+            header = new ReportHeader(name, programm, numberKKT, numberFS, versionFFD, countShift, fiscalDoc);
+            return 0;
+        }
+        
+        /// <summary>
+        /// Добавить STLV структуру (650XX)
+        /// </summary>
+        /// <param name="tag">Тег добавляемой структуры</param>
+        /// <returns>Добавленная структура типа STLV</returns>
+        public Structurs AddValue(UInt16 tag)
+        {
+            try
+            {
+                fDLongStorage.Add(new STLV(tag, null));
+            }
+            catch
+            {
+                throw new Exception("Произошла непредвиденная ошибка при добавлении значения в структуру отчёта.");
+            }
+            return fDLongStorage.Last();
         }
     }
     /// <summary>
@@ -152,7 +194,7 @@ namespace ReportFNSUtility
     /// <summary>
     /// Базовый класс для реализации TLV и STLV структур
     /// </summary>
-    class STLV
+    class Structurs
     {
 
         /// <summary>
@@ -192,7 +234,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// STLV структура в которой находится этот объект
         /// </summary>
-        STLV parent;
+        Structurs parent;
 
         /// <summary>
         /// Тег STLV или TLV структуры
@@ -247,7 +289,7 @@ namespace ReportFNSUtility
         /// <param name="tag">Тег</param>
         /// <param name="len">Длинна</param>
         /// <param name="parent">STLV структура в которою происходит добавление</param>
-        public STLV(UInt16 tag, UInt16 len, STLV parent)
+        public Structurs(UInt16 tag, UInt16 len, Structurs parent)
         {
             this.tag = tag;
             this.len = len;
@@ -260,7 +302,7 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="parent">STLV структура в которою происходит добавление</param>
-        public STLV(UInt16 tag, STLV parent)
+        public Structurs(UInt16 tag, Structurs parent)
         {
             this.tag = tag;
             this.parent = parent;
@@ -272,7 +314,7 @@ namespace ReportFNSUtility
     /// <summary>
     /// Реализация TLV структуры
     /// </summary>
-    class TLV : STLV
+    class TLV : Structurs
     {
         /// <summary>
         /// Значение в TLV структуре
@@ -285,7 +327,7 @@ namespace ReportFNSUtility
         /// <param name="tag">Тег</param>
         /// <param name="len">Длинна</param>
         /// <param name="parent">STLV структура в которою добавляется эта TLV структура</param>
-        public TLV(UInt16 tag, UInt16 len, STLV parent) : base(tag, len, parent)
+        public TLV(UInt16 tag, UInt16 len, Structurs parent) : base(tag, len, parent)
         {
             value = new byte[Len];
         }
@@ -363,7 +405,7 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="parent">STLV структура в которою добавляется эта TLV структура</param>
-        public TLV(UInt16 tag,STLV parent) : base(tag, parent)
+        public TLV(UInt16 tag,Structurs parent) : base(tag, parent)
         {
             if (parent != null)
                 parent.Len += 4;
@@ -386,12 +428,12 @@ namespace ReportFNSUtility
     /// <summary>
     /// Реализация STLV структуры
     /// </summary>
-    class TLS : STLV
+    class STLV : Structurs
     {
         /// <summary>
         /// Структуры в составе STLV структур
         /// </summary>
-        List<STLV> value = new List<STLV>();
+        List<Structurs> value = new List<Structurs>();
 
         /// <summary>
         /// Конструктор используемы при считыывании данных из файла
@@ -399,7 +441,7 @@ namespace ReportFNSUtility
         /// <param name="tag">Тег</param>
         /// <param name="len">Длинна</param>
         /// <param name="parent">STLV структура в которою добавляется эта STLV структура</param>
-        public TLS(UInt16 tag, UInt16 len, STLV parent) : base(tag, len, parent)
+        public STLV(UInt16 tag, UInt16 len, Structurs parent) : base(tag, len, parent)
         {
 
         }
@@ -417,12 +459,12 @@ namespace ReportFNSUtility
             {
                 UInt16 tag = reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
-                STLV tlsTmp;
+                Structurs tlsTmp;
                 if (Array.IndexOf(this.stlv, tag) != -1)
                 {
                     nodes.Add($"({tag})[{len}]");
-                    tlsTmp = new TLS(tag, len, this);
-                    (tlsTmp as TLS).ReadValue(reader, nodes[value.Count].Nodes);
+                    tlsTmp = new STLV(tag, len, this);
+                    (tlsTmp as STLV).ReadValue(reader, nodes[value.Count].Nodes);
                 }
                 else
                 {
@@ -446,7 +488,7 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="parent">STLV структура в которою добавляется эта STLV структура</param>
-        public TLS(UInt16 tag, STLV parent) : base(tag, parent)
+        public STLV(UInt16 tag, Structurs parent) : base(tag, parent)
         {
             if(parent!=null)
                 parent.Len+=4;
@@ -457,13 +499,13 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="tag">Тег добавляемой структуры</param>
         /// <returns>Добавленная структура типа STLV</returns>
-        public STLV AddValue(UInt16 tag)
+        public Structurs AddValue(UInt16 tag)
         {
             try
             {
                 if (Array.IndexOf(this.stlv, tag) != -1)
                 {
-                    value.Add(new TLS(tag, this));
+                    value.Add(new STLV(tag, this));
                 }
                 else
                 {
