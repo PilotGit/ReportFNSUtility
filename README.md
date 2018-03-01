@@ -8,55 +8,55 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 
 ## ReportFS
 
-Описание
+Класс содержащий в себе заголовок и массив фискальных документов длительного хранения.
 
 ### Поля
   |название      | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |header        | ReportHeader                  |Описание
-  |fDLongStorage | List<Structurs>               |Описание
+  |header        | ReportHeader                  |Заголовок
+  |fDLongStorage | List<Structurs>               |Массив даннхы длительного хранения
   
 ### Конструкторы 
 
 **ReportFS(BinaryReader reader)**
 
-Описание
+Конструктор принимающий поток чтения. Поток чтения будет передан в соответстующий конструктор заголовка, а потом распарсен для заполнения массива данных длительного хранения путём вычленения тега и длинны и передачи тега и потока в соотвествующий конструктор STLV. 
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |reader        | BinaryReader                  |Описание
+  |reader        | BinaryReader                  |Поток чтения файла отчёта
   
   
 **ReportFS()**
 
-Описание
+Конструктор без параметров.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |              |                               |        
+  |        -      |              -                 |        -
   
 ### Методы
 
 **InitHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)**
 
-Описание
+Метод вызывает конструктор заголовка передавая все необходимые поля за исключением хеша.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |name          | string                        |Описание
-  |programm      | string                        |Описание
-  |numberFS      | string                        |Описание
-  |versionFFD    | byte                          |Описание
-  |countShift    | uint                          |Описание
-  |fiscalDoc     | uint                          |Описание
+  |name          | string                        |Название файла
+  |programm      | string                        |Программа выгрузки
+  |numberFS      | string                        |Номер фискального накопителя
+  |versionFFD    | byte                          |Версия ФФД
+  |countShift    | uint                          |Количество смен
+  |fiscalDoc     | uint                          |Количество фискальных документов
   
   **AddValue(UInt16 tag)**
 
-Описание
+Метод добавляющий данные длителного хранения для последующей записи их. В метод передаётся тег (650хх) в массив данных длительного хранения добавляется новый элемент и возвращается ссылка на него.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |tag           | UInt16                        |Описание
+  |tag           | UInt16                        |Тег
   
 **Возвращаемое значение**
 
@@ -66,7 +66,7 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
   
   **WriteFile(BinaryWriter writer)**
 
-Описание
+Метод запускает процесс записи отчёта в файл, последовательно вызывая запись заголовка, массива данных длительного хранения и формирование хеша.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
@@ -74,7 +74,7 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 
 ## ReportHeader
 
-Описание
+Класс содержит в себе все необходимы поля заголовка отчёта и реализует функции считывания загоовка, запись заголовка в файл и формирование Хеш суммы.
 
 ### Поля
   |название      | Тип                           |Описание
@@ -92,7 +92,7 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 
 **ReportHeader(BinaryReader reader)**
 
-Описание
+Конструктор получает поток чтения и считывает из него все поля заголовка.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
@@ -101,7 +101,7 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
   
 **ReportHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)**
 
-Описание
+Конструктор получает значение всех полей за исключением хеша.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
@@ -113,23 +113,10 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
   |fiscalDoc     | uint                          |Описание 
   
 ### Методы
-
-**InitHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)**
-
-Описание
-
-  |Переменная    | Тип                           |Описание
-  |--------------|-------------------------------|-------- 
-  |name          | string                        |Описание
-  |programm      | string                        |Описание
-  |numberFS      | string                        |Описание
-  |versionFFD    | byte                          |Описание
-  |countShift    | uint                          |Описание
-  |fiscalDoc     | uint                          |Описание
-  
+ 
   **AddHesh(UInt16 tag)**
 
-Описание
+Метод формирует и записывает хеш в полученный поток записи.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
