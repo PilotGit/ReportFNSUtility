@@ -69,7 +69,7 @@ namespace ReportFNSUtility
             header = new ReportHeader(name, programm, numberKKT, numberFS, versionFFD, countShift, fiscalDoc);
             return 0;
         }
-        
+
         /// <summary>
         /// Добавить STLV структуру (650XX)
         /// </summary>
@@ -86,6 +86,17 @@ namespace ReportFNSUtility
                 throw new Exception("Произошла непредвиденная ошибка при добавлении значения в структуру отчёта.");
             }
             return fDLongStorage.Last();
+        }
+
+        public int WriteFile(BinaryWriter writer)
+        {
+            header.WriteFile(writer);
+            header.AddHesh(writer);
+            foreach (var item in fDLongStorage)
+            {
+                (item as STLV).WriteFile(writer);
+            }
+            return 0;
         }
     }
     /// <summary>
@@ -189,6 +200,37 @@ namespace ReportFNSUtility
             Form1.form.treeView1.Nodes[0].Nodes.Add(this.countfiscalDoc.ToString());
             Form1.form.treeView1.Nodes[0].Nodes.Add(this.hesh.ToString());
 
+        }
+
+        /// <summary>
+        /// Записывает в поток все поля заголовка кроме хеша.
+        /// </summary>
+        /// <param name="writer">Поток записи</param>
+        public void WriteFile(BinaryWriter writer)
+        {
+            try
+            {
+                writer.Write(Encoding.GetEncoding(866).GetBytes( name));
+                writer.Write(Encoding.GetEncoding(866).GetBytes(programm));
+                writer.Write(Encoding.GetEncoding(866).GetBytes(numberKKT));
+                writer.Write(Encoding.GetEncoding(866).GetBytes(numberFS));
+                writer.Write(versionFFD);
+                writer.Write(countShift);
+                writer.Write(countfiscalDoc);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Записывает хеш в файл
+        /// </summary>
+        /// <param name="writer">Поток записи</param>
+        public void AddHesh(BinaryWriter writer)
+        {
+            writer.Write(hesh);
         }
     }
     /// <summary>
@@ -308,7 +350,6 @@ namespace ReportFNSUtility
             this.parent = parent;
             type = true;
         }
-
     }
 
     /// <summary>
@@ -405,7 +446,7 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="tag">Тег</param>
         /// <param name="parent">STLV структура в которою добавляется эта TLV структура</param>
-        public TLV(UInt16 tag,Structurs parent) : base(tag, parent)
+        public TLV(UInt16 tag, Structurs parent) : base(tag, parent)
         {
             if (parent != null)
                 parent.Len += 4;
@@ -422,7 +463,24 @@ namespace ReportFNSUtility
             Len = (UInt16)value.Length;
             return 0;
         }
-        
+
+        /// <summary>
+        /// Запись в файл тега, длинны и значения
+        /// </summary>
+        /// <param name="writer">Поток записи</param>
+        public void WriteFile(BinaryWriter writer)
+        {
+            try
+            {
+                writer.Write(Tag);
+                writer.Write(Len);
+                writer.Write(value);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 
     /// <summary>
@@ -455,7 +513,7 @@ namespace ReportFNSUtility
         public int ReadValue(BinaryReader reader, TreeNodeCollection nodes)
         {
             long endPosition = reader.BaseStream.Position + Len;
-            while (reader.BaseStream.Position != endPosition)
+            while (reader.BaseStream.Position < endPosition)
             {
                 UInt16 tag = reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
@@ -464,7 +522,7 @@ namespace ReportFNSUtility
                 {
                     nodes.Add($"({tag})[{len}]");
                     tlsTmp = new STLV(tag, len, this);
-                    (tlsTmp as STLV).ReadValue(reader, nodes[value.Count].Nodes);
+                    (tlsTmp as STLV).ReadValue(reader, nodes[nodes.Count-1].Nodes);
                 }
                 else
                 {
@@ -490,8 +548,8 @@ namespace ReportFNSUtility
         /// <param name="parent">STLV структура в которою добавляется эта STLV структура</param>
         public STLV(UInt16 tag, Structurs parent) : base(tag, parent)
         {
-            if(parent!=null)
-                parent.Len+=4;
+            if (parent != null)
+                parent.Len += 4;
         }
 
         /// <summary>
@@ -517,6 +575,34 @@ namespace ReportFNSUtility
                 throw new Exception("Произошла непредвиденная ошибка при добавлении значения в структуру отчёта.");
             }
             return value.Last();
+        }
+
+        /// <summary>
+        /// Запись в файл тега длинны и вызов записи в файл для всех вложенных объектов
+        /// </summary>
+        /// <param name="writer">Поток записи</param>
+        public void WriteFile(BinaryWriter writer)
+        {
+            try
+            {
+                writer.Write(Tag);
+                writer.Write(Len);
+                foreach (var item in value)
+                {
+                    if(item is TLV itemTlv)
+                    {
+                        itemTlv.WriteFile(writer);
+                    }
+                    else
+                    {
+                        (item as STLV).WriteFile(writer);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
