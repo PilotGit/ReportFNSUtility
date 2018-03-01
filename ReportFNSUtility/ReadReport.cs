@@ -33,14 +33,8 @@ namespace ReportFNSUtility
         public int Read()
         {
             reportFS = new ReportFS(reader);
-
-            var baseStream = reader.BaseStream;
             reader.Close();
-            baseStream.Close();
             return 0;
-        }
-        ~ReadReport()
-        {
         }
     }
 }
