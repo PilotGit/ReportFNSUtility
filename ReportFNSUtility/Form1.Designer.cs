@@ -253,6 +253,7 @@
             this.Controls.Add(this.GB_Connect);
             this.Name = "Form1";
             this.Text = "ReportFNSUtility";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.GB_Connect.ResumeLayout(false);
             this.GB_Connect.PerformLayout();
             this.GB_PreviewReport.ResumeLayout(false);
