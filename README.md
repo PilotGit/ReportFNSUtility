@@ -70,7 +70,7 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |writer        | BinaryWriter                  |Описание
+  |writer        | BinaryWriter                  |Поток записи
 
 ## ReportHeader
 
@@ -79,14 +79,13 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 ### Поля
   |название      | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |name        | String                  |Описание
-  |programm        | String                  |Описание
-  |numberKKT        | String                  |Описание
-  |numberFS        | String                  |Описание
-  |versionFFD        | Byte                  |Описание
-  |countShift        | UInt32                  |Описание
-  |countfiscalDoc        | UInt32                  |Описание
-  |hesh        | UInt32                  |Описание
+  |name          | string                        |Название файла
+  |programm      | string                        |Программа выгрузки
+  |numberFS      | string                        |Номер фискального накопителя
+  |versionFFD    | byte                          |Версия ФФД
+  |countShift    | uint                          |Количество смен
+  |fiscalDoc     | uint                          |Количество фискальных документов
+  |hesh        | UInt32                  |Хеш сумма 
   
 ### Конструкторы 
 
@@ -96,7 +95,7 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |reader        | BinaryReader                  |Описание
+  |reader        | BinaryReader                  |Поток чтения
   
   
 **ReportHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)**
@@ -105,12 +104,12 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |name          | string                        |Описание
-  |programm      | string                        |Описание
-  |numberFS      | string                        |Описание
-  |versionFFD    | byte                          |Описание
-  |countShift    | uint                          |Описание
-  |fiscalDoc     | uint                          |Описание 
+  |name          | string                        |Название файла
+  |programm      | string                        |Программа выгрузки
+  |numberFS      | string                        |Номер фискального накопителя
+  |versionFFD    | byte                          |Версия ФФД
+  |countShift    | uint                          |Количество смен
+  |fiscalDoc     | uint                          |Количество фискальных документов 
   
 ### Методы
  
@@ -120,24 +119,24 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |tag           | BinaryWriter                        |Описание
+  |tag           | BinaryWriter                        |Поток записи
   
   **WriteFile(BinaryWriter writer)**
 
-Описание
+Записывает в фаайл все поля заголовка за исключением хеш суммы.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |writer        | BinaryWriter                  |Описание
+  |writer        | BinaryWriter                  |Поток записи
 
 ## Structurs
 
-Описание
+Класс описывающий тег и длину дочерних классов STLV и TLV. Включает в себя массивы тегов для определения 
 
 ### Поля
   |название      | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |tlString        | UInt16[]                  |Описание
+  |tlString        | UInt16[]                  |Массив тегов 
   |tlInt        | UInt16[]                  |Описание
   |tlDouble        | UInt16[]                  |Описание
   |tlBit        | UInt16[]                  |Описание
@@ -146,8 +145,8 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
   |stlv        | UInt16[]                  |Описание
   |type        | bool                  |Описание
   |parent        | Structurs                  |Описание
-  |Len        | UInt16                  |Описание
-  |Tag        | UInt16                  |Описание
+  |Len        | UInt16                  |Длинна
+  |Tag        | UInt16                  |Тег
   
 ### Конструкторы 
 
@@ -164,131 +163,131 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
   
 **Structurs((UInt16 tag, Structurs parent)**
 
-Описание
+Конструктор принимает на вход тег и родительскую структуру если она имеется
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |parent        | Structurs                  |Описание
-  |Tag        | UInt16                  |Описание
+  |parent        | Structurs                  |Родительская структура
+  |Tag        | UInt16                  |Тег структуры
   
 ## STLV : Structurs
 
-Описание
+Класс описывающий STLV структуру. Включает в себя поле value - Значение из STLV структуры и методы позволяющие считыват данные из потока в структуру и записывать структуру в поток.
 
 ### Поля
   |название      | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |value        | byte[]                  |Описание
+  |value        | Structurs[]                  |Value из STLV структуры
   
 ### Конструкторы 
 
 **STLV((UInt16 tag, UInt16 len, Structurs parent)**
 
-Описание
+Конструтор принимающий на вход Тег, Длинну и родительскую структуру. Тег и длинна передают в конструктор родительного класса. Используется при считывании отчёта из потока.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |parent        | Structurs                  |Описание
-  |Len        | UInt16                  |Описание
-  |Tag        | UInt16                  |Описание
+  |parent        | Structurs                  |Родительская структура
+  |Tag        | UInt16                  |Тег структуры
+  |Len        | UInt16                  |Длинна 
   
   
 **STLV((UInt16 tag, Structurs parent)**
 
-Описание
+Конструтор принимающий на вход Тег и родительскую структуру. Тег передаётся в конструктор родительного класса. Используется при записи отчёта в поток.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |parent        | Structurs                  |Описание
-  |Tag        | UInt16                  |Описание
+  |parent        | Structurs                  |Родительская структура
+  |Tag        | UInt16                  |Тег структуры
   
 ### Методы
 
 ** ReadValue(BinaryReader reader, TreeNodeCollection node)**
 
-Описание
+Считывает значение из потока чтения и записывает значение в отчёт и в дерево на форме.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |reader          | BinaryReader                        |Описание
-  |node      | TreeNodeCollection                        |Описание
+  |reader          | BinaryReader                        |Поток чтения
+  |node      | TreeNodeCollection                        |Коллекция ветвей в которую добавляется значение.
   
   **AddValue(byte[] value)**
 
-Описание
+Добавляет в value новую структуру типа STLV или TLV в зависимости от переданного тега и возвращает её. 
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |tag           | UInt16                       |Описание
+  |tag           | UInt16                       |Тег
+  
+   **Возвращаемое значение**
+
+  | Тип                           |Описание
+  |-------------------------------|-------- 
+  | Structurs                     | Структура
   
   **WriteFile(BinaryWriter writer)**
 
-Описание
+Запускат процесс записи тега длинны и всех значений в поток, путём вызова метода WriteFile для всех дочерних объектов.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |writer        | BinaryWriter                  |Описание
-  
+  |writer        | BinaryWriter                  |Поток записи
+   
   ## TLV : Structurs
 
-Описание
+Класс описывающий STLV структуру. Включает в себя поле value - Значение из TLV структуры и методы позволяющие считыват значения из потока в структуру и записывать структуру в поток.
 
 ### Поля
   |название      | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |value        | byte[]                  |Описание
+  |value        | byte[]                  |Массив байтов длинны Len 
   
 ### Конструкторы 
 
 **TLV((UInt16 tag, UInt16 len, Structurs parent)**
 
-Описание
+Конструтор принимающий на вход Тег, Длинну и родительскую структуру. Тег и длинна передают в конструктор родительного класса. Используется при считывании отчёта из потока.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |parent        | Structurs                  |Описание
-  |Len        | UInt16                  |Описание
-  |Tag        | UInt16                  |Описание
+  |parent        | Structurs                  |Родительская структура
+  |Tag        | UInt16                  |Тег структуры
+  |Len        | UInt16                  |Длинна 
   
   
 **TLV((UInt16 tag, Structurs parent)**
 
-Описание
+Конструтор принимающий на вход Тег и родительскую структуру. Тег передаётся в конструктор родительного класса. Используется при записи отчёта в поток.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |parent        | Structurs                  |Описание
-  |Tag        | UInt16                  |Описание
+  |parent        | Structurs                  |Родительская структура
+  |Tag        | UInt16                  |Тег структуры
   
 ### Методы
 
-** ReadValue(BinaryReader reader, TreeNodeCollection node = null)**
+** ReadValue(BinaryReader reader, TreeNodeCollection nodes )**
 
-Описание
+Считывает значение из потока чтения и записывает значение в отчёт и в дерево на форме.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |reader          | BinaryReader                        |Описание
-  |node      | TreeNodeCollection                        |Описание
+  |reader          | BinaryReader                        |Поток чтения
+  |node      | TreeNodeCollection                        |Коллекция ветвей в которую добавляется значение.
   
   **AddValue(byte[] value)**
 
-Описание
+Добавляет в value новую структуру типа STLV или TLV в зависимости от переданного тега и возвращает её. 
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |value           | byte[]                        |Описание
-  
-  **Возвращаемое значение**
-
-  | Тип                           |Описание
-  |-------------------------------|-------- 
-  | Structurs                     | 
-  
+  |value           | byte[]                        |Массив байтов
+   
   **WriteFile(BinaryWriter writer)**
 
-Описание
+Запускат процесс записи тега длинны и всех значений в поток.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |writer        | BinaryWriter                  |Описание
+  |writer        | BinaryWriter                  |Поток записи
