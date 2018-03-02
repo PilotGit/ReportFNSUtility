@@ -156,9 +156,9 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |parent        | Structurs                  |Описание
-  |Len        | UInt16                  |Описание
-  |Tag        | UInt16                  |Описание
+  |parent        | Structurs                  |Родительская структура
+  |Len        | UInt16                  |Длинна
+  |Tag        | UInt16                  |Тег
   
   
 **Structurs((UInt16 tag, Structurs parent)**
