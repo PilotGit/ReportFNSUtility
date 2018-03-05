@@ -282,7 +282,7 @@
         private System.Windows.Forms.TextBox TB_fileName;
         private System.Windows.Forms.Button B_fileWayDialog;
         private System.Windows.Forms.TextBox TB_fileWay;
-        private System.Windows.Forms.Button B_startParse;
+        public System.Windows.Forms.Button B_startParse;
     }
 }
 

@@ -62,6 +62,7 @@ namespace ReportFNSUtility
             ConnectToFW();
             WriteReport writeReport = new WriteReport(ecrCtrl);
             B_startParse.Enabled = false;
+            writeReport.WriteReportStartParseFNS();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)

@@ -36,7 +36,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// фискальные данные 650XX
         /// </summary>
-        ushort tagFDn = 65099;
+        ushort tagFDn = 65001;
 
         public WriteReport(EcrCtrl ecrCtrl)
         {
@@ -125,9 +125,13 @@ namespace ReportFNSUtility
                         {
                             ///!!!!!
                             ///
-
+                            if (currentARC.AddValue((ushort)(ad.TlvTag + 100)) is STLV currentRegChange)
+                            {
+                                if (currentRegChange.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV dateTime) //добавление времени
+                                    dateTime.AddValue(GetDateTime(rch.Base.Freq.DT));
+                            }
                         }
-                        else if (ad.Data is Fs.Native.ArcReg)
+                        else if (ad.Data is Fs.Native.ArcReg reg)
                         {
                             ///!!!!!
                             ///
@@ -135,7 +139,7 @@ namespace ReportFNSUtility
                         }
                         else if (ad.Data is Fs.Native.ArcReceipt rcpt)     //ЭТО ЧЕК!_! 103
                         {
-                            if (currentARC.AddValue((ushort)ad.TlvTag) is STLV currentReceipt)
+                            if (currentARC.AddValue((ushort)(ad.TlvTag+100)) is STLV currentReceipt)
                             {
                                 if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV dateTime) //добавление времени
                                     dateTime.AddValue(GetDateTime(rcpt.Freq.DT));
@@ -169,12 +173,24 @@ namespace ReportFNSUtility
 
                         else if (ad.Data is Fs.Native.ArcShift shift) //Закрытие\откытие смены 102\105
                         {
-                            if (currentARC.AddValue((ushort)ad.TlvTag) is STLV curentShift)
+                            if (currentARC.AddValue((ushort)(ad.TlvTag+100)) is STLV curentShift)
                             {
                                 if (curentShift.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV dateTime) //добавление времени
                                     dateTime.AddValue(GetDateTime(shift.Freq.DT));
                                 else
                                     MessageBox.Show("shift 1");
+                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.ShiftNumber) is TLV ShiftNumber) //добавление времени
+                                    ShiftNumber.AddValue(GetByte(shift.Number.ToString()));
+                                else
+                                    MessageBox.Show("shift 2");
+                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление времени
+                                    FiscalNumber.AddValue(GetByte(shift.Freq.FiscalNumber.ToString()));
+                                else
+                                    MessageBox.Show("shift 3");
+                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature) //добавление времени
+                                    FsSignature.AddValue(GetByte(shift.Freq.FiscalSignature.ToString()));
+                                else
+                                    MessageBox.Show("shift 4");
                             }
                             else
                                 MessageBox.Show("shift 0");
@@ -193,8 +209,12 @@ namespace ReportFNSUtility
 
                             //checkAcknowledg(fsArc, ad, i); //проверка поддтверждения 
                         }
+                        else
+                        {
+                            MessageBox.Show(ad.TlvTag.ToString());
+                        }
                     }
-                    throw new Exception("Error.WriteReportStartParseFNS reportFS.AddValue");
+                    //throw new Exception("Error.WriteReportStartParseFNS reportFS.AddValue");
 
 
                 }
@@ -207,7 +227,12 @@ namespace ReportFNSUtility
 
             BinaryWriter binaryWriter= new BinaryWriter(new FileStream(@"путь.bin",FileMode.Create));
             reportFS.WriteFile(binaryWriter);
+            (ecrCtrl as IDisposable).Dispose();
+            ecrCtrl = new EcrCtrl();
+            Form1.form.B_startParse.Enabled = true;
+            binaryWriter.Close();
         }
+        
 
         //private void checkAcknowledg(Fs.Native.IArchive fsArc, Fs.Native.ArchiveDoc ad, uint count)
         //{
