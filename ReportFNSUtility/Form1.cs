@@ -16,6 +16,7 @@ namespace ReportFNSUtility
     {
 
         public static Form1 form = null;
+        Fw16.EcrCtrl ecrCtrl;
         public Form1()
         {
             InitializeComponent();
@@ -54,7 +55,37 @@ namespace ReportFNSUtility
 
         private void B_startParse_Click(object sender, EventArgs e)
         {
+            ecrCtrl = new Fw16.EcrCtrl();
+            ConnectToFW();
+            WriteReport writeReport = new WriteReport(ecrCtrl);
+            B_startParse.Enabled = false;
+            writeReport.WriteReportStartParseFNS();
+        }
 
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                (ecrCtrl as IDisposable).Dispose();
+            }
+            catch { }
+        }
+        
+        /// <summary>
+        /// подключение к ККТ. обырв соеденения с ККТ происходит в "форме" при её закрытии.
+        /// </summary>
+        /// <param name="serialPort">serialPort</param>
+        /// <param name="baudRate">частота</param>
+        void ConnectToFW(int serialPort = 1, int baudRate = 57600)
+        {
+            try
+            {
+                ecrCtrl.Init(serialPort, baudRate);             //Подключчение по порту и частоте
+            }
+            catch
+            {
+                MessageBox.Show("Ошибка при подключении");
+            }
         }
 
         public void UpdateProgressBar(int val)
