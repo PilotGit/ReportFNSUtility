@@ -40,13 +40,13 @@
             this.CB_Rate = new System.Windows.Forms.ComboBox();
             this.CB_Port = new System.Windows.Forms.ComboBox();
             this.GB_PreviewReport = new System.Windows.Forms.GroupBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.ChB_VisibleValue = new System.Windows.Forms.CheckBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.B_Update = new System.Windows.Forms.Button();
             this.B_Browse = new System.Windows.Forms.Button();
             this.TB_Patch = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.GB_Connect.SuspendLayout();
             this.GB_PreviewReport.SuspendLayout();
             this.SuspendLayout();
@@ -175,6 +175,15 @@
             this.GB_PreviewReport.TabStop = false;
             this.GB_PreviewReport.Text = "Просмотр отчёта";
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar1.Location = new System.Drawing.Point(6, 412);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(698, 21);
+            this.progressBar1.TabIndex = 2;
+            // 
             // ChB_VisibleValue
             // 
             this.ChB_VisibleValue.AutoSize = true;
@@ -234,15 +243,6 @@
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "Бинарный файл|*.bin; *.fnc";
             // 
-            // progressBar1
-            // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(6, 412);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(698, 21);
-            this.progressBar1.TabIndex = 2;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -279,8 +279,8 @@
         private System.Windows.Forms.TextBox TB_fileName;
         private System.Windows.Forms.Button B_fileWayDialog;
         private System.Windows.Forms.TextBox TB_fileWay;
-        private System.Windows.Forms.Button B_startParse;
         public System.Windows.Forms.GroupBox GB_PreviewReport;
+        public System.Windows.Forms.Button B_startParse;
     }
 }
 

@@ -494,7 +494,7 @@ namespace ReportFNSUtility
                     value.Add(new TLV(tag, this));
                 }
             }
-            catch
+            catch(Exception ex)
             {
                 throw new Exception("Произошла непредвиденная ошибка при добавлении значения в структуру отчёта.");
             }

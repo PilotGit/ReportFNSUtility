@@ -71,45 +71,49 @@ namespace ReportFNSUtility
         void qq()
         {
             //составить список регистраций. ключ номер фискального докумнета
-            Fs.Native.IService svc=null;
-            svc.GetRegStat(out Fs.Native.RegStat rst);
-            var regcount = rst.RegCount;
-
+            //Fs.Native.IService svc=null;
+            //svc.GetRegStat(out Fs.Native.RegStat rst);
+            //var regcount = rst.RegCount;
+            var regcount = lastDocNum;
             var dd = new Dictionary<uint, string> ();
 
             for(byte i = 0; i < regcount; i++)
             {
-                Fs.Native.IArchive arc= null;
-                arc.BeginReadReg(i);
-
-                uint fiscalNumber=1000000000;
-                string ofdTaxId = null;
-                while(arc.NextReadReg(out Fw16.Model.TLV<Fw16.Model.TLVTag> tlv) == Fs.Native.FsAnswer.Success)
+                //Fs.Native.IArchive arc;
+                if (ecrCtrl.Fw16.FsDirect is Fs.Native.IArchive arc)
                 {
-                    if(tlv.Tag == Fw16.Model.TLVTag.OfdTaxId)
+                    arc.BeginReadReg(i);
+
+                    uint fiscalNumber=i;
+                    string ofdTaxId = null;
+                    while (arc.NextReadReg(out Fw16.Model.TLV<Fw16.Model.TLVTag> tlv) == Fs.Native.FsAnswer.Success)
                     {
-                        ofdTaxId = Encoding.GetEncoding(866).GetString(tlv.Value);
+                        if (tlv.Tag == Fw16.Model.TLVTag.OfdTaxId)
+                        {
+                            ofdTaxId = Encoding.GetEncoding(866).GetString(tlv.Value);
+                        }
+                        if (tlv.Tag == Fw16.Model.TLVTag.FiscalNumber)
+                        {
+
+                            var ms = new System.IO.MemoryStream(tlv.Value);
+                            var br = new System.IO.BinaryReader(ms);
+                            fiscalNumber = br.ReadUInt32();
+
+                            var w = new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(tlv.Value);
+                            fiscalNumber = Convert.ToUInt32(w.Value);
+
+
+                        }
                     }
-                    if (tlv.Tag == Fw16.Model.TLVTag.FiscalNumber)
-                    {
-
-                        var ms = new System.IO.MemoryStream(tlv.Value);
-                        var br = new System.IO.BinaryReader(ms);
-                        fiscalNumber = br.ReadUInt32();
-
-                        var w = new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(tlv.Value);
-                        fiscalNumber = Convert.ToUInt32(w.Value);
-
-
-                    }
+                    dd.Add(fiscalNumber, ofdTaxId);
                 }
-                dd.Add(fiscalNumber, ofdTaxId);
             }
 
         }
 
         public void WriteReportStartParseFNS()
         {
+            qq();
             //Чтение всех документов
             for (uint i = 0; i < lastDocNum; i++)
             {
