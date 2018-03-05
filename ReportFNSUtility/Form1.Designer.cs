@@ -162,6 +162,7 @@
             this.GB_PreviewReport.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.GB_PreviewReport.Controls.Add(this.progressBar1);
             this.GB_PreviewReport.Controls.Add(this.ChB_VisibleValue);
             this.GB_PreviewReport.Controls.Add(this.treeView1);
             this.GB_PreviewReport.Controls.Add(this.B_Update);
@@ -192,9 +193,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.Location = new System.Drawing.Point(7, 65);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(697, 384);
+            this.treeView1.Size = new System.Drawing.Size(697, 341);
             this.treeView1.TabIndex = 4;
-            this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
             // B_Update
             // 
@@ -238,9 +238,9 @@
             // 
             this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(21, 490);
+            this.progressBar1.Location = new System.Drawing.Point(6, 412);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(977, 21);
+            this.progressBar1.Size = new System.Drawing.Size(698, 21);
             this.progressBar1.TabIndex = 2;
             // 
             // Form1
@@ -248,12 +248,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1015, 523);
-            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.GB_PreviewReport);
             this.Controls.Add(this.GB_Connect);
             this.Name = "Form1";
             this.Text = "ReportFNSUtility";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.GB_Connect.ResumeLayout(false);
             this.GB_Connect.PerformLayout();
             this.GB_PreviewReport.ResumeLayout(false);
@@ -269,7 +267,6 @@
         private System.Windows.Forms.Label L_Port;
         private System.Windows.Forms.ComboBox CB_Rate;
         private System.Windows.Forms.ComboBox CB_Port;
-        private System.Windows.Forms.GroupBox GB_PreviewReport;
         private System.Windows.Forms.Button B_Browse;
         private System.Windows.Forms.TextBox TB_Patch;
         private System.Windows.Forms.Button B_Update;
@@ -282,7 +279,8 @@
         private System.Windows.Forms.TextBox TB_fileName;
         private System.Windows.Forms.Button B_fileWayDialog;
         private System.Windows.Forms.TextBox TB_fileWay;
-        public System.Windows.Forms.Button B_startParse;
+        private System.Windows.Forms.Button B_startParse;
+        public System.Windows.Forms.GroupBox GB_PreviewReport;
     }
 }
 

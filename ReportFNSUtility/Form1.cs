@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,7 +21,7 @@ namespace ReportFNSUtility
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.0.0.1.1(H)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
+            form.Text = "FNSUtility V.0.0.2.0(S)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -33,12 +34,8 @@ namespace ReportFNSUtility
         {
             treeView1.Nodes.Clear();
             ReadReport readReport = new ReadReport(TB_Patch.Text);
-            readReport.Read();
-        }
-
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-
+            Thread t = new Thread((ThreadStart)delegate { readReport.Read(); });
+            t.Start();
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -89,6 +86,11 @@ namespace ReportFNSUtility
             {
                 MessageBox.Show("Ошибка при подключении");
             }
+        }
+
+        public void UpdateProgressBar(int val)
+        {
+            progressBar1.Value = val;
         }
     }
 }
