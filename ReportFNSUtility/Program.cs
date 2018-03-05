@@ -42,10 +42,8 @@ namespace ReportFNSUtility
 
         internal static TLVType GetTypeTLV(TLVTag tag)
         {
-            byte[] d = BitConverter.GetBytes((Int16)tag);
-            byte[] d2 = new byte[4] { d[0], d[1], 0, 0 };
-            Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper = new TLVWrapper<TLVTag>(d2);
-            return tLVWrapper.TlvType;
+            TLVTagInfoAttribute tLV = TLVAttribute.GetCustomAttribute(typeof(TLVTag).GetField(tag.ToString()),typeof(TLVTagInfoAttribute) ) as TLVTagInfoAttribute;
+            return tLV.TlvType;
         }
     }
 }
