@@ -22,6 +22,10 @@ namespace ReportFNSUtility
         /// Фискальные даннные длительного хранения
         /// </summary>
         List<Structurs> fDLongStorage = new List<Structurs>();
+        /// <summary>
+        /// 
+        /// </summary>
+        List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> fdLongStorage = new List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>();
 
         /// <summary>
         /// Уонструктор формирующий получающий данные из файлового потока отчёта
@@ -31,19 +35,15 @@ namespace ReportFNSUtility
         {
             header = new ReportHeader(reader);
             TreeNodeCollection nodes = Form1.form.treeView1.Nodes;
-            var progressBar = Form1.form.progressBar1;
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
-                progressBar.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100);
-                progressBar.Refresh();
-                UInt16 tag = reader.ReadUInt16();
+                Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
+                reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
-                nodes.Add($"({tag})[{len}]");
-                STLV tlsTmp = new STLV(tag, len, null);
-                fDLongStorage.Add(tlsTmp);
-                tlsTmp.ReadValue(reader, nodes[fDLongStorage.Count].Nodes);
+                reader.BaseStream.Seek(-4, SeekOrigin.Current);
+                fdLongStorage.Add(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(reader.ReadBytes(len + 4)));
             }
-            progressBar.Value = 100;
+            Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
         }
 
         /// <summary>
@@ -64,10 +64,9 @@ namespace ReportFNSUtility
         /// <param name="versionFFD">Версия ФФД</param>
         /// <param name="countShift">Количество смен</param>
         /// <param name="fiscalDoc">Количество фискальных документов</param>
-        public int InitHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)
+        public void InitHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)
         {
             header = new ReportHeader(name, programm, numberKKT, numberFS, versionFFD, countShift, fiscalDoc);
-            return 0;
         }
 
         /// <summary>
@@ -88,7 +87,7 @@ namespace ReportFNSUtility
             return fDLongStorage.Last();
         }
 
-        public int WriteFile(BinaryWriter writer)
+        public void WriteFile(BinaryWriter writer)
         {
             header.WriteFile(writer);
             header.AddHesh(writer);
@@ -96,7 +95,6 @@ namespace ReportFNSUtility
             {
                 (item as STLV).WriteFile(writer);
             }
-            return 0;
         }
     }
     /// <summary>
@@ -153,10 +151,38 @@ namespace ReportFNSUtility
         /// <param name="fiscalDoc">Количество фискальных документов</param>
         public ReportHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)
         {
-            this.name = name;
-            this.programm = programm;
-            this.numberKKT = numberKKT;
-            this.numberFS = numberFS;
+            if (name.Length >= lenName)
+            {
+                this.name = name.Substring(0, lenName);
+            }
+            else
+            {
+                this.name += string.Format($"{ name,lenName}");
+            }
+            if (programm.Length >= lenProgramm)
+            {
+                this.programm = programm.Substring(0, lenProgramm);
+            }
+            else
+            {
+                this.programm = string.Format($"{programm,lenProgramm}");
+            }
+            if (numberKKT.Length >= lenNumberKKT)
+            {
+                this.numberKKT = numberKKT.Substring(0, lenNumberKKT);
+            }
+            else
+            {
+                this.numberKKT = string.Format($"{numberKKT,lenNumberKKT}");
+            }
+            if (numberFS.Length >= lenNumberFS)
+            {
+                this.numberFS = numberFS.Substring(0, lenNumberFS);
+            }
+            else
+            {
+                this.numberFS = string.Format($"{numberFS,lenNumberFS}");
+            }
             this.versionFFD = versionFFD;
             this.countShift = countShift;
             this.countfiscalDoc = fiscalDoc;
@@ -190,16 +216,18 @@ namespace ReportFNSUtility
             this.countShift = reader.ReadUInt32();
             this.countfiscalDoc = reader.ReadUInt32();
             this.hesh = reader.ReadUInt32();
-            Form1.form.treeView1.Nodes.Add("Header");
-            Form1.form.treeView1.Nodes[0].Nodes.Add(this.name);
-            Form1.form.treeView1.Nodes[0].Nodes.Add(this.programm);
-            Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberKKT);
-            Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
-            Form1.form.treeView1.Nodes[0].Nodes.Add(this.versionFFD.ToString());
-            Form1.form.treeView1.Nodes[0].Nodes.Add(this.countShift.ToString());
-            Form1.form.treeView1.Nodes[0].Nodes.Add(this.countfiscalDoc.ToString());
-            Form1.form.treeView1.Nodes[0].Nodes.Add(this.hesh.ToString());
-
+            Form1.form.Invoke((MethodInvoker)delegate
+            {
+                Form1.form.treeView1.Nodes.Add("Header");
+                Form1.form.treeView1.Nodes[0].Nodes.Add(this.name);
+                Form1.form.treeView1.Nodes[0].Nodes.Add(this.programm);
+                Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberKKT);
+                Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
+                Form1.form.treeView1.Nodes[0].Nodes.Add(this.versionFFD.ToString());
+                Form1.form.treeView1.Nodes[0].Nodes.Add(this.countShift.ToString());
+                Form1.form.treeView1.Nodes[0].Nodes.Add(this.countfiscalDoc.ToString());
+                Form1.form.treeView1.Nodes[0].Nodes.Add(this.hesh.ToString());
+            });
         }
 
         /// <summary>
@@ -210,7 +238,7 @@ namespace ReportFNSUtility
         {
             try
             {
-                writer.Write(Encoding.GetEncoding(866).GetBytes( name));
+                writer.Write(Encoding.GetEncoding(866).GetBytes(name));
                 writer.Write(Encoding.GetEncoding(866).GetBytes(programm));
                 writer.Write(Encoding.GetEncoding(866).GetBytes(numberKKT));
                 writer.Write(Encoding.GetEncoding(866).GetBytes(numberFS));
@@ -238,36 +266,6 @@ namespace ReportFNSUtility
     /// </summary>
     class Structurs
     {
-
-        /// <summary>
-        /// Массив тегов TLV структур где значение строка
-        /// </summary>
-        public UInt16[] tlString = { 1000, 1048, 1018, 1037, 1036, 1013, 1021, 1203, 1009, 1187, 1060, 1117, 1017, 1046, 1188, 1041, 1226 };
-        /// <summary>
-        /// Массив тегов TLV структур где значение число
-        /// </summary>
-        public UInt16[] tlInt = { 1029, 1062, 1002, 1221, 1110, 1056, 1001, 1108, 1207, 1109, 1193, 1126, 1189, 1190, 1213, 1040, 1101, 1209, 1038, 1054, 1214, 1212, 1097 };
-        /// <summary>
-        /// Массив тегов TLV структур где значение число c фиксированной точкой
-        /// </summary>
-        public UInt16[] tlDouble = { 1020, 1031, 1081, 1215, 1216, 1217, 1102, 1103, 1104, 1105, 1106, 1107, 1043, 1023 }; //1023-Пл. точка FVLN 
-        /// <summary>
-        /// Массив тегов TLV структур где значение массив битов
-        /// </summary>
-        public UInt16[] tlBit = { 1057, 1205, 1222 };
-        /// <summary>
-        /// Массив тегов TLV структур где значение дата и время
-        /// </summary>
-        public UInt16[] tlUnixTime = { 1012, 1098 };
-        /// <summary>
-        /// Массив тегов TLV структур где значение массив байтов
-        /// </summary>
-        public UInt16[] tlByteMass = { 1077, 304, 301, 1078, 1162, 300 };
-        /// <summary>
-        /// Массив тегов STLV структур
-        /// </summary>
-        public UInt16[] stlv = { 101, 111, 102, 121, 103, 131, 104, 141, 105, 106, 107, 1, 11, 2, 21, 3, 31, 4, 41, 5, 6, 7, 1059, 1157 };
-
         /// <summary>
         /// тип структуры true-считывание из ККТ, false-расшифровка файла.  
         /// </summary>
@@ -318,12 +316,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Тег STLV или TLV структуры
         /// </summary>
-        public ushort Tag { get => tag; }
-
-        /// <summary>
-        /// текущая позиция считывания относительного этого блока (Необходим для проверки превышения длинны)
-        /// </summary>
-        protected UInt16 currentByte = 0;
+        public UInt16 Tag { get => tag; }
 
         /// <summary>
         /// Конструктор используемы при считыывании данных из файла
@@ -351,7 +344,6 @@ namespace ReportFNSUtility
             type = true;
         }
     }
-
     /// <summary>
     /// Реализация TLV структуры
     /// </summary>
@@ -372,73 +364,19 @@ namespace ReportFNSUtility
         {
             value = new byte[Len];
         }
+
         /// <summary>
         /// Считывает значение из потока и добавляет ветвь, если былапередана коллекция ветвей
         /// </summary>
         /// <param name="reader">Бинарный поток чтения</param>
-        /// <param name="node">Коллекция ветвей, в которую будет добавлена новая ветвь</param>
+        /// <param name="nodes">Коллекция ветвей, в которую будет добавлена новая ветвь</param>
         /// <returns></returns>
-        public int ReadValue(BinaryReader reader, TreeNodeCollection node = null)
+        public static void ReadValue(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tlv, TreeNodeCollection nodes = null)
         {
-            reader.Read(value, 0, Len);
-            //Если была передана коллекция ветвей илёт добавление ветки
-            if (node != null)
+            Form1.form.Invoke((MethodInvoker)delegate
             {
-                Encoding encoding = Encoding.GetEncoding(866);
-                if (Array.IndexOf(tlByteMass, Tag) != -1)       //Сверка тега с массивом тегов для преобразования в массив битов
-                {
-                    string s = "";
-                    foreach (var item in value)
-                    {
-                        s += $"{item:X2} ";
-                    }
-                    node.Add($"({Tag})[{Len}] {s}");
-                }
-                else if (Array.IndexOf(tlString, Tag) != -1)         //Сверка тега с массивом тегов для преобразования в строку
-                {
-                    node.Add($"({Tag})[{Len}] {encoding.GetString(value)}");
-                }
-                else if (Array.IndexOf(tlUnixTime, Tag) != -1)       //Сверка тега с массивом тегов для преобразования в дату и время
-                {
-                    DateTime date = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) + TimeSpan.FromSeconds(BitConverter.ToUInt32(value, 0));
-                    node.Add($"({Tag})[{Len}]  {(date).ToString("dd:MM:yyyy HH:mm:ss")}");
-                }
-                else if (Array.IndexOf(tlInt, Tag) != -1)            //Сверка тега с массивом тегов для преобразования в целое число
-                {
-                    switch (Len)
-                    {
-                        case 1: node.Add($"({Tag})[{Len}]  {value[0]}"); break;
-                        case 2: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt16(value, 0)}"); break;
-                        case 4: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt32(value, 0)}"); break;
-                        case 8: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(value, 0)}"); break;
-                        default:
-                            break;
-                    }
-                }
-                else if (Array.IndexOf(tlDouble, Tag) != -1)         //Сверка тега с массивом тегов для преобразования в дробное число с 2 знаками после зпт
-                {
-                    switch (Len)
-                    {
-                        case 1: node.Add($"({Tag})[{Len}]  {value[0] / 100d}"); break;
-                        case 2: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt16(value, 0) / 100d}"); break;
-                        case 3: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt32(new byte[] { 0, value[0], value[1], value[2] }, 0) / 100d}"); break;
-                        case 4: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt32(value, 0) / 100d}"); break;
-                        case 5: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(new byte[] { 0, 0, 0, value[0], value[1], value[2], value[3], value[4] }, 0) / 100d}"); break;
-                        case 6: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(new byte[] { 0, 0, value[0], value[1], value[2], value[3], value[4], value[5] }, 0) / 100d}"); break;
-                        case 7: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(new byte[] { 0, value[0], value[1], value[2], value[3], value[4], value[5], value[6] }, 0) / 100d}"); break;
-                        case 8: node.Add($"({Tag})[{Len}]  {BitConverter.ToUInt64(value, 0) / 100d}"); break;
-                    }
-                }
-                else if (Array.IndexOf(tlBit, Tag) != -1)            //Сверка тега с массивом тегов для преобразования в массив битов
-                {
-                    node.Add($"({Tag})[{Len}]  {Convert.ToString(value[0])}");
-                }
-                else
-                {
-                    node.Add($"({Tag})[{Len}]");
-                }
-            }
-            return 0;
+                nodes.Add($"({tlv.Source.Tag})[{tlv.Source.Length}]\"{tlv.Description}\" {tlv.Value.ToString()}");
+            });
         }
 
         /// <summary>
@@ -457,11 +395,10 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="value">Значение в виде массива байтов</param>
         /// <returns>0-операция завершилась успешно</returns>
-        public int AddValue(byte[] value)
+        public void AddValue(byte[] value)
         {
             this.value = value;
             Len = (UInt16)value.Length;
-            return 0;
         }
 
         /// <summary>
@@ -510,35 +447,21 @@ namespace ReportFNSUtility
         /// <param name="reader">Поток чтения</param>
         /// <param name="nodes">Коллеция ветвей в которую будут добавлены новые ветви</param>
         /// <returns></returns>
-        public int ReadValue(BinaryReader reader, TreeNodeCollection nodes)
+        public void ReadValue(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> stlv, TreeNodeCollection nodes)
         {
-            long endPosition = reader.BaseStream.Position + Len;
-            while (reader.BaseStream.Position < endPosition)
+            nodes.Add($"({stlv.Source.Tag})[{stlv.Source.Length}]\"{stlv.Description}\"");
+            if (stlv.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> list)
             {
-                UInt16 tag = reader.ReadUInt16();
-                UInt16 len = reader.ReadUInt16();
-                Structurs tlsTmp;
-                if (Array.IndexOf(this.stlv, tag) != -1)
+
+                foreach (var item in list)
                 {
-                    nodes.Add($"({tag})[{len}]");
-                    tlsTmp = new STLV(tag, len, this);
-                    (tlsTmp as STLV).ReadValue(reader, nodes[nodes.Count-1].Nodes);
+                    ReadValue(item, nodes[nodes.Count - 1].Nodes);
                 }
-                else
-                {
-                    tlsTmp = new TLV(tag, len, this);
-                    if (Form1.form.ChB_VisibleValue.Checked)
-                    {
-                        (tlsTmp as TLV).ReadValue(reader, nodes);
-                    }
-                    else
-                    {
-                        (tlsTmp as TLV).ReadValue(reader);
-                    }
-                }
-                value.Add(tlsTmp);
             }
-            return 0;
+            else
+            {
+                TLV.ReadValue(stlv.Value as Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>, nodes[nodes.Count - 1].Nodes);
+            }
         }
 
         /// <summary>
@@ -561,7 +484,8 @@ namespace ReportFNSUtility
         {
             try
             {
-                if (Array.IndexOf(this.stlv, tag) != -1)
+
+                if (Program.GetTypeTLV((Fw16.Model.TLVTag)tag) is Fw16.Model.TLVType.STLV)
                 {
                     value.Add(new STLV(tag, this));
                 }
@@ -589,7 +513,7 @@ namespace ReportFNSUtility
                 writer.Write(Len);
                 foreach (var item in value)
                 {
-                    if(item is TLV itemTlv)
+                    if (item is TLV itemTlv)
                     {
                         itemTlv.WriteFile(writer);
                     }
