@@ -20,7 +20,7 @@ namespace ReportFNSUtility
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.0.0.1.1(H)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
+            form.Text = "FNSUtility V.0.0.2.0(S)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
         }
 
         private void button1_Click(object sender, EventArgs e)
