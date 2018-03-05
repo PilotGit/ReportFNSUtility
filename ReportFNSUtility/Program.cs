@@ -43,7 +43,7 @@ namespace ReportFNSUtility
         internal static TLVType GetTypeTLV(TLVTag tag)
         {
             TLVTagInfoAttribute tLV = TLVAttribute.GetCustomAttribute(typeof(TLVTag).GetField(tag.ToString()),typeof(TLVTagInfoAttribute) ) as TLVTagInfoAttribute;
-            return tLV.TlvType;
+            return tLV?.TlvType??TLVType.Auto;
         }
     }
 }
