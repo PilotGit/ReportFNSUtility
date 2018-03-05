@@ -38,7 +38,7 @@ namespace ReportFNSUtility
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
                 Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
-                reader.ReadUInt16();
+                UInt16 tag =reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 reader.BaseStream.Seek(-4, SeekOrigin.Current);
                 fdLongStorage.Add(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(reader.ReadBytes(len + 4)));
@@ -157,7 +157,7 @@ namespace ReportFNSUtility
             }
             else
             {
-                this.name += string.Format($"{ name,lenName}");
+                this.name += string.Format($"{ name,-lenName}");
             }
             if (programm.Length >= lenProgramm)
             {
@@ -165,7 +165,7 @@ namespace ReportFNSUtility
             }
             else
             {
-                this.programm = string.Format($"{programm,lenProgramm}");
+                this.programm = string.Format($"{programm,-lenProgramm}");
             }
             if (numberKKT.Length >= lenNumberKKT)
             {
@@ -173,7 +173,7 @@ namespace ReportFNSUtility
             }
             else
             {
-                this.numberKKT = string.Format($"{numberKKT,lenNumberKKT}");
+                this.numberKKT = string.Format($"{numberKKT,-lenNumberKKT}");
             }
             if (numberFS.Length >= lenNumberFS)
             {
@@ -181,7 +181,7 @@ namespace ReportFNSUtility
             }
             else
             {
-                this.numberFS = string.Format($"{numberFS,lenNumberFS}");
+                this.numberFS = string.Format($"{numberFS,-lenNumberFS}");
             }
             this.versionFFD = versionFFD;
             this.countShift = countShift;
@@ -243,8 +243,8 @@ namespace ReportFNSUtility
                 writer.Write(Encoding.GetEncoding(866).GetBytes(numberKKT));
                 writer.Write(Encoding.GetEncoding(866).GetBytes(numberFS));
                 writer.Write(versionFFD);
-                writer.Write(countShift);
-                writer.Write(countfiscalDoc);
+                writer.Write(BitConverter.GetBytes(countShift));
+                writer.Write(BitConverter.GetBytes(countfiscalDoc));
             }
             catch (Exception ex)
             {
@@ -258,7 +258,7 @@ namespace ReportFNSUtility
         /// <param name="writer">Поток записи</param>
         public void AddHesh(BinaryWriter writer)
         {
-            writer.Write(hesh);
+            writer.Write(BitConverter.GetBytes(hesh));
         }
     }
     /// <summary>
@@ -297,8 +297,9 @@ namespace ReportFNSUtility
                 {
                     try
                     {
+                        UInt16 tmp = (UInt16)(value-this.len);
                         if (parent != null)
-                            parent.Len += value;
+                            parent.Len += tmp;
                         this.len = value;
                     }
                     catch

@@ -84,7 +84,7 @@ namespace ReportFNSUtility
                 {
                     arc.BeginReadReg(i);
 
-                    uint fiscalNumber=i;
+                    uint fiscalNumber=1;
                     string ofdTaxId = null;
                     while (arc.NextReadReg(out Fw16.Model.TLV<Fw16.Model.TLVTag> tlv) == Fs.Native.FsAnswer.Success)
                     {
@@ -97,10 +97,10 @@ namespace ReportFNSUtility
 
                             var ms = new System.IO.MemoryStream(tlv.Value);
                             var br = new System.IO.BinaryReader(ms);
-                            fiscalNumber = br.ReadUInt32();
+                            fiscalNumber=br.ReadUInt32();
 
                             var w = new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(tlv.Value);
-                            fiscalNumber = Convert.ToUInt32(w.Value);
+                            fiscalNumber = Convert.ToUInt32(w.Value.ToString());
 
 
                         }
@@ -113,7 +113,7 @@ namespace ReportFNSUtility
 
         public void WriteReportStartParseFNS()
         {
-            qq();
+            //qq();
             //Чтение всех документов
             for (uint i = 0; i < lastDocNum; i++)
             {
@@ -133,6 +133,8 @@ namespace ReportFNSUtility
                             {
                                 if (currentRegChange.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV dateTime) //добавление времени
                                     dateTime.AddValue(GetDateTime(rch.Base.Freq.DT));
+                                else
+                                    MessageBox.Show("!");
                             }
                         }
                         else if (ad.Data is Fs.Native.ArcReg reg)
@@ -149,26 +151,26 @@ namespace ReportFNSUtility
                                     dateTime.AddValue(GetDateTime(rcpt.Freq.DT));
                                 else
                                     MessageBox.Show("rcpt 1");
-                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.Operation) is TLV operation) //добавление признака расчета
-                                    operation.AddValue(GetByte(((int)rcpt.Operation).ToString()));
-                                else
-                                    MessageBox.Show("rcpt 2");
-                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.Total) is TLV Total) //добавление сцммы по чеку
-                                    Total.AddValue(GetByte((rcpt.Total.ToString())));
-                                else
-                                    MessageBox.Show("rcpt 3");
-                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление номер ФД
-                                    FiscalNumber.AddValue(GetByte((rcpt.Freq.FiscalNumber.ToString())));
-                                else
-                                    MessageBox.Show("rcpt 4");
-                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FsId) is TLV FsId)//номер ФН
-                                    FsId.AddValue(this.FsId);
-                                else
-                                    MessageBox.Show("rcpt 5");
-                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature)//ФПД
-                                    FsSignature.AddValue(GetByte(rcpt.Freq.FiscalSignature.ToString()));
-                                else
-                                    MessageBox.Show("rcpt 6");
+                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.Operation) is TLV operation) //добавление признака расчета
+                                //    operation.AddValue(BitConverter.GetBytes((byte)rcpt.Operation));
+                                //else
+                                //    MessageBox.Show("rcpt 2");
+                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.Total) is TLV Total) //добавление сцммы по чеку
+                                //    Total.AddValue(BitConverter.GetBytes((rcpt.Total)));
+                                //else
+                                //    MessageBox.Show("rcpt 3");
+                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление номер ФД
+                                //    FiscalNumber.AddValue(BitConverter.GetBytes((rcpt.Freq.FiscalNumber)));
+                                //else
+                                //    MessageBox.Show("rcpt 4");
+                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FsId) is TLV FsId)//номер ФН
+                                //    FsId.AddValue(this.FsId);
+                                //else
+                                //    MessageBox.Show("rcpt 5");
+                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature)//ФПД
+                                //    FsSignature.AddValue(BitConverter.GetBytes(rcpt.Freq.FiscalSignature));
+                                //else
+                                //    MessageBox.Show("rcpt 6");
                             }
                             else
                                 MessageBox.Show("rcpt 0");
@@ -183,18 +185,18 @@ namespace ReportFNSUtility
                                     dateTime.AddValue(GetDateTime(shift.Freq.DT));
                                 else
                                     MessageBox.Show("shift 1");
-                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.ShiftNumber) is TLV ShiftNumber) //добавление времени
-                                    ShiftNumber.AddValue(GetByte(shift.Number.ToString()));
-                                else
-                                    MessageBox.Show("shift 2");
-                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление времени
-                                    FiscalNumber.AddValue(GetByte(shift.Freq.FiscalNumber.ToString()));
-                                else
-                                    MessageBox.Show("shift 3");
-                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature) //добавление времени
-                                    FsSignature.AddValue(GetByte(shift.Freq.FiscalSignature.ToString()));
-                                else
-                                    MessageBox.Show("shift 4");
+                                //if (curentShift.AddValue((int)Fw16.Model.TLVTag.ShiftNumber) is TLV ShiftNumber) //добавление времени
+                                //    ShiftNumber.AddValue(BitConverter.GetBytes(shift.Number));
+                                //else
+                                //    MessageBox.Show("shift 2");
+                                //if (curentShift.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление времени
+                                //    FiscalNumber.AddValue(BitConverter.GetBytes(shift.Freq.FiscalNumber));
+                                //else
+                                //    MessageBox.Show("shift 3");
+                                //if (curentShift.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature) //добавление времени
+                                //    FsSignature.AddValue(BitConverter.GetBytes(shift.Freq.FiscalSignature));
+                                //else
+                                //    MessageBox.Show("shift 4");
                             }
                             else
                                 MessageBox.Show("shift 0");
