@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Fw16.Model;
 
 namespace ReportFNSUtility
 {
@@ -18,6 +21,31 @@ namespace ReportFNSUtility
             Application.SetCompatibleTextRenderingDefault(false);
             Form1 form = new Form1();
             Application.Run(form);
+        }
+        /// <summary>
+        /// Получить описание enum
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        internal static string _GetDescription(Enum value)
+        {
+            FieldInfo field = value.GetType().GetField(value.ToString());
+
+            if (field == null)
+                return String.Format("<{0}>", value);
+
+            DescriptionAttribute attribute
+                    = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) as DescriptionAttribute;
+
+            return attribute?.Description;
+        }
+
+        internal static TLVType GetTypeTLV(TLVTag tag)
+        {
+            byte[] d = BitConverter.GetBytes((Int16)tag);
+            byte[] d2 = new byte[4] { d[0], d[1], 0, 0 };
+            Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper = new TLVWrapper<TLVTag>(d2);
+            return tLVWrapper.TlvType;
         }
     }
 }
