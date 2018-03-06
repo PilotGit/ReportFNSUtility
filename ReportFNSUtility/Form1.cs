@@ -56,10 +56,12 @@ namespace ReportFNSUtility
         private void B_startParse_Click(object sender, EventArgs e)
         {
             ecrCtrl = new Fw16.EcrCtrl();
-            ConnectToFW();
-            WriteReport writeReport = new WriteReport(ecrCtrl);
-            B_startParse.Enabled = false;
-            writeReport.WriteReportStartParseFNS();
+            if (ConnectToFW())
+            {
+                WriteReport writeReport = new WriteReport(ecrCtrl);
+                B_startParse.Enabled = false;
+                writeReport.WriteReportStartParseFNS();
+            }
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -76,15 +78,17 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="serialPort">serialPort</param>
         /// <param name="baudRate">частота</param>
-        void ConnectToFW(int serialPort = 1, int baudRate = 57600)
+        bool ConnectToFW(int serialPort = 1, int baudRate = 57600)
         {
             try
             {
                 ecrCtrl.Init(serialPort, baudRate);             //Подключчение по порту и частоте
+                return true;
             }
             catch
             {
                 MessageBox.Show("Ошибка при подключении");
+                return false;
             }
         }
 

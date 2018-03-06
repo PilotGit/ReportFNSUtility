@@ -51,7 +51,7 @@ namespace ReportFNSUtility
             }
 
         }
-        //ЧУТЬ ЧУТЬ ПЕРЕГРУЗОК__________________________________________________________________
+        //ЧУТЬ-ЧУТЬ ПЕРЕГРУЗОК__________________________________________________________________
         /// <summary>
         /// Получение времени в байтах в секундах
         /// </summary>
@@ -59,10 +59,10 @@ namespace ReportFNSUtility
         /// <returns></returns>
         public byte[] GetByte(DateTime dateTime)
         {
-            string dt;
-            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dt = Math.Floor((dateTime.ToUniversalTime() - origin).TotalSeconds).ToString();
-            return Encoding.GetEncoding(866).GetBytes(dt);
+            DateTimeOffset origin = dateTime.AddHours(3);
+            byte[] dt = BitConverter.GetBytes(origin.ToUnixTimeSeconds());
+            byte[] dtnew = new byte[] {dt[0], dt[1], dt[2], dt[3] };
+            return dtnew;
         }
         /// <summary>
         /// отправить данные получть массив байтов. функция перегружена
@@ -88,6 +88,17 @@ namespace ReportFNSUtility
         /// <param name="dt">данные</param>
         /// <returns>массив байтов</returns>
         public byte[] GetByte(uint dt)
+        {
+            byte[] bt = new byte[8];
+            bt=(BitConverter.GetBytes(dt));
+            return bt;
+        }
+        /// <summary>
+        /// отправить данные получть массив байтов. функция перегружена
+        /// </summary>
+        /// <param name="dt">данные</param>
+        /// <returns>массив байтов</returns>
+        public byte[] GetByte(ulong dt)
         {
             return BitConverter.GetBytes(dt);
         }
@@ -180,22 +191,23 @@ namespace ReportFNSUtility
                                     operation.AddValue(GetByte((byte)rcpt.Operation));
                                 else
                                     MessageBox.Show("rcpt 2");
-                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.Total) is TLV Total) //добавление сцммы по чеку
-                                //    Total.AddValue(BitConverter.GetBytes((rcpt.Total)));
-                                //else
-                                //    MessageBox.Show("rcpt 3");
-                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление номер ФД
-                                //    FiscalNumber.AddValue(BitConverter.GetBytes((rcpt.Freq.FiscalNumber)));
-                                //else
-                                //    MessageBox.Show("rcpt 4");
-                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FsId) is TLV FsId)//номер ФН
-                                //    FsId.AddValue(this.FsId);
-                                //else
-                                //    MessageBox.Show("rcpt 5");
-                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature)//ФПД
-                                //    FsSignature.AddValue(BitConverter.GetBytes(rcpt.Freq.FiscalSignature));
-                                //else
-                                //    MessageBox.Show("rcpt 6");
+                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.Total) is TLV Total) //добавление сцммы по чеку
+                                    Total.AddValue(GetByte((rcpt.Total)));
+                                else
+                                    MessageBox.Show("rcpt 3");
+                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление номер ФД
+                                    FiscalNumber.AddValue(GetByte((rcpt.Freq.FiscalNumber)));
+                                else
+                                    MessageBox.Show("rcpt 4");
+                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FsId) is TLV FsId)//номер ФН
+                                    FsId.AddValue(this.FsId);
+                                else
+                                    MessageBox.Show("rcpt 5");
+                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature)//ФПД
+                                    //FsSignature.AddValue(GetByte(rcpt.Freq.FiscalSignature));
+                                    FsSignature.AddValue(new byte[] {0,0,0,0,0,11 } );//{ 204,168,76,34,0,0}
+                                else
+                                    MessageBox.Show("rcpt 6");
                             }
                             else
                                 MessageBox.Show("rcpt 0");
@@ -218,10 +230,10 @@ namespace ReportFNSUtility
                                     FiscalNumber.AddValue(GetByte(shift.Freq.FiscalNumber));
                                 else
                                     MessageBox.Show("shift 3");
-                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature) //добавление ФПД
-                                    FsSignature.AddValue(GetByte(shift.Freq.FiscalSignature));
-                                else
-                                    MessageBox.Show("shift 4");
+                                //if (curentShift.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature) //добавление ФПД
+                                //    FsSignature.AddValue(GetByte(shift.Freq.FiscalSignature));
+                                //else
+                                //    MessageBox.Show("shift 4");
                             }
                             else
                                 MessageBox.Show("shift 0");
@@ -246,7 +258,7 @@ namespace ReportFNSUtility
                         }
                     }
                     //throw new Exception("Error.WriteReportStartParseFNS reportFS.AddValue");
-                    MessageBox.Show(Program.GetTypeTLV(Fw16.Model.TLVTag.FsSignature).ToString());
+                    //MessageBox.Show(Program.GetTypeTLV(Fw16.Model.TLVTag.DateTime).ToString());
 
                 }
             }
