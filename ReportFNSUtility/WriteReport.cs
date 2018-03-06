@@ -51,23 +51,47 @@ namespace ReportFNSUtility
             }
 
         }
+        //ЧУТЬ ЧУТЬ ПЕРЕГРУЗОК__________________________________________________________________
         /// <summary>
         /// Получение времени в байтах в секундах
         /// </summary>
         /// <param name="dateTime">время из ФН</param>
         /// <returns></returns>
-        public byte[] GetDateTime(DateTime dateTime)
+        public byte[] GetByte(DateTime dateTime)
         {
             string dt;
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dt = Math.Floor((dateTime.ToUniversalTime() - origin).TotalSeconds).ToString();
             return Encoding.GetEncoding(866).GetBytes(dt);
         }
-        public byte[] GetByte(string dt)
+        /// <summary>
+        /// отправить данные получть массив байтов. функция перегружена
+        /// </summary>
+        /// <param name="dt">данные</param>
+        /// <returns>массив байтов</returns>
+        public byte[] GetByte(byte dt)
         {
-            return Encoding.GetEncoding(866).GetBytes(dt);
+            return new byte[] { dt };
         }
-
+        /// <summary>
+        /// отправить данные получть массив байтов. функция перегружена
+        /// </summary>
+        /// <param name="dt">данные</param>
+        /// <returns>массив байтов</returns>
+        public byte[] GetByte(ushort dt)
+        {
+            return BitConverter.GetBytes(dt);
+        }
+        /// <summary>
+        /// отправить данные получть массив байтов. функция перегружена
+        /// </summary>
+        /// <param name="dt">данные</param>
+        /// <returns>массив байтов</returns>
+        public byte[] GetByte(uint dt)
+        {
+            return BitConverter.GetBytes(dt);
+        }
+        //конец перегрузок|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
         void qq()
         {
             //составить список регистраций. ключ номер фискального докумнета
@@ -111,6 +135,7 @@ namespace ReportFNSUtility
 
         }
 
+
         public void WriteReportStartParseFNS()
         {
             //qq();
@@ -132,7 +157,7 @@ namespace ReportFNSUtility
                             if (currentARC.AddValue((ushort)(ad.TlvTag + 100)) is STLV currentRegChange)
                             {
                                 if (currentRegChange.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV dateTime) //добавление времени
-                                    dateTime.AddValue(GetDateTime(rch.Base.Freq.DT));
+                                    dateTime.AddValue(GetByte(rch.Base.Freq.DT));
                                 else
                                     MessageBox.Show("!");
                             }
@@ -148,13 +173,13 @@ namespace ReportFNSUtility
                             if (currentARC.AddValue((ushort)(ad.TlvTag+100)) is STLV currentReceipt)
                             {
                                 if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV dateTime) //добавление времени
-                                    dateTime.AddValue(GetDateTime(rcpt.Freq.DT));
+                                    dateTime.AddValue(GetByte(rcpt.Freq.DT));
                                 else
                                     MessageBox.Show("rcpt 1");
-                                //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.Operation) is TLV operation) //добавление признака расчета
-                                //    operation.AddValue(BitConverter.GetBytes((byte)rcpt.Operation));
-                                //else
-                                //    MessageBox.Show("rcpt 2");
+                                if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.Operation) is TLV operation) //добавление признака расчета
+                                    operation.AddValue(GetByte((byte)rcpt.Operation));
+                                else
+                                    MessageBox.Show("rcpt 2");
                                 //if (currentReceipt.AddValue((int)Fw16.Model.TLVTag.Total) is TLV Total) //добавление сцммы по чеку
                                 //    Total.AddValue(BitConverter.GetBytes((rcpt.Total)));
                                 //else
@@ -182,21 +207,21 @@ namespace ReportFNSUtility
                             if (currentARC.AddValue((ushort)(ad.TlvTag+100)) is STLV curentShift)
                             {
                                 if (curentShift.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV dateTime) //добавление времени
-                                    dateTime.AddValue(GetDateTime(shift.Freq.DT));
+                                    dateTime.AddValue(GetByte(shift.Freq.DT));
                                 else
                                     MessageBox.Show("shift 1");
-                                //if (curentShift.AddValue((int)Fw16.Model.TLVTag.ShiftNumber) is TLV ShiftNumber) //добавление времени
-                                //    ShiftNumber.AddValue(BitConverter.GetBytes(shift.Number));
-                                //else
-                                //    MessageBox.Show("shift 2");
-                                //if (curentShift.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление времени
-                                //    FiscalNumber.AddValue(BitConverter.GetBytes(shift.Freq.FiscalNumber));
-                                //else
-                                //    MessageBox.Show("shift 3");
-                                //if (curentShift.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature) //добавление времени
-                                //    FsSignature.AddValue(BitConverter.GetBytes(shift.Freq.FiscalSignature));
-                                //else
-                                //    MessageBox.Show("shift 4");
+                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.ShiftNumber) is TLV ShiftNumber) //добавление Номера смены
+                                    ShiftNumber.AddValue(GetByte(shift.Number));
+                                else
+                                    MessageBox.Show("shift 2");
+                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление фискального номера
+                                    FiscalNumber.AddValue(GetByte(shift.Freq.FiscalNumber));
+                                else
+                                    MessageBox.Show("shift 3");
+                                if (curentShift.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature) //добавление ФПД
+                                    FsSignature.AddValue(GetByte(shift.Freq.FiscalSignature));
+                                else
+                                    MessageBox.Show("shift 4");
                             }
                             else
                                 MessageBox.Show("shift 0");
@@ -221,7 +246,7 @@ namespace ReportFNSUtility
                         }
                     }
                     //throw new Exception("Error.WriteReportStartParseFNS reportFS.AddValue");
-
+                    MessageBox.Show(Program.GetTypeTLV(Fw16.Model.TLVTag.FsSignature).ToString());
 
                 }
             }
@@ -230,7 +255,7 @@ namespace ReportFNSUtility
             reportFS.InitHeader((Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc"), Form1.form.Text, ecrCtrl.Info.FactoryInfo.FwBuild.ToString(), statusData.FsId, (byte)ecrCtrl.Info.FfdVersion, maxShift, lastDocNum);
 
 
-
+            //выгрузка дерева в файл
             BinaryWriter binaryWriter= new BinaryWriter(new FileStream(@"путь.bin",FileMode.Create));
             reportFS.WriteFile(binaryWriter);
             (ecrCtrl as IDisposable).Dispose();
