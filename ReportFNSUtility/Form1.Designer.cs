@@ -42,11 +42,11 @@
             this.GB_PreviewReport = new System.Windows.Forms.GroupBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.ChB_VisibleValue = new System.Windows.Forms.CheckBox();
-            this.treeView1 = new System.Windows.Forms.TreeView();
             this.B_Update = new System.Windows.Forms.Button();
             this.B_Browse = new System.Windows.Forms.Button();
             this.TB_Patch = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.GB_Connect.SuspendLayout();
             this.GB_PreviewReport.SuspendLayout();
             this.SuspendLayout();
@@ -195,16 +195,6 @@
             this.ChB_VisibleValue.UseVisualStyleBackColor = true;
             this.ChB_VisibleValue.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
-            // treeView1
-            // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeView1.Location = new System.Drawing.Point(7, 65);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(697, 341);
-            this.treeView1.TabIndex = 4;
-            // 
             // B_Update
             // 
             this.B_Update.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -243,6 +233,17 @@
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "Бинарный файл|*.bin; *.fnc";
             // 
+            // treeView1
+            // 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.Location = new System.Drawing.Point(7, 65);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(697, 341);
+            this.treeView1.Sorted = true;
+            this.treeView1.TabIndex = 4;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -252,6 +253,7 @@
             this.Controls.Add(this.GB_Connect);
             this.Name = "Form1";
             this.Text = "ReportFNSUtility";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.GB_Connect.ResumeLayout(false);
             this.GB_Connect.PerformLayout();
             this.GB_PreviewReport.ResumeLayout(false);
@@ -269,7 +271,6 @@
         private System.Windows.Forms.ComboBox CB_Port;
         private System.Windows.Forms.Button B_Browse;
         private System.Windows.Forms.TextBox TB_Patch;
-        private System.Windows.Forms.Button B_Update;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         public System.Windows.Forms.TreeView treeView1;
         public System.Windows.Forms.ProgressBar progressBar1;
@@ -281,6 +282,7 @@
         private System.Windows.Forms.TextBox TB_fileWay;
         public System.Windows.Forms.GroupBox GB_PreviewReport;
         public System.Windows.Forms.Button B_startParse;
+        public System.Windows.Forms.Button B_Update;
     }
 }
 

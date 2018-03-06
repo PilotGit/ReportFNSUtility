@@ -14,7 +14,8 @@ namespace ReportFNSUtility
 {
     public partial class Form1 : Form
     {
-
+        Thread readReportThread;
+        ReadReport readReport;
         public static Form1 form = null;
         Fw16.EcrCtrl ecrCtrl;
         public Form1()
@@ -22,6 +23,7 @@ namespace ReportFNSUtility
             InitializeComponent();
             Form1.form = this;
             form.Text = "FNSUtility V.0.0.2.0(S)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
+            treeView1.TreeViewNodeSorter = new TreeSorter();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -32,10 +34,30 @@ namespace ReportFNSUtility
 
         private void button2_Click(object sender, EventArgs e)
         {
-            treeView1.Nodes.Clear();
-            ReadReport readReport = new ReadReport(TB_Patch.Text);
-            Thread t = new Thread((ThreadStart)delegate { readReport.Read(); });
-            t.Start();
+            if (readReportThread?.IsAlive ?? false)
+            {
+                readReportThread?.Abort();
+                readReportThread.Join();
+                B_Update.Text = "Обновить";
+            }
+            else
+            {
+                try
+                {
+                    readReport?.reader?.BaseStream.Close();
+                    treeView1.Nodes.Clear();
+                    readReport = new ReadReport(TB_Patch.Text);
+
+                    readReportThread = new Thread((ThreadStart)delegate { readReport.Read(); });
+                    readReportThread.Start();
+                    B_Update.Text = "Остановить";
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -70,7 +92,7 @@ namespace ReportFNSUtility
             }
             catch { }
         }
-        
+
         /// <summary>
         /// подключение к ККТ. обырв соеденения с ККТ происходит в "форме" при её закрытии.
         /// </summary>
@@ -91,6 +113,11 @@ namespace ReportFNSUtility
         public void UpdateProgressBar(int val)
         {
             progressBar1.Value = val;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            readReportThread?.Abort();
         }
     }
 }

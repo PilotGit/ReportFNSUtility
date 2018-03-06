@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,10 +19,12 @@ namespace ReportFNSUtility
         /// Заголовок файла отчёта
         /// </summary>
         ReportHeader header;
+
         /// <summary>
         /// Фискальные даннные длительного хранения
         /// </summary>
         List<Structurs> fDLongStorage = new List<Structurs>();
+
         /// <summary>
         /// 
         /// </summary>
@@ -42,12 +45,17 @@ namespace ReportFNSUtility
                 UInt16 len = reader.ReadUInt16();
                 reader.BaseStream.Seek(-4, SeekOrigin.Current);
                 fdLongStorage.Add(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(reader.ReadBytes(len + 4)));
-                Form1.form.GB_PreviewReport.Invoke((MethodInvoker)delegate
+                Form1.form?.GB_PreviewReport?.Invoke((MethodInvoker)delegate
                 {
                     STLV.ShowTree(fdLongStorage.Last(), nodes);
                 });
             }
-            Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
+            Form1.form.Invoke((MethodInvoker)delegate
+            {
+                Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100);
+                Form1.form.progressBar1.Value = 0;
+                Form1.form.B_Update.Text = "Обновить";
+            });
         }
 
         /// <summary>
@@ -381,7 +389,19 @@ namespace ReportFNSUtility
         /// <param name="nodes">Коллекция ветвей</param>
         public static void ShowTree(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tlv, TreeNodeCollection nodes = null)
         {
-            nodes.Add($"({tlv.Source.Tag})[{tlv.Source.Length}]\"{tlv.Description}\" {tlv.Value.ToString()}");
+            if (tlv.Value is Byte[] val)
+            {
+                string str = "";
+                foreach (var item in val)
+                {
+                    str += $"{item,2:X2} ";
+                }
+                nodes.Add($"{string.Format($"({(int)tlv.Source.Tag})[{tlv.Source.Length}]",-13)}  {str}            [{tlv.Description}]");
+            }
+            else
+            {
+                nodes.Add($"{string.Format($"({(int)tlv.Source.Tag})[{tlv.Source.Length}]", -13)}  {tlv.Value.ToString()}            [{tlv.Description}]");
+            }
         }
 
         /// <summary>
@@ -455,18 +475,19 @@ namespace ReportFNSUtility
         {
             if (stlv.Source.Tag != Fw16.Model.TLVTag._Anonymous)
             {
-                nodes.Add($"({stlv.Source.Tag})[{stlv.Source.Length}]\"{stlv.Description}\"");
+                TreeNode tmp  = nodes.Add($"{$"({(int)stlv.Source.Tag})[{stlv.Source.Length}]",-13}            [{stlv.Description}]");
                 foreach (var item in stlv.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
                 {
                     if (item.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
                     {
-                        STLV.ShowTree(item, nodes[nodes.Count - 1].Nodes);
+                        STLV.ShowTree(item, tmp.Nodes);
                     }
                     else
                     {
-                        TLV.ShowTree(item, nodes[nodes.Count - 1].Nodes);
+                        TLV.ShowTree(item, tmp.Nodes);
                     }
                 }
+
             }
             else
             {
@@ -538,6 +559,27 @@ namespace ReportFNSUtility
             {
                 throw ex;
             }
+        }
+    }
+
+    class TreeSorter : IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            TreeNode tx = x as TreeNode;
+            TreeNode ty = y as TreeNode;
+
+            if ( ty.Parent == null)
+            {
+                return -1;
+            }
+
+            if ( (tx.Parent?.Text ??"")== "Header")
+            {
+                return 1;
+            }
+
+            return string.Compare(tx.Text, ty.Text);
         }
     }
 }

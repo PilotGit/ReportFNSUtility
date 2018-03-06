@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Windows.Forms;
 
 namespace ReportFNSUtility
 {
@@ -17,7 +18,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Двоичный reader потока файла отчёта
         /// </summary>
-        BinaryReader reader;
+        public BinaryReader reader;
         /// <summary>
         /// Отчёт о счиывании данных с фискального накопителя
         /// </summary>
@@ -27,7 +28,9 @@ namespace ReportFNSUtility
         public ReadReport(string path)
         {
             this.path = path;
-            reader = new BinaryReader(new FileStream(path, FileMode.Open));
+
+                reader = new BinaryReader(new FileStream(path, FileMode.Open));
+
         }
 
         public int Read()
