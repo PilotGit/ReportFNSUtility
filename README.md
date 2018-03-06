@@ -136,13 +136,6 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 ### Поля
   |название      | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |tlString        | UInt16[]                  |Массив тегов 
-  |tlInt        | UInt16[]                  |Описание
-  |tlDouble        | UInt16[]                  |Описание
-  |tlBit        | UInt16[]                  |Описание
-  |tlUnixTime        | UInt16[]                  |Описание
-  |tlByteMass        | UInt16[]                  |Описание
-  |stlv        | UInt16[]                  |Описание
   |type        | bool                  |Описание
   |parent        | Structurs                  |Описание
   |Len        | UInt16                  |Длинна
@@ -203,13 +196,13 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
   
 ### Методы
 
-** ReadValue(BinaryReader reader, TreeNodeCollection node)**
+** public static void ShowTree(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> stlv, TreeNodeCollection nodes) **
 
-Считывает значение из потока чтения и записывает значение в отчёт и в дерево на форме.
+Формирует дерево данных из полученного TLVWrapper в полученную коллекцию ветвей.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |reader          | BinaryReader                        |Поток чтения
+  |stlv          | TLVWrapper<TLVTag> |Поток чтения
   |node      | TreeNodeCollection                        |Коллекция ветвей в которую добавляется значение.
   
   **AddValue(byte[] value)**
@@ -267,13 +260,13 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
   
 ### Методы
 
-** ReadValue(BinaryReader reader, TreeNodeCollection nodes )**
+** public static void ShowTree(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> stlv, TreeNodeCollection nodes) **
 
-Считывает значение из потока чтения и записывает значение в отчёт и в дерево на форме.
+Формирует дерево данных из полученного TLVWrapper в полученную коллекцию ветвей.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |reader          | BinaryReader                        |Поток чтения
+  |stlv          | TLVWrapper<TLVTag> |Поток чтения
   |node      | TreeNodeCollection                        |Коллекция ветвей в которую добавляется значение.
   
   **AddValue(byte[] value)**
