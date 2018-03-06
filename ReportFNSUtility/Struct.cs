@@ -38,10 +38,14 @@ namespace ReportFNSUtility
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
                 Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
-                UInt16 tag =reader.ReadUInt16();
+                UInt16 tag = reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 reader.BaseStream.Seek(-4, SeekOrigin.Current);
                 fdLongStorage.Add(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(reader.ReadBytes(len + 4)));
+                Form1.form.GB_PreviewReport.Invoke((MethodInvoker)delegate
+                {
+                    STLV.ShowTree(fdLongStorage.Last(), nodes);
+                });
             }
             Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
         }
@@ -87,6 +91,10 @@ namespace ReportFNSUtility
             return fDLongStorage.Last();
         }
 
+        /// <summary>
+        /// Запускате запись в поток всех составных частей отчёта
+        /// </summary>
+        /// <param name="writer"></param>
         public void WriteFile(BinaryWriter writer)
         {
             header.WriteFile(writer);
@@ -297,7 +305,7 @@ namespace ReportFNSUtility
                 {
                     try
                     {
-                        UInt16 tmp = (UInt16)(value-this.len);
+                        UInt16 tmp = (UInt16)(value - this.len);
                         if (parent != null)
                             parent.Len += tmp;
                         this.len = value;
@@ -367,17 +375,13 @@ namespace ReportFNSUtility
         }
 
         /// <summary>
-        /// Считывает значение из потока и добавляет ветвь, если былапередана коллекция ветвей
+        /// Формирует ветки в полученной коллекции ветвей данными из полученного TLVWrapper
         /// </summary>
-        /// <param name="reader">Бинарный поток чтения</param>
-        /// <param name="nodes">Коллекция ветвей, в которую будет добавлена новая ветвь</param>
-        /// <returns></returns>
-        public static void ReadValue(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tlv, TreeNodeCollection nodes = null)
+        /// <param name="tlv">Структруа с входными данными</param>
+        /// <param name="nodes">Коллекция ветвей</param>
+        public static void ShowTree(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tlv, TreeNodeCollection nodes = null)
         {
-            Form1.form.Invoke((MethodInvoker)delegate
-            {
-                nodes.Add($"({tlv.Source.Tag})[{tlv.Source.Length}]\"{tlv.Description}\" {tlv.Value.ToString()}");
-            });
+            nodes.Add($"({tlv.Source.Tag})[{tlv.Source.Length}]\"{tlv.Description}\" {tlv.Value.ToString()}");
         }
 
         /// <summary>
@@ -443,25 +447,31 @@ namespace ReportFNSUtility
         }
 
         /// <summary>
-        /// Считыват значение из переданного потока чтения длины этого объекта, добавляя ветвь в дерево
+        /// Формирует ветки в полученной коллекции ветвей данными из полученного TLVWrapper
         /// </summary>
-        /// <param name="reader">Поток чтения</param>
-        /// <param name="nodes">Коллеция ветвей в которую будут добавлены новые ветви</param>
-        /// <returns></returns>
-        public void ReadValue(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> stlv, TreeNodeCollection nodes)
+        /// <param name="stlv">Структруа с входными данными</param>
+        /// <param name="nodes">Коллекция ветвей</param>
+        public static void ShowTree(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> stlv, TreeNodeCollection nodes)
         {
-            nodes.Add($"({stlv.Source.Tag})[{stlv.Source.Length}]\"{stlv.Description}\"");
-            if (stlv.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> list)
+            if (stlv.Source.Tag != Fw16.Model.TLVTag._Anonymous)
             {
-
-                foreach (var item in list)
+                nodes.Add($"({stlv.Source.Tag})[{stlv.Source.Length}]\"{stlv.Description}\"");
+                foreach (var item in stlv.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
                 {
-                    ReadValue(item, nodes[nodes.Count - 1].Nodes);
+                    if (item.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
+                    {
+                        STLV.ShowTree(item, nodes[nodes.Count - 1].Nodes);
+                    }
+                    else
+                    {
+                        TLV.ShowTree(item, nodes[nodes.Count - 1].Nodes);
+                    }
                 }
             }
             else
             {
-                TLV.ReadValue(stlv.Value as Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>, nodes[nodes.Count - 1].Nodes);
+                foreach (var item in stlv.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
+                    STLV.ShowTree(item, nodes);
             }
         }
 
@@ -495,7 +505,7 @@ namespace ReportFNSUtility
                     value.Add(new TLV(tag, this));
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 throw new Exception("Произошла непредвиденная ошибка при добавлении значения в структуру отчёта.");
             }
