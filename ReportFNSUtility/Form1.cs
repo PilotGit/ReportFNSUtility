@@ -22,7 +22,7 @@ namespace ReportFNSUtility
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.0.0.2.0(S)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
+            form.Text = "FNSUtility V.0.0.3.0(S)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
             treeView1.TreeViewNodeSorter = new TreeSorter();
         }
 
@@ -44,7 +44,7 @@ namespace ReportFNSUtility
             {
                 try
                 {
-                    readReport?.reader?.BaseStream.Close();
+                    readReport?.reader?.BaseStream?.Close();
                     treeView1.Nodes.Clear();
                     readReport = new ReadReport(TB_Patch.Text);
 
