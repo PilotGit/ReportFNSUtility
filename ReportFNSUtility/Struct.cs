@@ -31,7 +31,7 @@ namespace ReportFNSUtility
         List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> fdLongStorage = new List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>();
 
         /// <summary>
-        /// Уонструктор формирующий получающий данные из файлового потока отчёта
+        /// Конструктор формирующий получающий данные из файлового потока отчёта
         /// </summary>
         /// <param name="reader">Поток файла отчёта</param>
         public ReportFS(BinaryReader reader)

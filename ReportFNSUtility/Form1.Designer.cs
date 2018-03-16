@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.GB_Connect = new System.Windows.Forms.GroupBox();
             this.L_fileWay = new System.Windows.Forms.Label();
             this.L_fileName = new System.Windows.Forms.Label();
             this.TB_fileName = new System.Windows.Forms.TextBox();
@@ -40,42 +39,27 @@
             this.CB_Rate = new System.Windows.Forms.ComboBox();
             this.CB_Port = new System.Windows.Forms.ComboBox();
             this.GB_PreviewReport = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.ChB_VisibleValue = new System.Windows.Forms.CheckBox();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.B_Update = new System.Windows.Forms.Button();
             this.B_Browse = new System.Windows.Forms.Button();
             this.TB_Patch = new System.Windows.Forms.TextBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.GB_Connect.SuspendLayout();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.GB_PreviewReport.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // GB_Connect
-            // 
-            this.GB_Connect.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.GB_Connect.Controls.Add(this.L_fileWay);
-            this.GB_Connect.Controls.Add(this.L_fileName);
-            this.GB_Connect.Controls.Add(this.TB_fileName);
-            this.GB_Connect.Controls.Add(this.B_fileWayDialog);
-            this.GB_Connect.Controls.Add(this.TB_fileWay);
-            this.GB_Connect.Controls.Add(this.B_startParse);
-            this.GB_Connect.Controls.Add(this.L_Rate);
-            this.GB_Connect.Controls.Add(this.L_Port);
-            this.GB_Connect.Controls.Add(this.CB_Rate);
-            this.GB_Connect.Controls.Add(this.CB_Port);
-            this.GB_Connect.Location = new System.Drawing.Point(21, 29);
-            this.GB_Connect.Name = "GB_Connect";
-            this.GB_Connect.Size = new System.Drawing.Size(236, 455);
-            this.GB_Connect.TabIndex = 0;
-            this.GB_Connect.TabStop = false;
-            this.GB_Connect.Text = "Подключение к ККТ";
             // 
             // L_fileWay
             // 
             this.L_fileWay.AutoSize = true;
-            this.L_fileWay.Location = new System.Drawing.Point(7, 217);
+            this.L_fileWay.Location = new System.Drawing.Point(12, 223);
             this.L_fileWay.Name = "L_fileWay";
             this.L_fileWay.Size = new System.Drawing.Size(74, 13);
             this.L_fileWay.TabIndex = 17;
@@ -84,7 +68,7 @@
             // L_fileName
             // 
             this.L_fileName.AutoSize = true;
-            this.L_fileName.Location = new System.Drawing.Point(7, 173);
+            this.L_fileName.Location = new System.Drawing.Point(12, 179);
             this.L_fileName.Name = "L_fileName";
             this.L_fileName.Size = new System.Drawing.Size(64, 13);
             this.L_fileName.TabIndex = 16;
@@ -92,30 +76,35 @@
             // 
             // TB_fileName
             // 
-            this.TB_fileName.Location = new System.Drawing.Point(10, 189);
+            this.TB_fileName.ForeColor = System.Drawing.SystemColors.InactiveCaption;
+            this.TB_fileName.Location = new System.Drawing.Point(15, 195);
             this.TB_fileName.Name = "TB_fileName";
             this.TB_fileName.Size = new System.Drawing.Size(184, 20);
             this.TB_fileName.TabIndex = 14;
+            this.TB_fileName.Text = "По умолчанию";
+            this.TB_fileName.Enter += new System.EventHandler(this.TB_fileName_Enter);
+            this.TB_fileName.Leave += new System.EventHandler(this.TB_fileName_Leave);
             // 
             // B_fileWayDialog
             // 
-            this.B_fileWayDialog.Location = new System.Drawing.Point(200, 233);
+            this.B_fileWayDialog.Location = new System.Drawing.Point(205, 239);
             this.B_fileWayDialog.Name = "B_fileWayDialog";
             this.B_fileWayDialog.Size = new System.Drawing.Size(30, 20);
             this.B_fileWayDialog.TabIndex = 13;
             this.B_fileWayDialog.Text = "🔍";
             this.B_fileWayDialog.UseVisualStyleBackColor = true;
+            this.B_fileWayDialog.Click += new System.EventHandler(this.B_fileWayDialog_Click);
             // 
             // TB_fileWay
             // 
-            this.TB_fileWay.Location = new System.Drawing.Point(10, 233);
+            this.TB_fileWay.Location = new System.Drawing.Point(15, 239);
             this.TB_fileWay.Name = "TB_fileWay";
             this.TB_fileWay.Size = new System.Drawing.Size(184, 20);
             this.TB_fileWay.TabIndex = 12;
             // 
             // B_startParse
             // 
-            this.B_startParse.Location = new System.Drawing.Point(10, 259);
+            this.B_startParse.Location = new System.Drawing.Point(15, 260);
             this.B_startParse.Name = "B_startParse";
             this.B_startParse.Size = new System.Drawing.Size(220, 23);
             this.B_startParse.TabIndex = 11;
@@ -126,7 +115,7 @@
             // L_Rate
             // 
             this.L_Rate.AutoSize = true;
-            this.L_Rate.Location = new System.Drawing.Point(7, 71);
+            this.L_Rate.Location = new System.Drawing.Point(12, 67);
             this.L_Rate.Name = "L_Rate";
             this.L_Rate.Size = new System.Drawing.Size(49, 13);
             this.L_Rate.TabIndex = 3;
@@ -135,7 +124,7 @@
             // L_Port
             // 
             this.L_Port.AutoSize = true;
-            this.L_Port.Location = new System.Drawing.Point(7, 19);
+            this.L_Port.Location = new System.Drawing.Point(12, 20);
             this.L_Port.Name = "L_Port";
             this.L_Port.Size = new System.Drawing.Size(32, 13);
             this.L_Port.TabIndex = 2;
@@ -144,7 +133,7 @@
             // CB_Rate
             // 
             this.CB_Rate.FormattingEnabled = true;
-            this.CB_Rate.Location = new System.Drawing.Point(7, 90);
+            this.CB_Rate.Location = new System.Drawing.Point(15, 91);
             this.CB_Rate.Name = "CB_Rate";
             this.CB_Rate.Size = new System.Drawing.Size(223, 21);
             this.CB_Rate.TabIndex = 1;
@@ -152,7 +141,7 @@
             // CB_Port
             // 
             this.CB_Port.FormattingEnabled = true;
-            this.CB_Port.Location = new System.Drawing.Point(7, 42);
+            this.CB_Port.Location = new System.Drawing.Point(15, 43);
             this.CB_Port.Name = "CB_Port";
             this.CB_Port.Size = new System.Drawing.Size(223, 21);
             this.CB_Port.TabIndex = 0;
@@ -162,6 +151,7 @@
             this.GB_PreviewReport.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.GB_PreviewReport.Controls.Add(this.label1);
             this.GB_PreviewReport.Controls.Add(this.progressBar1);
             this.GB_PreviewReport.Controls.Add(this.ChB_VisibleValue);
             this.GB_PreviewReport.Controls.Add(this.treeView1);
@@ -174,6 +164,16 @@
             this.GB_PreviewReport.TabIndex = 1;
             this.GB_PreviewReport.TabStop = false;
             this.GB_PreviewReport.Text = "Просмотр отчёта";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.ForeColor = System.Drawing.Color.Red;
+            this.label1.Location = new System.Drawing.Point(193, 44);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(0, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Visible = false;
             // 
             // progressBar1
             // 
@@ -194,6 +194,17 @@
             this.ChB_VisibleValue.Text = "Отображать данные в дереве";
             this.ChB_VisibleValue.UseVisualStyleBackColor = true;
             this.ChB_VisibleValue.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // treeView1
+            // 
+            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.treeView1.Location = new System.Drawing.Point(7, 65);
+            this.treeView1.Name = "treeView1";
+            this.treeView1.Size = new System.Drawing.Size(697, 341);
+            this.treeView1.Sorted = true;
+            this.treeView1.TabIndex = 4;
             // 
             // B_Update
             // 
@@ -233,38 +244,65 @@
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "Бинарный файл|*.bin; *.fnc";
             // 
-            // treeView1
+            // tabControl1
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeView1.Location = new System.Drawing.Point(7, 65);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(697, 341);
-            this.treeView1.Sorted = true;
-            this.treeView1.TabIndex = 4;
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(12, 29);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(255, 455);
+            this.tabControl1.TabIndex = 2;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.L_fileWay);
+            this.tabPage1.Controls.Add(this.CB_Port);
+            this.tabPage1.Controls.Add(this.L_fileName);
+            this.tabPage1.Controls.Add(this.CB_Rate);
+            this.tabPage1.Controls.Add(this.TB_fileName);
+            this.tabPage1.Controls.Add(this.L_Port);
+            this.tabPage1.Controls.Add(this.B_fileWayDialog);
+            this.tabPage1.Controls.Add(this.L_Rate);
+            this.tabPage1.Controls.Add(this.TB_fileWay);
+            this.tabPage1.Controls.Add(this.B_startParse);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(247, 429);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Формирование отчета";
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(247, 429);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "tabPage2";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1015, 523);
+            this.ClientSize = new System.Drawing.Size(1015, 487);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.GB_PreviewReport);
-            this.Controls.Add(this.GB_Connect);
             this.Name = "Form1";
             this.Text = "ReportFNSUtility";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
-            this.GB_Connect.ResumeLayout(false);
-            this.GB_Connect.PerformLayout();
             this.GB_PreviewReport.ResumeLayout(false);
             this.GB_PreviewReport.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.GroupBox GB_Connect;
         private System.Windows.Forms.Label L_Rate;
         private System.Windows.Forms.Label L_Port;
         private System.Windows.Forms.ComboBox CB_Rate;
@@ -283,6 +321,11 @@
         public System.Windows.Forms.GroupBox GB_PreviewReport;
         public System.Windows.Forms.Button B_startParse;
         public System.Windows.Forms.Button B_Update;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.TabPage tabPage2;
+        public System.Windows.Forms.TabControl tabControl1;
+        public System.Windows.Forms.TabPage tabPage1;
     }
 }
 

@@ -22,7 +22,7 @@ namespace ReportFNSUtility
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.0.0.3.0(S)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
+            form.Text = "FNSUtility V.0.0.4.0(H)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
             treeView1.TreeViewNodeSorter = new TreeSorter();
         }
 
@@ -64,24 +64,22 @@ namespace ReportFNSUtility
         {
             if (ChB_VisibleValue.Checked)
             {
-                if (MessageBox.Show("Процедура займёт значительное количество\n" +
-                    "времени при большом объёме данных.\n" +
-                    "Вы уверены что хотите применить это свойство?",
-                    "Предупреждение",
-                    MessageBoxButtons.YesNo) == DialogResult.No)
-                {
-                    ChB_VisibleValue.Checked = false;
-                }
+                label1.Text = "Процедура займёт значительное количество времени при большом объёме данных.";
+                label1.Visible = true;
             }
+            else
+                label1.Visible = false;
         }
 
         private void B_startParse_Click(object sender, EventArgs e)
         {
             ecrCtrl = new Fw16.EcrCtrl();
-            ConnectToFW();
-            WriteReport writeReport = new WriteReport(ecrCtrl);
-            B_startParse.Enabled = false;
-            writeReport.WriteReportStartParseFNS();
+            if (ConnectToFW(1,115200))
+            {
+                WriteReport writeReport = new WriteReport(ecrCtrl,TB_fileWay.Text,TB_fileName.Text);
+                B_startParse.Enabled = false;
+                writeReport.WriteReportStartParseFNS();
+            }
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -98,15 +96,17 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="serialPort">serialPort</param>
         /// <param name="baudRate">частота</param>
-        void ConnectToFW(int serialPort = 1, int baudRate = 57600)
+        bool ConnectToFW(int serialPort = 1, int baudRate = 57600)
         {
             try
             {
                 ecrCtrl.Init(serialPort, baudRate);             //Подключчение по порту и частоте
+                return true;
             }
             catch
             {
                 MessageBox.Show("Ошибка при подключении");
+                return false;
             }
         }
 
@@ -118,6 +118,32 @@ namespace ReportFNSUtility
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             readReportThread?.Abort();
+        }
+
+        private void B_fileWayDialog_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                TB_fileWay.Text = folderBrowserDialog1.SelectedPath;
+            }
+        }
+
+        private void TB_fileName_Enter(object sender, EventArgs e)
+        {
+            if(TB_fileName.Text=="По умолчанию")
+            {
+                TB_fileName.Text = string.Empty;
+                TB_fileName.ForeColor = SystemColors.WindowText;
+            }
+        }
+
+        private void TB_fileName_Leave(object sender, EventArgs e)
+        {
+            if (TB_fileName.Text == string.Empty)
+            {
+                TB_fileName.Text = "По умолчанию";
+                TB_fileName.ForeColor = SystemColors.ActiveCaption;
+            }
         }
     }
 }
