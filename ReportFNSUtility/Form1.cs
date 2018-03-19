@@ -22,7 +22,7 @@ namespace ReportFNSUtility
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.0.0.3.0(H)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
+            form.Text = "FNSUtility V.0.0.4.0(H)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
             treeView1.TreeViewNodeSorter = new TreeSorter();
         }
 
@@ -74,7 +74,7 @@ namespace ReportFNSUtility
         private void B_startParse_Click(object sender, EventArgs e)
         {
             ecrCtrl = new Fw16.EcrCtrl();
-            if (ConnectToFW(1,115200))
+            if (ConnectToFW(CB_Port.Text))
             {
                 WriteReport writeReport = new WriteReport(ecrCtrl,TB_fileWay.Text,TB_fileName.Text);
                 B_startParse.Enabled = false;
@@ -96,11 +96,11 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="serialPort">serialPort</param>
         /// <param name="baudRate">частота</param>
-        bool ConnectToFW(int serialPort = 1, int baudRate = 57600)
+        bool ConnectToFW(string name="default")
         {
             try
             {
-                ecrCtrl.Init(serialPort, baudRate);             //Подключчение по порту и частоте
+                ecrCtrl.Init(name);             //Подключчение по порту и частоте
                 return true;
             }
             catch

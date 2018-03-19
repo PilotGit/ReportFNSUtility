@@ -455,20 +455,67 @@ namespace ReportFNSUtility
 
                         //ОТЧЕТ О ЗАКРЫТИИ ФН
                         /// ↓
-                        //else if (ad.Data is Fs.Native.ArcCloseFs arcCloseFs)
-                        //{
-                        //    if (currentARC.AddValue((ushort)(ad.TlvTag + 100)) is STLV curentArcCloseFs)
-                        //    {
-                        //        if (curentArcCloseFs.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV dateTime) //добавление времени
-                        //            dateTime.AddValue(GetByte(arcCloseFs.Freq.DT));
-                        //        else
-                        //            MessageBox.Show("arcCloseFs 1");
-                        //        if (curentArcCloseFs.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV dateTime) //добавление времени
-                        //            dateTime.AddValue(GetByte(arcCloseFs.Freq.));
-                        //        else
-                        //            MessageBox.Show("arcCloseFs 2");
-                        //    }
-                        //}
+                        else if (ad.Data is Fs.Native.ArcCloseFs arcCloseFs)
+                        {
+                            if (currentARC.AddValue((ushort)(ad.TlvTag + 100)) is STLV curentArcCloseFs)
+                            {
+                                if (currentARC.AddValue((ushort)(ad.TlvTag)) is STLV curentArcCloseFsAcknowledge)
+                                {
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.FsId) is TLV FsId) //добавление Номера ФН
+                                        FsId.AddValue(this.FsId);
+                                    else
+                                        MessageBox.Show("arcCloseFs 1");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.RegId) is TLV RegId) //добавление Регистрационного номера ККТ
+                                        RegId.AddValue(Encoding.GetEncoding(866).GetBytes(arcCloseFs.RegId));
+                                    else
+                                        MessageBox.Show("arcCloseFs 2");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.OwnerTaxId) is TLV OwnerTaxId) //добавление ИНН пользователя
+                                        OwnerTaxId.AddValue(dictionary.Values.Last()[1081]);
+                                    else
+                                        MessageBox.Show("arcCloseFs 3");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление Номера ФД
+                                        FiscalNumber.AddValue(GetByte(arcCloseFs.Freq.FiscalNumber));
+                                    else
+                                        MessageBox.Show("arcCloseFs 4");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.DateTime) is TLV DateTime) //добавление Дата
+                                        DateTime.AddValue(GetByte(arcCloseFs.Freq.DT));
+                                    else
+                                        MessageBox.Show("arcCloseFs 5");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature) //добавление ФПД
+                                        FsSignature.AddValue(GetByte(arcCloseFs.Freq.FiscalSignature,0));
+                                    else
+                                        MessageBox.Show("arcCloseFs 6");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.t1209) is TLV t1209) //добавление версия ФФД
+                                        t1209.AddValue(dictionary.Values.Last()[1209]);
+                                    else
+                                        MessageBox.Show("arcCloseFs 7");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.Operator) is TLV Operator) //добавление кассир
+                                        Operator.AddValue(dictionary.Values.Last()[1021]);
+                                    else
+                                        MessageBox.Show("arcCloseFs 8");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.OwnerName) is TLV OwnerName) //добавление наименование пользователя
+                                        OwnerName.AddValue(dictionary.Values.Last()[1048]);
+                                    else
+                                        MessageBox.Show("arcCloseFs 9");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.Location) is TLV Location) //добавление Место расчетов
+                                        Location.AddValue(dictionary.Values.Last()[1187]);
+                                    else
+                                        MessageBox.Show("arcCloseFs 10");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.LocationAddress) is TLV LocationAddress) //добавление Адес расчетов
+                                        LocationAddress.AddValue(dictionary.Values.Last()[1009]);
+                                    else
+                                        MessageBox.Show("arcCloseFs 11");
+                                    if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.ShiftNumber) is TLV ShiftNumber) //добавление номер смены
+                                        ShiftNumber.AddValue(GetByte(maxShift));
+                                    else
+                                        MessageBox.Show("arcCloseFs 12");
+
+                                    if (ad.Acknowledged)
+                                        checkAcknowledg(fsArc, currentARC, i + 1);
+                                }
+                                    
+                            }
+                        }
                         else
                         {
                             MessageBox.Show(ad.TlvTag.ToString());

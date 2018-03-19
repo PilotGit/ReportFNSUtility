@@ -234,15 +234,25 @@ namespace ReportFNSUtility
             this.hesh = reader.ReadUInt32();
             Form1.form.Invoke((MethodInvoker)delegate
             {
-                Form1.form.treeView1.Nodes.Add("Header");
-                Form1.form.treeView1.Nodes[0].Nodes.Add(this.name);
-                Form1.form.treeView1.Nodes[0].Nodes.Add(this.programm);
-                Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberKKT);
-                Form1.form.treeView1.Nodes[0].Nodes.Add(this.numberFS);
-                Form1.form.treeView1.Nodes[0].Nodes.Add(this.versionFFD.ToString());
-                Form1.form.treeView1.Nodes[0].Nodes.Add(this.countShift.ToString());
-                Form1.form.treeView1.Nodes[0].Nodes.Add(this.countfiscalDoc.ToString());
-                Form1.form.treeView1.Nodes[0].Nodes.Add(this.hesh.ToString());
+                //Form1.form.treeView1.Nodes.Add("Header");
+                Form1.form.tabControl1.SelectTab(Form1.form.T_page_headInfo);
+                Form1.form.TB_1_saveFile.Text = this.name;
+                Form1.form.TB_2_UnloadingProgram.Text = this.programm;
+                Form1.form.TB_3_RegNumber.Text = this.numberKKT;
+                Form1.form.TB_4_NumberFN.Text = this.numberFS;
+                Form1.form.TB_5_NumberFFD.Text = this.versionFFD.ToString();
+                Form1.form.TB_6_NumberOfShifts.Text = this.countShift.ToString();
+                Form1.form.TB_7_NumberOfFiscalDOC.Text = this.countfiscalDoc.ToString();
+                Form1.form.TB_8_CheckSum.Text = this.hesh.ToString();
+                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_1_saveFile.Text);
+                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_2_UnloadingProgram.Text = this.programm);
+                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_3_RegNumber.Text = this.numberKKT);
+                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_4_NumberFN.Text = this.numberFS);
+                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_5_NumberFFD.Text = this.versionFFD.ToString());
+                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_6_NumberOfShifts.Text = this.countShift.ToString());
+                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_7_NumberOfFiscalDOC.Text = this.countfiscalDoc.ToString());
+                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_8_CheckSum.Text = this.hesh.ToString());
+
             });
         }
 
@@ -274,6 +284,7 @@ namespace ReportFNSUtility
         /// <param name="writer">Поток записи</param>
         public void AddHesh(BinaryWriter writer)
         {
+
             writer.Write(BitConverter.GetBytes(hesh));
         }
     }
