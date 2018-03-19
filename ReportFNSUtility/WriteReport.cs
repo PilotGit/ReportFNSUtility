@@ -47,7 +47,7 @@ namespace ReportFNSUtility
         /// <param name="ecrCtrl">ссылка на объект работы с ккт</param>
         /// <param name="way">путь к файлу</param>
         /// <param name="fileName">имя файла</param>
-        public WriteReport(EcrCtrl ecrCtrl,string way,string fileName)
+        public WriteReport(EcrCtrl ecrCtrl,string way,string fileName="")
         {
             //Заполнение преременных 
             this.ecrCtrl = ecrCtrl;
@@ -58,7 +58,7 @@ namespace ReportFNSUtility
                 lastDocNum = statusData.LastDocNum;
                 reportFS = new ReportFS();
             }
-            way = way == string.Empty ? Application.StartupPath : way;
+            way = way == "" ? Application.StartupPath : way;
             if (fileName=="По умолчанию")
             {
                 this.way = way + @"\" +statusData.FsId+"_"+DateTime.Now.ToString("d")+ ".fnc";
@@ -268,7 +268,13 @@ namespace ReportFNSUtility
             FileStream fileStream = null;
             try
             {
+                if (Program.canRewrite!=false||Form1.form!=null)
                 fileStream = new FileStream(way, FileMode.CreateNew);
+                else
+                {
+                    Console.WriteLine("file can not Rewrite");
+                    return;
+                }
             }
             catch
             {
@@ -277,7 +283,13 @@ namespace ReportFNSUtility
             }
             //если не получилось выходим из метода
             if (fileStream == null)
+            {
+                (ecrCtrl as IDisposable).Dispose();
+                ecrCtrl = new EcrCtrl();
+                Form1.form.B_startParse.Enabled = true;
                 return;
+            }
+                
 
             Dictionary<uint, Dictionary<uint, byte[]>> dictionary = GetDictionaryREG();
             //dd(); //балуюсь с чтением всех тегов
