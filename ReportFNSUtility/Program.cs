@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Fw16;
 using Fw16.Model;
+
 
 namespace ReportFNSUtility
 {
@@ -28,6 +30,7 @@ namespace ReportFNSUtility
             }
             else
             {
+                Console.WriteLine("11111");
                 EcrCtrl ecrCtrl=new Fw16.EcrCtrl();
                 string way="";
                 foreach (var item in args)
@@ -45,7 +48,9 @@ namespace ReportFNSUtility
                                 canRewrite = true;
                             break;
                         default:
-                            Console.WriteLine("");
+                            Console.WriteLine("rw – перезаписать файл  отчёта при совпадении имени\n" +
+                                "P< Номер_Порта > -порт подключения к ККТ\n" +
+                                "D< Абсолютный_Путь_К_Директории > – Путь к директории в которой будет создан файл отчёта.");
                             return;
                     }
                 }
