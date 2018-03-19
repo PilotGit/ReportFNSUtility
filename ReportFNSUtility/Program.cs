@@ -7,11 +7,21 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Fw16;
 using Fw16.Model;
+using System.Runtime.InteropServices;
 
 namespace ReportFNSUtility
 {
     static class Program
     {
+        [DllImport("kernel32.dll")]
+        static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        const int SW_HIDE = 0;
+        const int SW_SHOW = 5;
+
         public static bool canRewrite = false;
         /// <summary>
         /// Главная точка входа для приложения.
@@ -19,17 +29,20 @@ namespace ReportFNSUtility
         [STAThread]
         static void Main(string[] args)
         {
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+
             if (args.Length == 0)
             {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
+                var handle = GetConsoleWindow();
+                ShowWindow(handle, SW_HIDE);
                 Form1 form = new Form1();
                 Application.Run(form);
             }
             else
             {
-                EcrCtrl ecrCtrl=new Fw16.EcrCtrl();
-                string way="";
+                EcrCtrl ecrCtrl = new Fw16.EcrCtrl();
+                string way = "";
                 foreach (var item in args)
                 {
                     switch (item[0])
@@ -41,7 +54,7 @@ namespace ReportFNSUtility
                             way = item.Substring(1);
                             break;
                         case 'r':
-                            if(item=="rw")
+                            if (item == "rw")
                                 canRewrite = true;
                             break;
                         default:
@@ -52,7 +65,7 @@ namespace ReportFNSUtility
                 WriteReport writeReport = new WriteReport(ecrCtrl, way);
                 writeReport.WriteReportStartParseFNS();
             }
-                
+
 
         }
         /// <summary>
