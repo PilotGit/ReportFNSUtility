@@ -106,7 +106,7 @@ namespace ReportFNSUtility
         /// <param name="writer"></param>
         public void WriteFile(string way)
         {
-            FileStream fileStream = new FileStream(way, FileMode.Create);
+            FileStream fileStream = new FileStream(way, FileMode.Open);
             BinaryWriter writer = new BinaryWriter(fileStream);
 
             header.WriteFile(writer);
@@ -288,21 +288,24 @@ namespace ReportFNSUtility
         /// <param name="writer">Поток записи</param>
         public void AddHesh(BinaryWriter writer)
         {
-            Crc32 crc32 = new Crc32();
+            //считаем хеш
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
-            hash = BitConverter.ToUInt32(crc32.ComputeHash(writer.BaseStream),0);
+            Crc32 crc32 = new Crc32();
+            byte[] _hash = crc32.ComputeHash(writer.BaseStream);
+            Array.Reverse(_hash);
+            hash = BitConverter.ToUInt32(_hash,0);
+            //копируем в memorystream дерево тегов
             writer.BaseStream.Seek(354, SeekOrigin.Begin);
             MemoryStream memoryStream = new MemoryStream();
             writer.BaseStream.CopyTo(memoryStream);
+            //пишем хеш
             writer.BaseStream.Seek(354, SeekOrigin.Begin);
-            writer.Write(BitConverter.GetBytes(hash));
+            writer.Write(hash);
+            //дописываем дерево тегов
             memoryStream.Seek(0, SeekOrigin.Begin);
             memoryStream.CopyTo(writer.BaseStream);
             writer.Close();
             memoryStream.Close();
-
-
-            //full_file[0] = full_file[0].Insert(354, Encoding.GetEncoding(866).GetString(BitConverter.GetBytes( hash)));
         }
     }
     /// <summary>
