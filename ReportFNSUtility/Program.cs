@@ -34,6 +34,7 @@ namespace ReportFNSUtility
 
             if (args.Length == 0)
             {
+                canRewrite = true;
                 var handle = GetConsoleWindow();
                 ShowWindow(handle, SW_HIDE);
                 Form1 form = new Form1();

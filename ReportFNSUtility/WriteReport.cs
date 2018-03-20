@@ -268,8 +268,10 @@ namespace ReportFNSUtility
             FileStream fileStream = null;
             try
             {
-                if (Program.canRewrite!=false||Form1.form!=null)
-                fileStream = new FileStream(way, FileMode.CreateNew);
+                if (Program.canRewrite != false && Form1.form != null)
+                    fileStream = new FileStream(way, FileMode.CreateNew);
+                else if (Program.canRewrite != false)
+                    fileStream = new FileStream(way, FileMode.Create);
                 else
                 {
                     Console.WriteLine("file can not Rewrite");
@@ -283,12 +285,13 @@ namespace ReportFNSUtility
             //если не получилось выходим из метода
             if (fileStream == null)
             {
+                File.Delete(way);
                 (ecrCtrl as IDisposable).Dispose();
                 ecrCtrl = new EcrCtrl();
                 Form1.form.B_startParse.Enabled = true;
                 return;
             }
-                
+            fileStream.Close();
 
             Dictionary<uint, Dictionary<uint, byte[]>> dictionary = GetDictionaryREG();
             //dd(); //балуюсь с чтением всех тегов
@@ -540,13 +543,11 @@ namespace ReportFNSUtility
             reportFS.InitHeader((Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc"), Form1.form.Text, Encoding.GetEncoding(866).GetString(dictionary[1][1037]), statusData.FsId, (byte)ecrCtrl.Info.FfdVersion, maxShift, lastDocNum);
 
             //выгрузка дерева в файл
-            BinaryWriter binaryWriter= new BinaryWriter(fileStream);
-            reportFS.WriteFile(binaryWriter);
+            reportFS.WriteFile(way);
             //создание нового объекта для работы с ККТ
             (ecrCtrl as IDisposable).Dispose();
             ecrCtrl = new EcrCtrl();
             Form1.form.B_startParse.Enabled = true;
-            binaryWriter.Close();
         }
     }
 }
