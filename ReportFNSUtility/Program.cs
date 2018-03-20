@@ -58,7 +58,9 @@ namespace ReportFNSUtility
                                 canRewrite = true;
                             break;
                         default:
-                            Console.WriteLine("");
+                            Console.WriteLine("rw – перезаписать файл  отчёта при совпадении имени\n" +
+                                "P < Номер_Порта > -порт подключения к ККТ\n" +
+                                "D”< Абсолютный_Путь_К_Директории >” – Путь к директории в которой будет создан файл отчёта.");
                             return;
                     }
                 }

@@ -273,7 +273,6 @@ namespace ReportFNSUtility
                 else
                 {
                     Console.WriteLine("file can not Rewrite");
-                    return;
                 }
             }
             catch
