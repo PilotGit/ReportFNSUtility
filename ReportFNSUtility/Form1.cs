@@ -22,7 +22,7 @@ namespace ReportFNSUtility
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.1.0.1.0(S)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
+            form.Text = "FNSUtility V.1.0.1.1(S)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
             treeView1.TreeViewNodeSorter = new TreeSorter();
         }
 

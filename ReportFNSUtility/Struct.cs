@@ -114,7 +114,7 @@ namespace ReportFNSUtility
             {
                 (item as STLV).WriteFile(writer);
             }
-            header.AddHesh(writer, way);
+            header.AddHesh(writer);
         }
     }
     /// <summary>
@@ -286,7 +286,7 @@ namespace ReportFNSUtility
         /// Записывает хеш в файл
         /// </summary>
         /// <param name="writer">Поток записи</param>
-        public void AddHesh(BinaryWriter writer, string way)
+        public void AddHesh(BinaryWriter writer)
         {
             Crc32 crc32 = new Crc32();
             writer.BaseStream.Seek(0, SeekOrigin.Begin);
