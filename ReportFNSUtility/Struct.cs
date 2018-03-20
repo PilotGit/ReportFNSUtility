@@ -103,14 +103,17 @@ namespace ReportFNSUtility
         /// Запускате запись в поток всех составных частей отчёта
         /// </summary>
         /// <param name="writer"></param>
-        public void WriteFile(BinaryWriter writer)
+        public void WriteFile(string way)
         {
+            FileStream fileStream = new FileStream(way, FileMode.Create);
+            BinaryWriter writer = new BinaryWriter(fileStream);
+            
             header.WriteFile(writer);
-            header.AddHesh(writer);
             foreach (var item in fDLongStorage)
             {
                 (item as STLV).WriteFile(writer);
             }
+            header.AddHesh(writer);
         }
     }
     /// <summary>
