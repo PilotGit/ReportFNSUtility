@@ -191,9 +191,7 @@ namespace ReportFNSUtility
             }
             catch { }
             tagFDn += BitConverter.ToString(dictionary[count][1002]) != "00" ? (ushort)1 : (ushort)2;
-            OfdTaxId =dictionary[count][1017];
-
-
+            try { OfdTaxId =dictionary[count][1017]; } catch { }
         }
         /// <summary>
         /// получени поддтверждения документа
@@ -484,7 +482,7 @@ namespace ReportFNSUtility
                                     else
                                         MessageBox.Show("arcCloseFs 2");
                                     if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.OwnerTaxId) is TLV OwnerTaxId) //добавление ИНН пользователя
-                                        OwnerTaxId.AddValue(dictionary.Values.Last()[1081]);
+                                        OwnerTaxId.AddValue(dictionary.Values.Last()[1018]);
                                     else
                                         MessageBox.Show("arcCloseFs 3");
                                     if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.FiscalNumber) is TLV FiscalNumber) //добавление Номера ФД

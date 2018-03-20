@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DamienG.Security.Cryptography;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -107,13 +108,13 @@ namespace ReportFNSUtility
         {
             FileStream fileStream = new FileStream(way, FileMode.Create);
             BinaryWriter writer = new BinaryWriter(fileStream);
-            
+
             header.WriteFile(writer);
             foreach (var item in fDLongStorage)
             {
                 (item as STLV).WriteFile(writer);
             }
-            header.AddHesh(writer);
+            header.AddHesh(writer, way);
         }
     }
     /// <summary>
@@ -156,7 +157,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Хеш
         /// </summary>
-        UInt32 hesh;
+        UInt32 hash;
 
         /// <summary>
         /// Конструктор получающий все значения
@@ -234,7 +235,7 @@ namespace ReportFNSUtility
             this.versionFFD = reader.ReadByte();
             this.countShift = reader.ReadUInt32();
             this.countfiscalDoc = reader.ReadUInt32();
-            this.hesh = reader.ReadUInt32();
+            this.hash = reader.ReadUInt32();
             Form1.form.Invoke((MethodInvoker)delegate
             {
                 //Form1.form.treeView1.Nodes.Add("Header");
@@ -246,7 +247,7 @@ namespace ReportFNSUtility
                 Form1.form.TB_5_NumberFFD.Text = this.versionFFD.ToString();
                 Form1.form.TB_6_NumberOfShifts.Text = this.countShift.ToString();
                 Form1.form.TB_7_NumberOfFiscalDOC.Text = this.countfiscalDoc.ToString();
-                Form1.form.TB_8_CheckSum.Text = this.hesh.ToString();
+                Form1.form.TB_8_CheckSum.Text = this.hash.ToString();
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_1_saveFile.Text);
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_2_UnloadingProgram.Text = this.programm);
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_3_RegNumber.Text = this.numberKKT);
@@ -285,10 +286,23 @@ namespace ReportFNSUtility
         /// Записывает хеш в файл
         /// </summary>
         /// <param name="writer">Поток записи</param>
-        public void AddHesh(BinaryWriter writer)
+        public void AddHesh(BinaryWriter writer, string way)
         {
+            Crc32 crc32 = new Crc32();
+            writer.BaseStream.Seek(0, SeekOrigin.Begin);
+            hash = BitConverter.ToUInt32(crc32.ComputeHash(writer.BaseStream),0);
+            writer.BaseStream.Seek(354, SeekOrigin.Begin);
+            MemoryStream memoryStream = new MemoryStream();
+            writer.BaseStream.CopyTo(memoryStream);
+            writer.BaseStream.Seek(354, SeekOrigin.Begin);
+            writer.Write(BitConverter.GetBytes(hash));
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            memoryStream.CopyTo(writer.BaseStream);
+            writer.Close();
+            memoryStream.Close();
 
-            writer.Write(BitConverter.GetBytes(hesh));
+
+            //full_file[0] = full_file[0].Insert(354, Encoding.GetEncoding(866).GetString(BitConverter.GetBytes( hash)));
         }
     }
     /// <summary>
@@ -410,7 +424,7 @@ namespace ReportFNSUtility
                 {
                     str += $"{item,2:X2} ";
                 }
-                nodes.Add($"{string.Format($"({(int)tlv.Source.Tag})[{tlv.Source.Length}]",-13)}  {str}            [{tlv.Description}]");
+                nodes.Add($"{string.Format($"({(int)tlv.Source.Tag})[{tlv.Source.Length}]", -13)}  {str}            [{tlv.Description}]");
             }
             else
             {
@@ -489,7 +503,7 @@ namespace ReportFNSUtility
         {
             if (stlv.Source.Tag != Fw16.Model.TLVTag._Anonymous)
             {
-                TreeNode tmp  = nodes.Add($"{$"({(int)stlv.Source.Tag})[{stlv.Source.Length}]",-13}            [{stlv.Description}]");
+                TreeNode tmp = nodes.Add($"{$"({(int)stlv.Source.Tag})[{stlv.Source.Length}]",-13}            [{stlv.Description}]");
                 foreach (var item in stlv.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
                 {
                     if (item.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
@@ -583,12 +597,12 @@ namespace ReportFNSUtility
             TreeNode tx = x as TreeNode;
             TreeNode ty = y as TreeNode;
 
-            if ( ty.Parent == null)
+            if (ty.Parent == null)
             {
                 return -1;
             }
 
-            if ( (tx.Parent?.Text ??"")== "Header")
+            if ((tx.Parent?.Text ?? "") == "Header")
             {
                 return 1;
             }
