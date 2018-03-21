@@ -14,15 +14,16 @@ namespace ReportFNSUtility
 {
     public partial class Form1 : Form
     {
-        Thread readReportThread;
+        Thread readReportThread, writeReportThread;
         ReadReport readReport;
+        WriteReport writeReport;
         public static Form1 form = null;
         Fw16.EcrCtrl ecrCtrl;
         public Form1()
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.1.0.2.0(S)";
+            form.Text = "FNSUtility V.1.1.0.0(H)";
             treeView1.TreeViewNodeSorter = new TreeSorter();
         }
 
@@ -59,15 +60,36 @@ namespace ReportFNSUtility
             }
 
         }
-
+        
         private void B_startParse_Click(object sender, EventArgs e)
         {
-            ecrCtrl = new Fw16.EcrCtrl();
-            if (ConnectToFW(CB_Port.Text))
+            if (writeReportThread?.IsAlive ?? false)
             {
-                WriteReport writeReport = new WriteReport(ecrCtrl,TB_fileWay.Text,TB_fileName.Text);
-                B_startParse.Enabled = false;
-                writeReport.WriteReportStartParseFNS();
+                writeReportThread?.Abort();
+                writeReportThread.Join();
+                (writeReport.ecrCtrl as IDisposable).Dispose();
+                writeReport.fileStream?.Close();
+                progressBar1.Value = 0;
+
+                B_startParse.Text = "Формировать отчет";
+            }
+            else
+            {
+                ecrCtrl = new Fw16.EcrCtrl();
+                ConnectToFW(CB_Port.Text);
+                try
+                {
+                    readReport?.reader?.BaseStream?.Close();
+                    writeReport = new WriteReport(ecrCtrl, TB_fileWay.Text, TB_fileName.ForeColor== SystemColors.ActiveCaption?"":TB_fileName.Text);
+
+                    writeReportThread = new Thread((ThreadStart)delegate { writeReport.WriteReportStartParseFNS(); });
+                    writeReportThread.Start();
+                    B_startParse.Text = "Остановить";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 
@@ -99,10 +121,25 @@ namespace ReportFNSUtility
             }
         }
 
+        public void UpdateProgressBar(int val)
+        {
+            progressBar1.Value = val;
+        }
+
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            readReportThread?.Abort();
-            readReportThread?.Join();
+            if (writeReportThread?.IsAlive ?? false)
+            {
+                writeReportThread?.Abort();
+                writeReportThread.Join();
+                (writeReport.ecrCtrl as IDisposable).Dispose();
+                writeReport.fileStream?.Close();
+            }
+            if (readReportThread?.IsAlive ?? false)
+            {
+                readReportThread?.Abort();
+                readReportThread.Join();
+            }
         }
 
         private void B_fileWayDialog_Click(object sender, EventArgs e)
@@ -115,7 +152,7 @@ namespace ReportFNSUtility
 
         private void TB_fileName_Enter(object sender, EventArgs e)
         {
-            if(TB_fileName.Text=="По умолчанию")
+            if(TB_fileName.Text=="По умолчанию" && TB_fileName.ForeColor == SystemColors.ActiveCaption)
             {
                 TB_fileName.Text = string.Empty;
                 TB_fileName.ForeColor = SystemColors.WindowText;
