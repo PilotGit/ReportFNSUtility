@@ -14,8 +14,9 @@ namespace ReportFNSUtility
 {
     public partial class Form1 : Form
     {
-        Thread readReportThread;
+        Thread readReportThread, writeReportThread;
         ReadReport readReport;
+        WriteReport writeReport;
         public static Form1 form = null;
         Fw16.EcrCtrl ecrCtrl;
         public Form1()
@@ -59,26 +60,40 @@ namespace ReportFNSUtility
             }
 
         }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ChB_VisibleValue.Checked)
-            {
-                label1.Text = "Процедура займёт значительное количество времени при большом объёме данных.";
-                label1.Visible = true;
-            }
-            else
-                label1.Visible = false;
-        }
+        
 
         private void B_startParse_Click(object sender, EventArgs e)
         {
-            ecrCtrl = new Fw16.EcrCtrl();
-            if (ConnectToFW(CB_Port.Text))
+            if (writeReportThread?.IsAlive ?? false)
             {
-                WriteReport writeReport = new WriteReport(ecrCtrl,TB_fileWay.Text,TB_fileName.Text);
-                B_startParse.Enabled = false;
-                writeReport.WriteReportStartParseFNS();
+                writeReportThread?.Abort();
+                writeReportThread.Join();
+                (writeReport.ecrCtrl as IDisposable).Dispose();
+                writeReport.fileStream?.Close();
+                //(writeReport.ecrCtrl as IDisposable).Dispose();
+                //writeReport = new WriteReport();
+                progressBar1.Value = 0;
+                ////(ecrCtrl as IDisposable).Dispose();
+
+                B_startParse.Text = "Формировать отчет";
+            }
+            else
+            {
+                ecrCtrl = new Fw16.EcrCtrl();
+                ConnectToFW(CB_Port.Text);
+                try
+                {
+                    readReport?.reader?.BaseStream?.Close();
+                    writeReport = new WriteReport(ecrCtrl, TB_fileWay.Text, TB_fileName.Text);
+
+                    writeReportThread = new Thread((ThreadStart)delegate { writeReport.WriteReportStartParseFNS(); });
+                    writeReportThread.Start();
+                    B_startParse.Text = "Остановить";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             }
         }
 

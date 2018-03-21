@@ -14,11 +14,11 @@ namespace ReportFNSUtility
         /// <summary>
         /// Объект для работы с ККТ
         /// </summary>
-        EcrCtrl ecrCtrl;
+        public EcrCtrl ecrCtrl;
         /// <summary>
         /// Отчёт о счиывании данных с фискального накопителя
         /// </summary>
-        ReportFS reportFS;
+        public ReportFS reportFS;
         /// <summary>
         /// Id фискального накопителя
         /// </summary>
@@ -41,6 +41,9 @@ namespace ReportFNSUtility
         /// Путь к файлу с именем файла
         /// </summary>
         string way;
+        public FileStream fileStream;
+
+        public WriteReport() { }
         /// <summary>
         /// создание объекта для наполнения дерева тегов
         /// </summary>
@@ -149,9 +152,10 @@ namespace ReportFNSUtility
             //составить список регистраций. ключ номер фискального докумнета
             var regcount = lastDocNum;
             var dd = new Dictionary<uint, Dictionary<uint,byte[]>> ();
-            (Form1.form.progressBar1 as Control).Text = "Ждите. Чтение регистраций";
             for (byte i = 0; i < regcount; i++)
             {
+                //Обновление прогресбара
+                Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)(i + 1) / (double)lastDocNum) * 100); });
                 uint fiscalNumber=0;
                 var ofdTaxId = new Dictionary<uint, byte[]>();
                 if (ecrCtrl.Fw16.FsDirect is Fs.Native.IArchive2 arc)
@@ -214,56 +218,12 @@ namespace ReportFNSUtility
             }
         }
 
-        void dd()
-        {
-            //составить список регистраций. ключ номер фискального докумнета
-            //Fs.Native.IService svc=null;
-            //svc.GetRegStat(out Fs.Native.RegStat rst);
-            //var regcount = rst.RegCount;
-            var regcount = lastDocNum;
-            var dd = new Dictionary<uint, Dictionary<uint, byte[]>>();
-
-
-            for (byte i = 0; i < regcount; i++)
-            {
-                uint fiscalNumber = 0;
-                var ofdTaxId = new Dictionary<uint, byte[]>();
-                if (ecrCtrl.Fw16.FsDirect is Fs.Native.IArchive2 arc)
-                {
-                    arc.BeginReadDocument(i,out Fw16.Model.TLV<Fw16.Model.TLVTag> header);
-
-                    while (arc.NextReadDocument(out Fw16.Model.TLV<Fw16.Model.TLVTag> tlv) == Fs.Native.FsAnswer.Success)
-                    {
-                        try { ofdTaxId.Add((uint)tlv.Tag, tlv.Value); }
-                        catch
-                        {
-                            byte[] test = new byte[ofdTaxId[(uint)tlv.Tag].Length + tlv.Length];
-                            ofdTaxId[(uint)tlv.Tag].CopyTo(test, 0);
-                            tlv.Value.CopyTo(test, ofdTaxId[(uint)tlv.Tag].Length);
-                            ofdTaxId[(uint)tlv.Tag] = test;
-                        }
-                        //if (tlv.Tag == Fw16.Model.TLVTag.OfdTaxId)
-                        //{
-                        //    ofdTaxId = Encoding.GetEncoding(866).GetString(tlv.Value);
-                        //}
-                        if (tlv.Tag == Fw16.Model.TLVTag.FiscalNumber)
-                        {
-                            var w = new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(tlv);
-                            if (fiscalNumber == Convert.ToUInt32(w.Value))
-                                break;
-                            fiscalNumber = Convert.ToUInt32(w.Value);
-                        }
-                    }
-                    try { dd.Add(fiscalNumber, ofdTaxId); } catch { }
-                }
-            }
-        }
-
+       
         public void WriteReportStartParseFNS()
         {
             ///Создание потока для записи файла
             /// 
-            FileStream fileStream = null;
+            fileStream = null;
             try
             {
                 if (Program.canRewrite != false && Form1.form != null)
@@ -287,12 +247,12 @@ namespace ReportFNSUtility
                 (ecrCtrl as IDisposable).Dispose();
                 ecrCtrl = new EcrCtrl();
                 Form1.form.B_startParse.Enabled = true;
+                Form1.form.Invoke((MethodInvoker)delegate { Form1.form.B_startParse.Text = "Формировать отчет"; });
                 return;
             }
             fileStream.Close();
 
             Dictionary<uint, Dictionary<uint, byte[]>> dictionary = GetDictionaryREG();
-            //dd(); //балуюсь с чтением всех тегов
 
             ///заполнение статических переменных первой регистрации
             ///
@@ -305,6 +265,9 @@ namespace ReportFNSUtility
             //Чтение всех документов
             for (uint i = 0; i < lastDocNum; i++)
             {
+                //обновление прогресбара
+                Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)(i + 1)/ (double)lastDocNum) * 100); });
+
                 //Обращение к документам длительного хранения
                 if (ecrCtrl.Fw16.FsDirect is Fs.Native.IArchive fsArc)
                 {
@@ -539,13 +502,14 @@ namespace ReportFNSUtility
 
             //Пишем в конце заголовок!
             reportFS.InitHeader((Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc"), Form1.form.Text, Encoding.GetEncoding(866).GetString(dictionary[1][1037]), statusData.FsId, (byte)ecrCtrl.Info.FfdVersion, maxShift, lastDocNum);
-
             //выгрузка дерева в файл
-            reportFS.WriteFile(way);
+            System.Threading.Thread thread= new System.Threading.Thread((System.Threading.ThreadStart)delegate { reportFS.WriteFile(way); });
+            thread.Start();
+            thread.Join();
             //создание нового объекта для работы с ККТ
             (ecrCtrl as IDisposable).Dispose();
-            ecrCtrl = new EcrCtrl();
-            Form1.form.B_startParse.Enabled = true;
+            Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = 0; });
+            Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.B_startParse.Text= "Формировать отчет"; });
         }
     }
 }
