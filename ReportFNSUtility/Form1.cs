@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -13,51 +14,158 @@ namespace ReportFNSUtility
 {
     public partial class Form1 : Form
     {
-
+        Thread readReportThread, writeReportThread;
+        ReadReport readReport;
+        WriteReport writeReport;
         public static Form1 form = null;
+        Fw16.EcrCtrl ecrCtrl;
         public Form1()
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.0.0.1.1(H)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
+            form.Text = Program.nameProgram;
+            treeView1.TreeViewNodeSorter = new TreeSorter();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void B_Browse_Click(object sender, EventArgs e)
         {
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-                TB_Patch.Text = openFileDialog1.FileName;
+            if (OpenFD_binFile.ShowDialog() == DialogResult.OK)
+                TB_Patch.Text = OpenFD_binFile.FileName;
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void B_UpdateStop_Click(object sender, EventArgs e)
         {
-            treeView1.Nodes.Clear();
-            ReadReport readReport = new ReadReport(TB_Patch.Text);
-            readReport.Read();
-        }
-
-        private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (ChB_VisibleValue.Checked)
+            if (readReportThread?.IsAlive ?? false)
             {
-                if (MessageBox.Show("Процедура займёт значительное количество\n" +
-                    "времени при большом объёме данных.\n" +
-                    "Вы уверены что хотите применить это свойство?",
-                    "Предупреждение",
-                    MessageBoxButtons.YesNo) == DialogResult.No)
+                readReportThread?.Abort();
+                readReportThread.Join();
+                B_UpdateStop.Text = "Обновить";
+            }
+            else
+            {
+                try
                 {
-                    ChB_VisibleValue.Checked = false;
+                    readReport?.reader?.BaseStream?.Close();
+                    treeView1.Nodes.Clear();
+                    readReport = new ReadReport(TB_Patch.Text);
+
+                    readReportThread = new Thread((ThreadStart)delegate { readReport.Read(); });
+                    readReportThread.Start();
+                    B_UpdateStop.Text = "Остановить";
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+
+        }
+        
+        private void B_startParse_Click(object sender, EventArgs e)
+        {
+            if (writeReportThread?.IsAlive ?? false)
+            {
+                writeReportThread?.Abort();
+                writeReportThread.Join();
+                (writeReport.ecrCtrl as IDisposable).Dispose();
+                writeReport.fileStream?.Close();
+                progressBar1.Value = 0;
+
+                B_startParse.Text = "Формировать отчет";
+            }
+            else
+            {
+                ecrCtrl = new Fw16.EcrCtrl();
+                ConnectToFW(CB_Port.Text);
+                try
+                {
+                    readReport?.reader?.BaseStream?.Close();
+                    writeReport = new WriteReport(ecrCtrl, TB_fileWay.Text, TB_fileName.ForeColor== SystemColors.ActiveCaption?"":TB_fileName.Text);
+
+                    writeReportThread = new Thread((ThreadStart)delegate { writeReport.WriteReportStartParseFNS(); });
+                    writeReportThread.Start();
+                    B_startParse.Text = "Остановить";
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
                 }
             }
         }
 
-        private void B_startParse_Click(object sender, EventArgs e)
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
+            try
+            {
+                (ecrCtrl as IDisposable).Dispose();
+            }
+            catch { }
+        }
 
+        /// <summary>
+        /// подключение к ККТ. обырв соеденения с ККТ происходит в "форме" при её закрытии.
+        /// </summary>
+        /// <param name="serialPort">serialPort</param>
+        /// <param name="baudRate">частота</param>
+        bool ConnectToFW(string name="default")
+        {
+            try
+            {
+                ecrCtrl.Init(name);             //Подключчение по порту и частоте
+                return true;
+            }
+            catch
+            {
+                MessageBox.Show("Ошибка при подключении");
+                return false;
+            }
+        }
+
+        public void UpdateProgressBar(int val)
+        {
+            progressBar1.Value = val;
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (writeReportThread?.IsAlive ?? false)
+            {
+                writeReportThread?.Abort();
+                writeReportThread.Join();
+                (writeReport.ecrCtrl as IDisposable).Dispose();
+                writeReport.fileStream?.Close();
+            }
+            if (readReportThread?.IsAlive ?? false)
+            {
+                readReportThread?.Abort();
+                readReportThread.Join();
+            }
+        }
+
+        private void B_fileWayDialog_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                TB_fileWay.Text = folderBrowserDialog1.SelectedPath;
+            }
+        }
+
+        private void TB_fileName_Enter(object sender, EventArgs e)
+        {
+            if(TB_fileName.Text=="По умолчанию" && TB_fileName.ForeColor == SystemColors.ActiveCaption)
+            {
+                TB_fileName.Text = string.Empty;
+                TB_fileName.ForeColor = SystemColors.WindowText;
+            }
+        }
+
+        private void TB_fileName_Leave(object sender, EventArgs e)
+        {
+            if (TB_fileName.Text == string.Empty)
+            {
+                TB_fileName.Text = "По умолчанию";
+                TB_fileName.ForeColor = SystemColors.ActiveCaption;
+            }
         }
     }
 }
