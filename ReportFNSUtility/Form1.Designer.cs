@@ -89,7 +89,7 @@
             // 
             // TB_fileName
             // 
-            this.TB_fileName.ForeColor = System.Drawing.SystemColors.InactiveCaption;
+            this.TB_fileName.ForeColor = System.Drawing.SystemColors.ActiveCaption;
             this.TB_fileName.Location = new System.Drawing.Point(15, 83);
             this.TB_fileName.Name = "TB_fileName";
             this.TB_fileName.Size = new System.Drawing.Size(184, 20);
@@ -278,7 +278,7 @@
             // 
             // TB_8_CheckSum
             // 
-            this.TB_8_CheckSum.BackColor = System.Drawing.Color.Tan;
+            this.TB_8_CheckSum.BackColor = System.Drawing.Color.LightGray;
             this.TB_8_CheckSum.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_8_CheckSum.Location = new System.Drawing.Point(4, 302);
             this.TB_8_CheckSum.Name = "TB_8_CheckSum";
@@ -297,7 +297,7 @@
             // 
             // TB_7_NumberOfFiscalDOC
             // 
-            this.TB_7_NumberOfFiscalDOC.BackColor = System.Drawing.Color.Tan;
+            this.TB_7_NumberOfFiscalDOC.BackColor = System.Drawing.Color.LightGray;
             this.TB_7_NumberOfFiscalDOC.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_7_NumberOfFiscalDOC.Location = new System.Drawing.Point(4, 262);
             this.TB_7_NumberOfFiscalDOC.Name = "TB_7_NumberOfFiscalDOC";
@@ -316,7 +316,7 @@
             // 
             // TB_6_NumberOfShifts
             // 
-            this.TB_6_NumberOfShifts.BackColor = System.Drawing.Color.Tan;
+            this.TB_6_NumberOfShifts.BackColor = System.Drawing.Color.LightGray;
             this.TB_6_NumberOfShifts.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_6_NumberOfShifts.Location = new System.Drawing.Point(4, 222);
             this.TB_6_NumberOfShifts.Name = "TB_6_NumberOfShifts";
@@ -335,7 +335,7 @@
             // 
             // TB_5_NumberFFD
             // 
-            this.TB_5_NumberFFD.BackColor = System.Drawing.Color.Tan;
+            this.TB_5_NumberFFD.BackColor = System.Drawing.Color.LightGray;
             this.TB_5_NumberFFD.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_5_NumberFFD.Location = new System.Drawing.Point(4, 181);
             this.TB_5_NumberFFD.Name = "TB_5_NumberFFD";
@@ -354,7 +354,7 @@
             // 
             // TB_4_NumberFN
             // 
-            this.TB_4_NumberFN.BackColor = System.Drawing.Color.Tan;
+            this.TB_4_NumberFN.BackColor = System.Drawing.Color.LightGray;
             this.TB_4_NumberFN.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_4_NumberFN.Location = new System.Drawing.Point(4, 141);
             this.TB_4_NumberFN.Name = "TB_4_NumberFN";
@@ -373,7 +373,7 @@
             // 
             // TB_3_RegNumber
             // 
-            this.TB_3_RegNumber.BackColor = System.Drawing.Color.Tan;
+            this.TB_3_RegNumber.BackColor = System.Drawing.Color.LightGray;
             this.TB_3_RegNumber.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_3_RegNumber.Location = new System.Drawing.Point(4, 102);
             this.TB_3_RegNumber.Name = "TB_3_RegNumber";
@@ -392,7 +392,7 @@
             // 
             // TB_2_UnloadingProgram
             // 
-            this.TB_2_UnloadingProgram.BackColor = System.Drawing.Color.Tan;
+            this.TB_2_UnloadingProgram.BackColor = System.Drawing.Color.LightGray;
             this.TB_2_UnloadingProgram.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_2_UnloadingProgram.Location = new System.Drawing.Point(4, 63);
             this.TB_2_UnloadingProgram.Name = "TB_2_UnloadingProgram";
@@ -411,7 +411,7 @@
             // 
             // TB_1_saveFile
             // 
-            this.TB_1_saveFile.BackColor = System.Drawing.Color.Tan;
+            this.TB_1_saveFile.BackColor = System.Drawing.Color.LightGray;
             this.TB_1_saveFile.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_1_saveFile.Location = new System.Drawing.Point(4, 24);
             this.TB_1_saveFile.Name = "TB_1_saveFile";
