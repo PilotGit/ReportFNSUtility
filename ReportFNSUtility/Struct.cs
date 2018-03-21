@@ -32,17 +32,17 @@ namespace ReportFNSUtility
         List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> fdLongStorage = new List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>();
 
         /// <summary>
-        /// Конструктор формирующий получающий данные из файлового потока отчёта
+        /// Конструктор получающий данные из файлового потока отчёта
         /// </summary>
         /// <param name="reader">Поток файла отчёта</param>
         public ReportFS(BinaryReader reader)
         {
             header = new ReportHeader(reader);
             TreeNodeCollection nodes = Form1.form.treeView1.Nodes;
+            Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
-                Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
-                UInt16 tag = reader.ReadUInt16();
+                reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 reader.BaseStream.Seek(-4, SeekOrigin.Current);
                 fdLongStorage.Add(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(reader.ReadBytes(len + 4)));
@@ -50,12 +50,12 @@ namespace ReportFNSUtility
                 {
                     STLV.ShowTree(fdLongStorage.Last(), nodes);
                 });
+                Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
             }
             Form1.form.Invoke((MethodInvoker)delegate
             {
-                Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100);
                 Form1.form.progressBar1.Value = 0;
-                Form1.form.B_Update.Text = "Обновить";
+                Form1.form.B_UpdateStop.Text = "Обновить";
             });
         }
 
@@ -101,7 +101,7 @@ namespace ReportFNSUtility
         }
 
         /// <summary>
-        /// Запускате запись в поток всех составных частей отчёта
+        /// Запускает процесс записи данных в файл
         /// </summary>
         /// <param name="writer"></param>
         public void WriteFile(string way)
@@ -117,6 +117,7 @@ namespace ReportFNSUtility
             header.AddHesh(writer);
         }
     }
+
     /// <summary>
     /// Заголовок отчёта о считывании данных из ФН
     /// </summary>
@@ -126,21 +127,33 @@ namespace ReportFNSUtility
         /// Наименование файла выгрузки
         /// </summary>
         String name;
+        /// <summary>
+        /// Длинна наименования файла выгрузки
+        /// </summary>
         const int lenName = 53;
         /// <summary>
-        /// программа выгрузки
+        /// Программа выгрузки
         /// </summary>
         String programm;
+        /// <summary>
+        /// Длинна наименования программы вгрузки
+        /// </summary>
         const int lenProgramm = 256;
         /// <summary>
         /// Номер ККТ
         /// </summary>
         String numberKKT;
+        /// <summary>
+        /// Длинна строки "Номер ККТ"
+        /// </summary>
         const int lenNumberKKT = 20;
         /// <summary>
         /// Номер фискального накопителя
         /// </summary>
         String numberFS;
+        /// <summary>
+        /// Длинна строки "Длинна номера фискального накопителя"
+        /// </summary>
         const int lenNumberFS = 16;
         /// <summary>
         /// Версия ФФД
@@ -238,7 +251,6 @@ namespace ReportFNSUtility
             this.hash = reader.ReadUInt32();
             Form1.form.Invoke((MethodInvoker)delegate
             {
-                //Form1.form.treeView1.Nodes.Add("Header");
                 Form1.form.tabControl1.SelectTab(Form1.form.T_page_headInfo);
                 Form1.form.TB_1_saveFile.Text = this.name;
                 Form1.form.TB_2_UnloadingProgram.Text = this.programm;
@@ -248,6 +260,7 @@ namespace ReportFNSUtility
                 Form1.form.TB_6_NumberOfShifts.Text = this.countShift.ToString();
                 Form1.form.TB_7_NumberOfFiscalDOC.Text = this.countfiscalDoc.ToString();
                 Form1.form.TB_8_CheckSum.Text = this.hash.ToString();
+                //Form1.form.treeView1.Nodes.Add("Header");
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_1_saveFile.Text);
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_2_UnloadingProgram.Text = this.programm);
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_3_RegNumber.Text = this.numberKKT);
@@ -256,7 +269,6 @@ namespace ReportFNSUtility
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_6_NumberOfShifts.Text = this.countShift.ToString());
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_7_NumberOfFiscalDOC.Text = this.countfiscalDoc.ToString());
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_8_CheckSum.Text = this.hesh.ToString());
-
             });
         }
 
@@ -308,6 +320,7 @@ namespace ReportFNSUtility
             memoryStream.Close();
         }
     }
+
     /// <summary>
     /// Базовый класс для реализации TLV и STLV структур
     /// </summary>
@@ -316,7 +329,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// тип структуры true-считывание из ККТ, false-расшифровка файла.  
         /// </summary>
-        protected bool type = true;
+        protected bool fromKKT = true;
 
         /// <summary>
         /// STLV структура в которой находится этот объект
@@ -340,7 +353,7 @@ namespace ReportFNSUtility
             get => len;
             set
             {
-                if (this.type)
+                if (this.fromKKT)
                 {
                     try
                     {
@@ -377,7 +390,7 @@ namespace ReportFNSUtility
             this.tag = tag;
             this.len = len;
             this.parent = parent;
-            type = false;
+            fromKKT = false;//тип - считывание данных из файла
         }
 
         /// <summary>
@@ -389,7 +402,7 @@ namespace ReportFNSUtility
         {
             this.tag = tag;
             this.parent = parent;
-            type = true;
+            fromKKT = true;//тип - считывание данных из ККТ
         }
     }
     /// <summary>
@@ -416,7 +429,7 @@ namespace ReportFNSUtility
         /// <summary>
         /// Формирует ветки в полученной коллекции ветвей данными из полученного TLVWrapper
         /// </summary>
-        /// <param name="tlv">Структруа с входными данными</param>
+        /// <param name="tlv">Структруа с данными ветви</param>
         /// <param name="nodes">Коллекция ветвей</param>
         public static void ShowTree(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tlv, TreeNodeCollection nodes = null)
         {
@@ -439,7 +452,7 @@ namespace ReportFNSUtility
         /// конструктор используемый для считывания данных из ККТ
         /// </summary>
         /// <param name="tag">Тег</param>
-        /// <param name="parent">STLV структура в которою добавляется эта TLV структура</param>
+        /// <param name="parent">Родительная STLV структура.</param>
         public TLV(UInt16 tag, Structurs parent) : base(tag, parent)
         {
             if (parent != null)
@@ -471,7 +484,7 @@ namespace ReportFNSUtility
             }
             catch (Exception ex)
             {
-                throw ex;
+                MessageBox.Show($"tag - {Tag}; Exception message: {ex.Message}");
             }
         }
     }
@@ -500,11 +513,11 @@ namespace ReportFNSUtility
         /// <summary>
         /// Формирует ветки в полученной коллекции ветвей данными из полученного TLVWrapper
         /// </summary>
-        /// <param name="stlv">Структруа с входными данными</param>
+        /// <param name="stlv">Структруа с данными ветви</param>
         /// <param name="nodes">Коллекция ветвей</param>
         public static void ShowTree(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> stlv, TreeNodeCollection nodes)
         {
-            if (stlv.Source.Tag != Fw16.Model.TLVTag._Anonymous)
+            if (stlv.Source.Tag != Fw16.Model.TLVTag._Anonymous)//Игнорирование анонимного тега
             {
                 TreeNode tmp = nodes.Add($"{$"({(int)stlv.Source.Tag})[{stlv.Source.Length}]",-13}            [{stlv.Description}]");
                 foreach (var item in stlv.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
@@ -559,7 +572,7 @@ namespace ReportFNSUtility
             }
             catch (Exception ex)
             {
-                throw new Exception("Произошла непредвиденная ошибка при добавлении значения в структуру отчёта.");
+                throw new Exception($"Произошла непредвиденная ошибка при добавлении значения в структуру отчёта. \nException\n{ex.Message}");
             }
             return value.Last();
         }

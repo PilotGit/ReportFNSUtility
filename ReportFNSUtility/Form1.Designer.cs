@@ -37,34 +37,32 @@
             this.L_Port = new System.Windows.Forms.Label();
             this.CB_Port = new System.Windows.Forms.ComboBox();
             this.GB_PreviewReport = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.ChB_VisibleValue = new System.Windows.Forms.CheckBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
-            this.B_Update = new System.Windows.Forms.Button();
+            this.B_UpdateStop = new System.Windows.Forms.Button();
             this.B_Browse = new System.Windows.Forms.Button();
             this.TB_Patch = new System.Windows.Forms.TextBox();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.OpenFD_binFile = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.T_page_report_Generation = new System.Windows.Forms.TabPage();
             this.T_page_headInfo = new System.Windows.Forms.TabPage();
-            this.L_1_saveFile = new System.Windows.Forms.Label();
-            this.TB_1_saveFile = new System.Windows.Forms.TextBox();
-            this.TB_2_UnloadingProgram = new System.Windows.Forms.TextBox();
-            this.L_2_UnloadingProgram = new System.Windows.Forms.Label();
-            this.TB_3_RegNumber = new System.Windows.Forms.TextBox();
-            this.L_3_RegNumber = new System.Windows.Forms.Label();
-            this.TB_4_NumberFN = new System.Windows.Forms.TextBox();
-            this.L_4_NumberFN = new System.Windows.Forms.Label();
-            this.TB_5_NumberFFD = new System.Windows.Forms.TextBox();
-            this.L_5_NumberFFD = new System.Windows.Forms.Label();
-            this.TB_6_NumberOfShifts = new System.Windows.Forms.TextBox();
-            this.L_6_NumberOfShifts = new System.Windows.Forms.Label();
-            this.TB_7_NumberOfFiscalDOC = new System.Windows.Forms.TextBox();
-            this.L_7_NumberOfFiscalDOC = new System.Windows.Forms.Label();
             this.TB_8_CheckSum = new System.Windows.Forms.TextBox();
             this.L_8_CheckSum = new System.Windows.Forms.Label();
+            this.TB_7_NumberOfFiscalDOC = new System.Windows.Forms.TextBox();
+            this.L_7_NumberOfFiscalDOC = new System.Windows.Forms.Label();
+            this.TB_6_NumberOfShifts = new System.Windows.Forms.TextBox();
+            this.L_6_NumberOfShifts = new System.Windows.Forms.Label();
+            this.TB_5_NumberFFD = new System.Windows.Forms.TextBox();
+            this.L_5_NumberFFD = new System.Windows.Forms.Label();
+            this.TB_4_NumberFN = new System.Windows.Forms.TextBox();
+            this.L_4_NumberFN = new System.Windows.Forms.Label();
+            this.TB_3_RegNumber = new System.Windows.Forms.TextBox();
+            this.L_3_RegNumber = new System.Windows.Forms.Label();
+            this.TB_2_UnloadingProgram = new System.Windows.Forms.TextBox();
+            this.L_2_UnloadingProgram = new System.Windows.Forms.Label();
+            this.TB_1_saveFile = new System.Windows.Forms.TextBox();
+            this.L_1_saveFile = new System.Windows.Forms.Label();
             this.GB_PreviewReport.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.T_page_report_Generation.SuspendLayout();
@@ -74,7 +72,7 @@
             // L_fileWay
             // 
             this.L_fileWay.AutoSize = true;
-            this.L_fileWay.Location = new System.Drawing.Point(12, 223);
+            this.L_fileWay.Location = new System.Drawing.Point(12, 111);
             this.L_fileWay.Name = "L_fileWay";
             this.L_fileWay.Size = new System.Drawing.Size(74, 13);
             this.L_fileWay.TabIndex = 17;
@@ -83,7 +81,7 @@
             // L_fileName
             // 
             this.L_fileName.AutoSize = true;
-            this.L_fileName.Location = new System.Drawing.Point(12, 179);
+            this.L_fileName.Location = new System.Drawing.Point(12, 67);
             this.L_fileName.Name = "L_fileName";
             this.L_fileName.Size = new System.Drawing.Size(64, 13);
             this.L_fileName.TabIndex = 16;
@@ -92,7 +90,7 @@
             // TB_fileName
             // 
             this.TB_fileName.ForeColor = System.Drawing.SystemColors.InactiveCaption;
-            this.TB_fileName.Location = new System.Drawing.Point(15, 195);
+            this.TB_fileName.Location = new System.Drawing.Point(15, 83);
             this.TB_fileName.Name = "TB_fileName";
             this.TB_fileName.Size = new System.Drawing.Size(184, 20);
             this.TB_fileName.TabIndex = 14;
@@ -102,7 +100,7 @@
             // 
             // B_fileWayDialog
             // 
-            this.B_fileWayDialog.Location = new System.Drawing.Point(205, 239);
+            this.B_fileWayDialog.Location = new System.Drawing.Point(205, 127);
             this.B_fileWayDialog.Name = "B_fileWayDialog";
             this.B_fileWayDialog.Size = new System.Drawing.Size(30, 20);
             this.B_fileWayDialog.TabIndex = 13;
@@ -112,14 +110,14 @@
             // 
             // TB_fileWay
             // 
-            this.TB_fileWay.Location = new System.Drawing.Point(15, 239);
+            this.TB_fileWay.Location = new System.Drawing.Point(15, 127);
             this.TB_fileWay.Name = "TB_fileWay";
             this.TB_fileWay.Size = new System.Drawing.Size(184, 20);
             this.TB_fileWay.TabIndex = 12;
             // 
             // B_startParse
             // 
-            this.B_startParse.Location = new System.Drawing.Point(15, 260);
+            this.B_startParse.Location = new System.Drawing.Point(15, 148);
             this.B_startParse.Name = "B_startParse";
             this.B_startParse.Size = new System.Drawing.Size(220, 23);
             this.B_startParse.TabIndex = 11;
@@ -132,9 +130,9 @@
             this.L_Port.AutoSize = true;
             this.L_Port.Location = new System.Drawing.Point(12, 20);
             this.L_Port.Name = "L_Port";
-            this.L_Port.Size = new System.Drawing.Size(32, 13);
+            this.L_Port.Size = new System.Drawing.Size(153, 13);
             this.L_Port.TabIndex = 2;
-            this.L_Port.Text = "Порт";
+            this.L_Port.Text = "Наименование подключения";
             // 
             // CB_Port
             // 
@@ -154,71 +152,48 @@
             this.GB_PreviewReport.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.GB_PreviewReport.Controls.Add(this.label1);
             this.GB_PreviewReport.Controls.Add(this.progressBar1);
-            this.GB_PreviewReport.Controls.Add(this.ChB_VisibleValue);
             this.GB_PreviewReport.Controls.Add(this.treeView1);
-            this.GB_PreviewReport.Controls.Add(this.B_Update);
+            this.GB_PreviewReport.Controls.Add(this.B_UpdateStop);
             this.GB_PreviewReport.Controls.Add(this.B_Browse);
             this.GB_PreviewReport.Controls.Add(this.TB_Patch);
-            this.GB_PreviewReport.Location = new System.Drawing.Point(281, 29);
+            this.GB_PreviewReport.Location = new System.Drawing.Point(286, 12);
             this.GB_PreviewReport.Name = "GB_PreviewReport";
-            this.GB_PreviewReport.Size = new System.Drawing.Size(717, 455);
+            this.GB_PreviewReport.Size = new System.Drawing.Size(717, 433);
             this.GB_PreviewReport.TabIndex = 1;
             this.GB_PreviewReport.TabStop = false;
             this.GB_PreviewReport.Text = "Просмотр отчёта";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(193, 44);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(0, 13);
-            this.label1.TabIndex = 6;
-            this.label1.Visible = false;
             // 
             // progressBar1
             // 
             this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(6, 412);
+            this.progressBar1.Location = new System.Drawing.Point(6, 406);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(698, 21);
             this.progressBar1.TabIndex = 2;
-            // 
-            // ChB_VisibleValue
-            // 
-            this.ChB_VisibleValue.AutoSize = true;
-            this.ChB_VisibleValue.Location = new System.Drawing.Point(7, 42);
-            this.ChB_VisibleValue.Name = "ChB_VisibleValue";
-            this.ChB_VisibleValue.Size = new System.Drawing.Size(177, 17);
-            this.ChB_VisibleValue.TabIndex = 5;
-            this.ChB_VisibleValue.Text = "Отображать данные в дереве";
-            this.ChB_VisibleValue.UseVisualStyleBackColor = true;
-            this.ChB_VisibleValue.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // treeView1
             // 
             this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeView1.Location = new System.Drawing.Point(7, 65);
+            this.treeView1.Location = new System.Drawing.Point(7, 46);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(697, 341);
+            this.treeView1.Size = new System.Drawing.Size(697, 354);
             this.treeView1.Sorted = true;
             this.treeView1.TabIndex = 4;
             // 
-            // B_Update
+            // B_UpdateStop
             // 
-            this.B_Update.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.B_Update.Location = new System.Drawing.Point(629, 17);
-            this.B_Update.Name = "B_Update";
-            this.B_Update.Size = new System.Drawing.Size(75, 23);
-            this.B_Update.TabIndex = 3;
-            this.B_Update.Text = "Обновить";
-            this.B_Update.UseVisualStyleBackColor = true;
-            this.B_Update.Click += new System.EventHandler(this.button2_Click);
+            this.B_UpdateStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.B_UpdateStop.Location = new System.Drawing.Point(629, 17);
+            this.B_UpdateStop.Name = "B_UpdateStop";
+            this.B_UpdateStop.Size = new System.Drawing.Size(75, 23);
+            this.B_UpdateStop.TabIndex = 3;
+            this.B_UpdateStop.Text = "Обновить";
+            this.B_UpdateStop.UseVisualStyleBackColor = true;
+            this.B_UpdateStop.Click += new System.EventHandler(this.B_UpdateStop_Click);
             // 
             // B_Browse
             // 
@@ -229,7 +204,7 @@
             this.B_Browse.TabIndex = 1;
             this.B_Browse.Text = "Обзор";
             this.B_Browse.UseVisualStyleBackColor = true;
-            this.B_Browse.Click += new System.EventHandler(this.button1_Click);
+            this.B_Browse.Click += new System.EventHandler(this.B_Browse_Click);
             // 
             // TB_Patch
             // 
@@ -241,20 +216,22 @@
             this.TB_Patch.TabIndex = 0;
             this.TB_Patch.Text = "C:\\Users\\Ulovkov\\Documents\\9999078900011412.fnc";
             // 
-            // openFileDialog1
+            // OpenFD_binFile
             // 
-            this.openFileDialog1.DefaultExt = "bin";
-            this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.Filter = "Бинарный файл|*.bin; *.fnc";
+            this.OpenFD_binFile.DefaultExt = "bin";
+            this.OpenFD_binFile.FileName = "openFileDialog1";
+            this.OpenFD_binFile.Filter = "Бинарный файл|*.bin; *.fnc";
             // 
             // tabControl1
             // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
             this.tabControl1.Controls.Add(this.T_page_report_Generation);
             this.tabControl1.Controls.Add(this.T_page_headInfo);
-            this.tabControl1.Location = new System.Drawing.Point(12, 29);
+            this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(255, 455);
+            this.tabControl1.Size = new System.Drawing.Size(255, 433);
             this.tabControl1.TabIndex = 2;
             // 
             // T_page_report_Generation
@@ -270,7 +247,7 @@
             this.T_page_report_Generation.Location = new System.Drawing.Point(4, 22);
             this.T_page_report_Generation.Name = "T_page_report_Generation";
             this.T_page_report_Generation.Padding = new System.Windows.Forms.Padding(3);
-            this.T_page_report_Generation.Size = new System.Drawing.Size(247, 429);
+            this.T_page_report_Generation.Size = new System.Drawing.Size(247, 407);
             this.T_page_report_Generation.TabIndex = 0;
             this.T_page_report_Generation.Text = "Формирование отчета";
             // 
@@ -295,142 +272,9 @@
             this.T_page_headInfo.Location = new System.Drawing.Point(4, 22);
             this.T_page_headInfo.Name = "T_page_headInfo";
             this.T_page_headInfo.Padding = new System.Windows.Forms.Padding(3);
-            this.T_page_headInfo.Size = new System.Drawing.Size(247, 429);
+            this.T_page_headInfo.Size = new System.Drawing.Size(247, 407);
             this.T_page_headInfo.TabIndex = 1;
             this.T_page_headInfo.Text = "Отчет о считывании";
-            // 
-            // L_1_saveFile
-            // 
-            this.L_1_saveFile.AutoSize = true;
-            this.L_1_saveFile.Location = new System.Drawing.Point(7, 7);
-            this.L_1_saveFile.Name = "L_1_saveFile";
-            this.L_1_saveFile.Size = new System.Drawing.Size(128, 13);
-            this.L_1_saveFile.TabIndex = 0;
-            this.L_1_saveFile.Text = "Путь сохранения файла";
-            // 
-            // TB_1_saveFile
-            // 
-            this.TB_1_saveFile.BackColor = System.Drawing.Color.Tan;
-            this.TB_1_saveFile.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_1_saveFile.Location = new System.Drawing.Point(4, 24);
-            this.TB_1_saveFile.Name = "TB_1_saveFile";
-            this.TB_1_saveFile.ReadOnly = true;
-            this.TB_1_saveFile.Size = new System.Drawing.Size(240, 20);
-            this.TB_1_saveFile.TabIndex = 1;
-            // 
-            // TB_2_UnloadingProgram
-            // 
-            this.TB_2_UnloadingProgram.BackColor = System.Drawing.Color.Tan;
-            this.TB_2_UnloadingProgram.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_2_UnloadingProgram.Location = new System.Drawing.Point(4, 63);
-            this.TB_2_UnloadingProgram.Name = "TB_2_UnloadingProgram";
-            this.TB_2_UnloadingProgram.ReadOnly = true;
-            this.TB_2_UnloadingProgram.Size = new System.Drawing.Size(240, 20);
-            this.TB_2_UnloadingProgram.TabIndex = 3;
-            // 
-            // L_2_UnloadingProgram
-            // 
-            this.L_2_UnloadingProgram.AutoSize = true;
-            this.L_2_UnloadingProgram.Location = new System.Drawing.Point(7, 47);
-            this.L_2_UnloadingProgram.Name = "L_2_UnloadingProgram";
-            this.L_2_UnloadingProgram.Size = new System.Drawing.Size(120, 13);
-            this.L_2_UnloadingProgram.TabIndex = 2;
-            this.L_2_UnloadingProgram.Text = "Программа выгрузки ";
-            // 
-            // TB_3_RegNumber
-            // 
-            this.TB_3_RegNumber.BackColor = System.Drawing.Color.Tan;
-            this.TB_3_RegNumber.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_3_RegNumber.Location = new System.Drawing.Point(4, 102);
-            this.TB_3_RegNumber.Name = "TB_3_RegNumber";
-            this.TB_3_RegNumber.ReadOnly = true;
-            this.TB_3_RegNumber.Size = new System.Drawing.Size(240, 20);
-            this.TB_3_RegNumber.TabIndex = 5;
-            // 
-            // L_3_RegNumber
-            // 
-            this.L_3_RegNumber.AutoSize = true;
-            this.L_3_RegNumber.Location = new System.Drawing.Point(7, 86);
-            this.L_3_RegNumber.Name = "L_3_RegNumber";
-            this.L_3_RegNumber.Size = new System.Drawing.Size(157, 13);
-            this.L_3_RegNumber.TabIndex = 4;
-            this.L_3_RegNumber.Text = "Регистрационный номер ККТ";
-            // 
-            // TB_4_NumberFN
-            // 
-            this.TB_4_NumberFN.BackColor = System.Drawing.Color.Tan;
-            this.TB_4_NumberFN.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_4_NumberFN.Location = new System.Drawing.Point(4, 141);
-            this.TB_4_NumberFN.Name = "TB_4_NumberFN";
-            this.TB_4_NumberFN.ReadOnly = true;
-            this.TB_4_NumberFN.Size = new System.Drawing.Size(240, 20);
-            this.TB_4_NumberFN.TabIndex = 7;
-            // 
-            // L_4_NumberFN
-            // 
-            this.L_4_NumberFN.AutoSize = true;
-            this.L_4_NumberFN.Location = new System.Drawing.Point(7, 125);
-            this.L_4_NumberFN.Name = "L_4_NumberFN";
-            this.L_4_NumberFN.Size = new System.Drawing.Size(63, 13);
-            this.L_4_NumberFN.TabIndex = 6;
-            this.L_4_NumberFN.Text = "Номер ФН";
-            // 
-            // TB_5_NumberFFD
-            // 
-            this.TB_5_NumberFFD.BackColor = System.Drawing.Color.Tan;
-            this.TB_5_NumberFFD.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_5_NumberFFD.Location = new System.Drawing.Point(4, 181);
-            this.TB_5_NumberFFD.Name = "TB_5_NumberFFD";
-            this.TB_5_NumberFFD.ReadOnly = true;
-            this.TB_5_NumberFFD.Size = new System.Drawing.Size(240, 20);
-            this.TB_5_NumberFFD.TabIndex = 9;
-            // 
-            // L_5_NumberFFD
-            // 
-            this.L_5_NumberFFD.AutoSize = true;
-            this.L_5_NumberFFD.Location = new System.Drawing.Point(7, 165);
-            this.L_5_NumberFFD.Name = "L_5_NumberFFD";
-            this.L_5_NumberFFD.Size = new System.Drawing.Size(117, 13);
-            this.L_5_NumberFFD.TabIndex = 8;
-            this.L_5_NumberFFD.Text = "Номер версии ФФД ";
-            // 
-            // TB_6_NumberOfShifts
-            // 
-            this.TB_6_NumberOfShifts.BackColor = System.Drawing.Color.Tan;
-            this.TB_6_NumberOfShifts.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_6_NumberOfShifts.Location = new System.Drawing.Point(4, 222);
-            this.TB_6_NumberOfShifts.Name = "TB_6_NumberOfShifts";
-            this.TB_6_NumberOfShifts.ReadOnly = true;
-            this.TB_6_NumberOfShifts.Size = new System.Drawing.Size(240, 20);
-            this.TB_6_NumberOfShifts.TabIndex = 11;
-            // 
-            // L_6_NumberOfShifts
-            // 
-            this.L_6_NumberOfShifts.AutoSize = true;
-            this.L_6_NumberOfShifts.Location = new System.Drawing.Point(7, 205);
-            this.L_6_NumberOfShifts.Name = "L_6_NumberOfShifts";
-            this.L_6_NumberOfShifts.Size = new System.Drawing.Size(95, 13);
-            this.L_6_NumberOfShifts.TabIndex = 10;
-            this.L_6_NumberOfShifts.Text = "Количество смен";
-            // 
-            // TB_7_NumberOfFiscalDOC
-            // 
-            this.TB_7_NumberOfFiscalDOC.BackColor = System.Drawing.Color.Tan;
-            this.TB_7_NumberOfFiscalDOC.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_7_NumberOfFiscalDOC.Location = new System.Drawing.Point(4, 262);
-            this.TB_7_NumberOfFiscalDOC.Name = "TB_7_NumberOfFiscalDOC";
-            this.TB_7_NumberOfFiscalDOC.ReadOnly = true;
-            this.TB_7_NumberOfFiscalDOC.Size = new System.Drawing.Size(240, 20);
-            this.TB_7_NumberOfFiscalDOC.TabIndex = 13;
-            // 
-            // L_7_NumberOfFiscalDOC
-            // 
-            this.L_7_NumberOfFiscalDOC.AutoSize = true;
-            this.L_7_NumberOfFiscalDOC.Location = new System.Drawing.Point(7, 245);
-            this.L_7_NumberOfFiscalDOC.Name = "L_7_NumberOfFiscalDOC";
-            this.L_7_NumberOfFiscalDOC.Size = new System.Drawing.Size(195, 13);
-            this.L_7_NumberOfFiscalDOC.TabIndex = 12;
-            this.L_7_NumberOfFiscalDOC.Text = "Количество фискальных документов";
             // 
             // TB_8_CheckSum
             // 
@@ -451,11 +295,144 @@
             this.L_8_CheckSum.TabIndex = 14;
             this.L_8_CheckSum.Text = "Контрольная сумма";
             // 
+            // TB_7_NumberOfFiscalDOC
+            // 
+            this.TB_7_NumberOfFiscalDOC.BackColor = System.Drawing.Color.Tan;
+            this.TB_7_NumberOfFiscalDOC.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_7_NumberOfFiscalDOC.Location = new System.Drawing.Point(4, 262);
+            this.TB_7_NumberOfFiscalDOC.Name = "TB_7_NumberOfFiscalDOC";
+            this.TB_7_NumberOfFiscalDOC.ReadOnly = true;
+            this.TB_7_NumberOfFiscalDOC.Size = new System.Drawing.Size(240, 20);
+            this.TB_7_NumberOfFiscalDOC.TabIndex = 13;
+            // 
+            // L_7_NumberOfFiscalDOC
+            // 
+            this.L_7_NumberOfFiscalDOC.AutoSize = true;
+            this.L_7_NumberOfFiscalDOC.Location = new System.Drawing.Point(7, 245);
+            this.L_7_NumberOfFiscalDOC.Name = "L_7_NumberOfFiscalDOC";
+            this.L_7_NumberOfFiscalDOC.Size = new System.Drawing.Size(195, 13);
+            this.L_7_NumberOfFiscalDOC.TabIndex = 12;
+            this.L_7_NumberOfFiscalDOC.Text = "Количество фискальных документов";
+            // 
+            // TB_6_NumberOfShifts
+            // 
+            this.TB_6_NumberOfShifts.BackColor = System.Drawing.Color.Tan;
+            this.TB_6_NumberOfShifts.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_6_NumberOfShifts.Location = new System.Drawing.Point(4, 222);
+            this.TB_6_NumberOfShifts.Name = "TB_6_NumberOfShifts";
+            this.TB_6_NumberOfShifts.ReadOnly = true;
+            this.TB_6_NumberOfShifts.Size = new System.Drawing.Size(240, 20);
+            this.TB_6_NumberOfShifts.TabIndex = 11;
+            // 
+            // L_6_NumberOfShifts
+            // 
+            this.L_6_NumberOfShifts.AutoSize = true;
+            this.L_6_NumberOfShifts.Location = new System.Drawing.Point(7, 205);
+            this.L_6_NumberOfShifts.Name = "L_6_NumberOfShifts";
+            this.L_6_NumberOfShifts.Size = new System.Drawing.Size(95, 13);
+            this.L_6_NumberOfShifts.TabIndex = 10;
+            this.L_6_NumberOfShifts.Text = "Количество смен";
+            // 
+            // TB_5_NumberFFD
+            // 
+            this.TB_5_NumberFFD.BackColor = System.Drawing.Color.Tan;
+            this.TB_5_NumberFFD.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_5_NumberFFD.Location = new System.Drawing.Point(4, 181);
+            this.TB_5_NumberFFD.Name = "TB_5_NumberFFD";
+            this.TB_5_NumberFFD.ReadOnly = true;
+            this.TB_5_NumberFFD.Size = new System.Drawing.Size(240, 20);
+            this.TB_5_NumberFFD.TabIndex = 9;
+            // 
+            // L_5_NumberFFD
+            // 
+            this.L_5_NumberFFD.AutoSize = true;
+            this.L_5_NumberFFD.Location = new System.Drawing.Point(7, 165);
+            this.L_5_NumberFFD.Name = "L_5_NumberFFD";
+            this.L_5_NumberFFD.Size = new System.Drawing.Size(117, 13);
+            this.L_5_NumberFFD.TabIndex = 8;
+            this.L_5_NumberFFD.Text = "Номер версии ФФД ";
+            // 
+            // TB_4_NumberFN
+            // 
+            this.TB_4_NumberFN.BackColor = System.Drawing.Color.Tan;
+            this.TB_4_NumberFN.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_4_NumberFN.Location = new System.Drawing.Point(4, 141);
+            this.TB_4_NumberFN.Name = "TB_4_NumberFN";
+            this.TB_4_NumberFN.ReadOnly = true;
+            this.TB_4_NumberFN.Size = new System.Drawing.Size(240, 20);
+            this.TB_4_NumberFN.TabIndex = 7;
+            // 
+            // L_4_NumberFN
+            // 
+            this.L_4_NumberFN.AutoSize = true;
+            this.L_4_NumberFN.Location = new System.Drawing.Point(7, 125);
+            this.L_4_NumberFN.Name = "L_4_NumberFN";
+            this.L_4_NumberFN.Size = new System.Drawing.Size(63, 13);
+            this.L_4_NumberFN.TabIndex = 6;
+            this.L_4_NumberFN.Text = "Номер ФН";
+            // 
+            // TB_3_RegNumber
+            // 
+            this.TB_3_RegNumber.BackColor = System.Drawing.Color.Tan;
+            this.TB_3_RegNumber.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_3_RegNumber.Location = new System.Drawing.Point(4, 102);
+            this.TB_3_RegNumber.Name = "TB_3_RegNumber";
+            this.TB_3_RegNumber.ReadOnly = true;
+            this.TB_3_RegNumber.Size = new System.Drawing.Size(240, 20);
+            this.TB_3_RegNumber.TabIndex = 5;
+            // 
+            // L_3_RegNumber
+            // 
+            this.L_3_RegNumber.AutoSize = true;
+            this.L_3_RegNumber.Location = new System.Drawing.Point(7, 86);
+            this.L_3_RegNumber.Name = "L_3_RegNumber";
+            this.L_3_RegNumber.Size = new System.Drawing.Size(157, 13);
+            this.L_3_RegNumber.TabIndex = 4;
+            this.L_3_RegNumber.Text = "Регистрационный номер ККТ";
+            // 
+            // TB_2_UnloadingProgram
+            // 
+            this.TB_2_UnloadingProgram.BackColor = System.Drawing.Color.Tan;
+            this.TB_2_UnloadingProgram.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_2_UnloadingProgram.Location = new System.Drawing.Point(4, 63);
+            this.TB_2_UnloadingProgram.Name = "TB_2_UnloadingProgram";
+            this.TB_2_UnloadingProgram.ReadOnly = true;
+            this.TB_2_UnloadingProgram.Size = new System.Drawing.Size(240, 20);
+            this.TB_2_UnloadingProgram.TabIndex = 3;
+            // 
+            // L_2_UnloadingProgram
+            // 
+            this.L_2_UnloadingProgram.AutoSize = true;
+            this.L_2_UnloadingProgram.Location = new System.Drawing.Point(7, 47);
+            this.L_2_UnloadingProgram.Name = "L_2_UnloadingProgram";
+            this.L_2_UnloadingProgram.Size = new System.Drawing.Size(120, 13);
+            this.L_2_UnloadingProgram.TabIndex = 2;
+            this.L_2_UnloadingProgram.Text = "Программа выгрузки ";
+            // 
+            // TB_1_saveFile
+            // 
+            this.TB_1_saveFile.BackColor = System.Drawing.Color.Tan;
+            this.TB_1_saveFile.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_1_saveFile.Location = new System.Drawing.Point(4, 24);
+            this.TB_1_saveFile.Name = "TB_1_saveFile";
+            this.TB_1_saveFile.ReadOnly = true;
+            this.TB_1_saveFile.Size = new System.Drawing.Size(240, 20);
+            this.TB_1_saveFile.TabIndex = 1;
+            // 
+            // L_1_saveFile
+            // 
+            this.L_1_saveFile.AutoSize = true;
+            this.L_1_saveFile.Location = new System.Drawing.Point(7, 7);
+            this.L_1_saveFile.Name = "L_1_saveFile";
+            this.L_1_saveFile.Size = new System.Drawing.Size(128, 13);
+            this.L_1_saveFile.TabIndex = 0;
+            this.L_1_saveFile.Text = "Путь сохранения файла";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1015, 487);
+            this.ClientSize = new System.Drawing.Size(1015, 465);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.GB_PreviewReport);
             this.Name = "Form1";
@@ -477,10 +454,9 @@
         private System.Windows.Forms.ComboBox CB_Port;
         private System.Windows.Forms.Button B_Browse;
         private System.Windows.Forms.TextBox TB_Patch;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.OpenFileDialog OpenFD_binFile;
         public System.Windows.Forms.TreeView treeView1;
         public System.Windows.Forms.ProgressBar progressBar1;
-        public System.Windows.Forms.CheckBox ChB_VisibleValue;
         private System.Windows.Forms.Label L_fileWay;
         private System.Windows.Forms.Label L_fileName;
         private System.Windows.Forms.TextBox TB_fileName;
@@ -488,8 +464,7 @@
         private System.Windows.Forms.TextBox TB_fileWay;
         public System.Windows.Forms.GroupBox GB_PreviewReport;
         public System.Windows.Forms.Button B_startParse;
-        public System.Windows.Forms.Button B_Update;
-        private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Button B_UpdateStop;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         public System.Windows.Forms.TabControl tabControl1;
         public System.Windows.Forms.TabPage T_page_report_Generation;
