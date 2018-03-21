@@ -23,7 +23,7 @@ namespace ReportFNSUtility
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.1.1.0.0(H)";
+            form.Text = Program.nameProgram;
             treeView1.TreeViewNodeSorter = new TreeSorter();
         }
 
