@@ -42,6 +42,7 @@ namespace ReportFNSUtility
         /// </summary>
         string way;
         public FileStream fileStream;
+        ushort count = 0;
 
         public WriteReport() { }
         /// <summary>
@@ -50,7 +51,7 @@ namespace ReportFNSUtility
         /// <param name="ecrCtrl">ссылка на объект работы с ккт</param>
         /// <param name="way">путь к файлу</param>
         /// <param name="fileName">имя файла</param>
-        public WriteReport(EcrCtrl ecrCtrl,string way,string fileName="")
+        public WriteReport(EcrCtrl ecrCtrl, string way, string fileName = "")
         {
             //Заполнение преременных 
             this.ecrCtrl = ecrCtrl;
@@ -60,15 +61,15 @@ namespace ReportFNSUtility
                 FsId = Encoding.GetEncoding(866).GetBytes(statusData.FsId);
                 lastDocNum = statusData.LastDocNum;
                 reportFS = new ReportFS();
-            }
-            way = way == "" ? Application.StartupPath : way;
-            if (fileName=="")
-            {
-                this.way = way + @"\" +statusData.FsId+"_"+DateTime.Now.ToString("d")+ ".fnc";
-            }
-            else
-            {
-                this.way = way + @"\" + (fileName.IndexOf(".")>0?fileName:fileName+".fnc");
+                way = way == "" ? Application.StartupPath : way;
+                if (fileName == "")
+                {
+                    this.way = way + @"\" + statusData.FsId + "_" + DateTime.Now.ToString("d") + ".fnc";
+                }
+                else
+                {
+                    this.way = way + @"\" + (fileName.IndexOf(".") > 0 ? fileName : fileName + ".fnc");
+                }
             }
         }
         //ЧУТЬ-ЧУТЬ ПЕРЕГРУЗОК__________________________________________________________________
@@ -117,7 +118,7 @@ namespace ReportFNSUtility
         /// <returns>массив байтов</returns>
         public byte[] GetByte(uint dt)
         {
-            byte[] bt =(BitConverter.GetBytes(dt));
+            byte[] bt = (BitConverter.GetBytes(dt));
             return bt;
         }
         /// <summary>
@@ -134,10 +135,10 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="dt">данные</param>
         /// <returns>массив байтов</returns>
-        public byte[] GetByte(uint dt,byte a=0,byte c=0)
+        public byte[] GetByte(uint dt, byte a = 0, byte c = 0)
         {
             byte[] b = BitConverter.GetBytes(dt);
-            b = new byte[] { b[3], b[2], b[1], b[0], a,c};
+            b = new byte[] { b[3], b[2], b[1], b[0], a, c };
             Array.Reverse(b);
             return b;
         }
@@ -151,12 +152,12 @@ namespace ReportFNSUtility
         {
             //составить список регистраций. ключ номер фискального докумнета
             var regcount = lastDocNum;
-            var dd = new Dictionary<uint, Dictionary<uint,byte[]>> ();
-            for (byte i = 0; i < regcount; i++)
+            var dd = new Dictionary<uint, Dictionary<uint, byte[]>>();
+            for (byte i = 0; i < regcount + (byte)1; i++)
             {
                 //Обновление прогресбара
-                Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)(i + 1) / (double)lastDocNum) * 100); });
-                uint fiscalNumber=0;
+                Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)(i) / ((double)lastDocNum+1)) * 100); });
+                uint fiscalNumber = 0;
                 var ofdTaxId = new Dictionary<uint, byte[]>();
                 if (ecrCtrl.Fw16.FsDirect is Fs.Native.IArchive2 arc)
                 {
@@ -173,11 +174,11 @@ namespace ReportFNSUtility
                             fiscalNumber = Convert.ToUInt32(w.Value);
                         }
                     }
-                    try {dd.Add(fiscalNumber, ofdTaxId); }
-                    catch(Exception ex) { return dd; }
+                    try { dd.Add(fiscalNumber, ofdTaxId); }
+                    catch (Exception ex) { return dd; }
                 }
             }
-            return null;
+            return dd;
         }
 
         /// <summary>
@@ -195,7 +196,7 @@ namespace ReportFNSUtility
             }
             catch { }
             tagFDn += BitConverter.ToString(dictionary[count][1002]) != "00" ? (ushort)1 : (ushort)2;
-            try { OfdTaxId =dictionary[count][1017]; } catch { }
+            try { OfdTaxId = dictionary[count][1017]; } catch { }
         }
         /// <summary>
         /// получени поддтверждения документа
@@ -218,9 +219,23 @@ namespace ReportFNSUtility
             }
         }
 
-       
+
         public void WriteReportStartParseFNS()
         {
+            if (lastDocNum <= 0)
+            {
+                if (Form1.form != null)
+                {
+                    Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.B_startParse.Text = "Формировать отчет"; });
+                    MessageBox.Show("Нет документов для чтения");
+                }
+                else
+                {
+                    Console.WriteLine("Нет документов для чтения");
+                }
+                (ecrCtrl as IDisposable).Dispose();
+                return;
+            }
             ///Создание потока для записи файла
             /// 
             fileStream = null;
@@ -260,13 +275,23 @@ namespace ReportFNSUtility
             ///Конец !!"заполнение статических переменных первой регистрации"!!
             ///
 
-            Form1.form.progressBar1.ResetText();
-
+            if (Form1.form == null)
+            {
+                Console.WriteLine("[||||||||||||||||Обработка|||||||||||||]");
+            }
             //Чтение всех документов
             for (uint i = 0; i < lastDocNum; i++)
             {
                 //обновление прогресбара
-                Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)(i + 1)/ (double)lastDocNum) * 100); });
+                Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)(i + 1) / (double)lastDocNum) * 100); });
+                if (Form1.form == null)
+                {
+                    if (((double)(i + 1) / (double)lastDocNum) * 40 > count)
+                    {
+                        count++;
+                        Console.Write("|");
+                    }
+                }
 
                 //Обращение к документам длительного хранения
                 if (ecrCtrl.Fw16.FsDirect is Fs.Native.IArchive fsArc)
@@ -457,7 +482,7 @@ namespace ReportFNSUtility
                                     else
                                         MessageBox.Show("arcCloseFs 5");
                                     if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.FsSignature) is TLV FsSignature) //добавление ФПД
-                                        FsSignature.AddValue(GetByte(arcCloseFs.Freq.FiscalSignature,0));
+                                        FsSignature.AddValue(GetByte(arcCloseFs.Freq.FiscalSignature, 0));
                                     else
                                         MessageBox.Show("arcCloseFs 6");
                                     if (curentArcCloseFsAcknowledge.AddValue((int)Fw16.Model.TLVTag.t1209) is TLV t1209) //добавление версия ФФД
@@ -488,7 +513,7 @@ namespace ReportFNSUtility
                                     if (ad.Acknowledged)
                                         checkAcknowledg(fsArc, currentARC, i + 1);
                                 }
-                                    
+
                             }
                         }
                         else
@@ -501,15 +526,17 @@ namespace ReportFNSUtility
 
 
             //Пишем в конце заголовок!
-            reportFS.InitHeader((Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc"), Form1.form.Text, Encoding.GetEncoding(866).GetString(dictionary[1][1037]), statusData.FsId, (byte)ecrCtrl.Info.FfdVersion, maxShift, lastDocNum);
+            reportFS.InitHeader((Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc"), Program.nameProgram, Encoding.GetEncoding(866).GetString(dictionary[1][1037]), statusData.FsId, (byte)ecrCtrl.Info.FfdVersion, maxShift, lastDocNum);
             //выгрузка дерева в файл
-            System.Threading.Thread thread= new System.Threading.Thread((System.Threading.ThreadStart)delegate { reportFS.WriteFile(way); });
+            System.Threading.Thread thread = new System.Threading.Thread((System.Threading.ThreadStart)delegate { reportFS.WriteFile(way); });
             thread.Start();
             thread.Join();
             //создание нового объекта для работы с ККТ
             (ecrCtrl as IDisposable).Dispose();
             Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = 0; });
-            Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.B_startParse.Text= "Формировать отчет"; });
+            Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.B_startParse.Text = "Формировать отчет"; });
+            if (Form1.form == null)
+                Console.WriteLine("\nКонец обработки. файл сохранён в {0}", way);
         }
     }
 }

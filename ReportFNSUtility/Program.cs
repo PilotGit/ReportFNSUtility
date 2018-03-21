@@ -22,6 +22,7 @@ namespace ReportFNSUtility
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;
 
+        public static string nameProgram = "FNSUtility V.1.1.1.0(H)";
         public static bool canRewrite = false;
         /// <summary>
         /// Главная точка входа для приложения.
@@ -44,12 +45,13 @@ namespace ReportFNSUtility
             {
                 EcrCtrl ecrCtrl = new Fw16.EcrCtrl();
                 string way = "";
+                string Init = "default";
                 foreach (var item in args)
                 {
                     switch (item[0])
                     {
                         case 'P':
-                            ecrCtrl.Init(item.Substring(1));
+                            Init=(item.Substring(1));
                             break;
                         case 'D':
                             way = item.Substring(1);
@@ -65,8 +67,14 @@ namespace ReportFNSUtility
                             return;
                     }
                 }
+                try
+                {
+                    ecrCtrl.Init(Init);
+                }
+                catch { Console.WriteLine("не верно указано подключение"); }
                 WriteReport writeReport = new WriteReport(ecrCtrl, way);
                 writeReport.WriteReportStartParseFNS();
+
             }
 
 
