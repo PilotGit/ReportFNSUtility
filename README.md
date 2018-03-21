@@ -1,9 +1,23 @@
 # ReportFNSUtility
-Как работать с ФН
+Как работать с Утилитой
 
-public Fs.Native.StatusData GetFsStatus()- получение статуса ФН, если есть документы то работаем 
-Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.ArchiveDoc doc)= получение документа
-                   -Fs.Native.FsAnswer GetAcknowledge(uint number, out Fs.Native.ArcAck ack)= получение поддтверждения обмена с ОФД                  
+## Работа в Оконном режиме
+Что бы перейти в оконный режим необходимо запустить приложение без параметров запуска.
+Оконное приложение позволяет просматривать отчеты о считывании данных с ФН и создватать эти отчеты.
+### Чтение отчетов
+Для чтения необходимо выбрать путь к файлу(кнопка `Обзор`) и запустить чтение файла(кнопка `Обновить`; чтение можно остановить)
+### Создание отчетов
+Для создания файла необходимо выбрать или ввести способ подключения к ккт(в формате `configName`), по желанию выбрать путь для сохранения и название файла.
+
+
+## Консольный режим
+Для запуска консоли необходимо запустить приложение с параметрами(или без них, тогда сохранение произойдет в папку с приложением,С именем заданным по умолчянию в приложении,если файл с таким же именем не существует):
+- "`rw` – перезаписать файл  отчёта при совпадении имени" 
+- "`P<Название_подключения>` -Название подключения к ККТ"
+- "`D<Абсолютный_Путь_К_Директории>` – Путь к директории в которой будет создан файл отчёта."
+
+Параметры можно указывать в любом порядке
+
 # Структура отчёта в программае
 
 ## ReportFS
@@ -136,13 +150,6 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
 ### Поля
   |название      | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |tlString        | UInt16[]                  |Массив тегов 
-  |tlInt        | UInt16[]                  |Описание
-  |tlDouble        | UInt16[]                  |Описание
-  |tlBit        | UInt16[]                  |Описание
-  |tlUnixTime        | UInt16[]                  |Описание
-  |tlByteMass        | UInt16[]                  |Описание
-  |stlv        | UInt16[]                  |Описание
   |type        | bool                  |Описание
   |parent        | Structurs                  |Описание
   |Len        | UInt16                  |Длинна
@@ -203,13 +210,15 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
   
 ### Методы
 
-** ReadValue(BinaryReader reader, TreeNodeCollection node)**
 
-Считывает значение из потока чтения и записывает значение в отчёт и в дерево на форме.
+** public static void ShowTree(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> stlv, TreeNodeCollection nodes) **
+
+Формирует дерево данных из полученного TLVWrapper в полученную коллекцию ветвей.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |reader          | BinaryReader                        |Поток чтения
+  |stlv          | TLVWrapper<TLVTag> |Поток чтения
+
   |node      | TreeNodeCollection                        |Коллекция ветвей в которую добавляется значение.
   
   **AddValue(byte[] value)**
@@ -267,13 +276,15 @@ Fs.Native.IArchive -Fs.Native.FsAnswer GetDocument(uint number, out Fs.Native.Ar
   
 ### Методы
 
-** ReadValue(BinaryReader reader, TreeNodeCollection nodes )**
 
-Считывает значение из потока чтения и записывает значение в отчёт и в дерево на форме.
+** public static void ShowTree(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> stlv, TreeNodeCollection nodes) **
+
+Формирует дерево данных из полученного TLVWrapper в полученную коллекцию ветвей.
 
   |Переменная    | Тип                           |Описание
   |--------------|-------------------------------|-------- 
-  |reader          | BinaryReader                        |Поток чтения
+  |stlv          | TLVWrapper<TLVTag> |Поток чтения
+
   |node      | TreeNodeCollection                        |Коллекция ветвей в которую добавляется значение.
   
   **AddValue(byte[] value)**
