@@ -62,7 +62,7 @@ namespace ReportFNSUtility
                 reportFS = new ReportFS();
             }
             way = way == "" ? Application.StartupPath : way;
-            if (fileName=="По умолчанию")
+            if (fileName=="")
             {
                 this.way = way + @"\" +statusData.FsId+"_"+DateTime.Now.ToString("d")+ ".fnc";
             }

@@ -23,23 +23,23 @@ namespace ReportFNSUtility
         {
             InitializeComponent();
             Form1.form = this;
-            form.Text = "FNSUtility V.1.0.2.0(S)"; //А давай ка играть с названием формы что бы понятно так! H-Hamoru
+            form.Text = "FNSUtility V.1.1.0.0(H)";
             treeView1.TreeViewNodeSorter = new TreeSorter();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void B_Browse_Click(object sender, EventArgs e)
         {
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-                TB_Patch.Text = openFileDialog1.FileName;
+            if (OpenFD_binFile.ShowDialog() == DialogResult.OK)
+                TB_Patch.Text = OpenFD_binFile.FileName;
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void B_UpdateStop_Click(object sender, EventArgs e)
         {
             if (readReportThread?.IsAlive ?? false)
             {
                 readReportThread?.Abort();
                 readReportThread.Join();
-                B_Update.Text = "Обновить";
+                B_UpdateStop.Text = "Обновить";
             }
             else
             {
@@ -51,7 +51,7 @@ namespace ReportFNSUtility
 
                     readReportThread = new Thread((ThreadStart)delegate { readReport.Read(); });
                     readReportThread.Start();
-                    B_Update.Text = "Остановить";
+                    B_UpdateStop.Text = "Остановить";
                 }
                 catch(Exception ex)
                 {
@@ -61,7 +61,6 @@ namespace ReportFNSUtility
 
         }
         
-
         private void B_startParse_Click(object sender, EventArgs e)
         {
             if (writeReportThread?.IsAlive ?? false)
@@ -70,10 +69,7 @@ namespace ReportFNSUtility
                 writeReportThread.Join();
                 (writeReport.ecrCtrl as IDisposable).Dispose();
                 writeReport.fileStream?.Close();
-                //(writeReport.ecrCtrl as IDisposable).Dispose();
-                //writeReport = new WriteReport();
                 progressBar1.Value = 0;
-                ////(ecrCtrl as IDisposable).Dispose();
 
                 B_startParse.Text = "Формировать отчет";
             }
@@ -84,7 +80,7 @@ namespace ReportFNSUtility
                 try
                 {
                     readReport?.reader?.BaseStream?.Close();
-                    writeReport = new WriteReport(ecrCtrl, TB_fileWay.Text, TB_fileName.Text);
+                    writeReport = new WriteReport(ecrCtrl, TB_fileWay.Text, TB_fileName.ForeColor== SystemColors.ActiveCaption?"":TB_fileName.Text);
 
                     writeReportThread = new Thread((ThreadStart)delegate { writeReport.WriteReportStartParseFNS(); });
                     writeReportThread.Start();
@@ -132,7 +128,18 @@ namespace ReportFNSUtility
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            readReportThread?.Abort();
+            if (writeReportThread?.IsAlive ?? false)
+            {
+                writeReportThread?.Abort();
+                writeReportThread.Join();
+                (writeReport.ecrCtrl as IDisposable).Dispose();
+                writeReport.fileStream?.Close();
+            }
+            if (readReportThread?.IsAlive ?? false)
+            {
+                readReportThread?.Abort();
+                readReportThread.Join();
+            }
         }
 
         private void B_fileWayDialog_Click(object sender, EventArgs e)
@@ -145,7 +152,7 @@ namespace ReportFNSUtility
 
         private void TB_fileName_Enter(object sender, EventArgs e)
         {
-            if(TB_fileName.Text=="По умолчанию")
+            if(TB_fileName.Text=="По умолчанию" && TB_fileName.ForeColor == SystemColors.ActiveCaption)
             {
                 TB_fileName.Text = string.Empty;
                 TB_fileName.ForeColor = SystemColors.WindowText;
