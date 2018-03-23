@@ -43,6 +43,7 @@ namespace ReportFNSUtility
         string way;
         public FileStream fileStream;
         ushort count = 0;
+        private BinaryWriter writer;
 
         public WriteReport() { }
         /// <summary>
@@ -252,7 +253,7 @@ namespace ReportFNSUtility
             }
             catch
             {
-                if (MessageBox.Show("Файл существует. Хотите перезаписать файл?", "Предупреждение", MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.Yes)
+                if (MessageBox.Show("Файл существует. Хотите перезаписать файл?", "Предупреждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                     fileStream = new FileStream(way, FileMode.Create);
             }
             //если не получилось выходим из метода
@@ -279,6 +280,15 @@ namespace ReportFNSUtility
             {
                 Console.WriteLine("[||||||||||||||||Обработка|||||||||||||]");
             }
+
+            //Открытие потока для записи
+            fileStream = new FileStream(way, FileMode.Open);
+            BinaryWriter writer = new BinaryWriter(fileStream);
+
+            //Написание заголовка
+            ReportHeader header = new ReportHeader((Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc"), Program.nameProgram, Encoding.GetEncoding(866).GetString(dictionary[1][1037]), statusData.FsId, (byte)ecrCtrl.Info.FfdVersion, maxShift, lastDocNum);
+            header.WriteFile(writer);
+
             //Чтение всех документов
             for (uint i = 0; i < lastDocNum; i++)
             {
@@ -299,7 +309,8 @@ namespace ReportFNSUtility
                     //Получение документа
                     if (fsArc.GetDocument(i + 1, out Fs.Native.ArchiveDoc ad) != Fs.Native.FsAnswer.Success)
                         throw new Exception("Error.WriteReportStartParseFNS fsArc.GetDocument");
-                    if (reportFS.AddValue(tagFDn) is STLV currentARC)
+                    STLV currentARC = new STLV(tagFDn, null);
+                    if (currentARC != null)
                     {
                         ///ПЕРЕРЕГИСТРАЦИЯ
                         /// ↓
@@ -520,17 +531,15 @@ namespace ReportFNSUtility
                         {
                             MessageBox.Show(ad.TlvTag.ToString());
                         }
+                        System.Threading.Thread thread = new System.Threading.Thread((System.Threading.ThreadStart)delegate { currentARC.WriteFile(writer); });
+                        thread.Start();
                     }
                 }
             }
-
-
-            //Пишем в конце заголовок!
-            reportFS.InitHeader((Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc"), Program.nameProgram, Encoding.GetEncoding(866).GetString(dictionary[1][1037]), statusData.FsId, (byte)ecrCtrl.Info.FfdVersion, maxShift, lastDocNum);
-            //выгрузка дерева в файл
-            System.Threading.Thread thread = new System.Threading.Thread((System.Threading.ThreadStart)delegate { reportFS.WriteFile(way); });
-            thread.Start();
-            thread.Join();
+            
+            //Написание хеша
+            header.AddHesh(writer);
+            
             //создание нового объекта для работы с ККТ
             (ecrCtrl as IDisposable).Dispose();
             if (Form1.form == null)
