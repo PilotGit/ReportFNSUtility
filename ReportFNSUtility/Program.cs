@@ -22,7 +22,7 @@ namespace ReportFNSUtility
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;
 
-        public static string nameProgram = "FNSUtility V.1.1.1.0(H)";
+        public static string nameProgram = "FNSUtility V.1.1.2.0(S)";
         public static bool canRewrite = false;
         /// <summary>
         /// Главная точка входа для приложения.

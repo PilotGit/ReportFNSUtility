@@ -214,12 +214,10 @@
             this.TB_Patch.Name = "TB_Patch";
             this.TB_Patch.Size = new System.Drawing.Size(536, 20);
             this.TB_Patch.TabIndex = 0;
-            this.TB_Patch.Text = "C:\\Users\\Ulovkov\\Documents\\9999078900011412.fnc";
             // 
             // OpenFD_binFile
             // 
             this.OpenFD_binFile.DefaultExt = "bin";
-            this.OpenFD_binFile.FileName = "openFileDialog1";
             this.OpenFD_binFile.Filter = "Бинарный файл|*.bin; *.fnc";
             // 
             // tabControl1
@@ -453,7 +451,6 @@
         private System.Windows.Forms.Label L_Port;
         private System.Windows.Forms.ComboBox CB_Port;
         private System.Windows.Forms.Button B_Browse;
-        private System.Windows.Forms.TextBox TB_Patch;
         private System.Windows.Forms.OpenFileDialog OpenFD_binFile;
         public System.Windows.Forms.TreeView treeView1;
         public System.Windows.Forms.ProgressBar progressBar1;
@@ -485,6 +482,7 @@
         public System.Windows.Forms.TextBox TB_4_NumberFN;
         public System.Windows.Forms.TextBox TB_3_RegNumber;
         public System.Windows.Forms.TextBox TB_2_UnloadingProgram;
+        public System.Windows.Forms.TextBox TB_Patch;
     }
 }
 
