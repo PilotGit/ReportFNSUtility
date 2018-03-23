@@ -320,7 +320,7 @@ namespace ReportFNSUtility
                 if (Form1.form != null)
                 {
                     Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.B_startParse.Text = "Формировать отчет"; });
-                    MessageBox.Show("Нет документов для чтения");
+                    MessageBox.Show("Нет документов для чтения", "Состояние ФН", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
@@ -345,7 +345,7 @@ namespace ReportFNSUtility
             }
             catch
             {
-                if (MessageBox.Show("Файл существует. Хотите перезаписать файл?", "Предупреждение", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show("Файл существует. Хотите перезаписать файл?", "Предупреждение", MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.Yes)
                     fileStream = new FileStream(way, FileMode.Create);
             }
             //если не получилось выходим из метода
@@ -631,10 +631,19 @@ namespace ReportFNSUtility
             thread.Join();
             //создание нового объекта для работы с ККТ
             (ecrCtrl as IDisposable).Dispose();
-            Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = 0; });
-            Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.B_startParse.Text = "Формировать отчет"; });
             if (Form1.form == null)
                 Console.WriteLine("\nКонец обработки. файл сохранён в {0}", way);
+            else
+                Form1.form?.Invoke((MethodInvoker)delegate
+                {
+                    Form1.form.TB_Patch.Text = way;
+                    if (MessageBox.Show("Создание отчёта завершено.\nОткрыть файл для проверки?", "Готово", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        Form1.form.B_UpdateStop_Click(Form1.form.B_UpdateStop, new EventArgs());
+                    }
+                    Form1.form.progressBar1.Value = 0;
+                    Form1.form.B_startParse.Text = "Формировать отчет";
+                });
         }
     }
 }

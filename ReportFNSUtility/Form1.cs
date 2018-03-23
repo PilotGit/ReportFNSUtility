@@ -25,6 +25,7 @@ namespace ReportFNSUtility
             Form1.form = this;
             form.Text = Program.nameProgram;
             treeView1.TreeViewNodeSorter = new TreeSorter();
+            OpenFD_binFile.InitialDirectory = Application.StartupPath;
         }
 
         private void B_Browse_Click(object sender, EventArgs e)
@@ -33,7 +34,7 @@ namespace ReportFNSUtility
                 TB_Patch.Text = OpenFD_binFile.FileName;
         }
 
-        private void B_UpdateStop_Click(object sender, EventArgs e)
+        public void B_UpdateStop_Click(object sender, EventArgs e)
         {
             if (readReportThread?.IsAlive ?? false)
             {
@@ -58,7 +59,6 @@ namespace ReportFNSUtility
                     MessageBox.Show(ex.Message);
                 }
             }
-
         }
         
         private void B_startParse_Click(object sender, EventArgs e)
@@ -76,19 +76,21 @@ namespace ReportFNSUtility
             else
             {
                 ecrCtrl = new Fw16.EcrCtrl();
-                ConnectToFW(CB_Port.Text);
-                try
+                if (ConnectToFW(CB_Port.Text))
                 {
-                    readReport?.reader?.BaseStream?.Close();
-                    writeReport = new WriteReport(ecrCtrl, TB_fileWay.Text, TB_fileName.ForeColor== SystemColors.ActiveCaption?"":TB_fileName.Text);
+                    try
+                    {
+                        readReport?.reader?.BaseStream?.Close();
+                        writeReport = new WriteReport(ecrCtrl, TB_fileWay.Text, TB_fileName.ForeColor == SystemColors.ActiveCaption ? "" : TB_fileName.Text);
 
-                    writeReportThread = new Thread((ThreadStart)delegate { writeReport.WriteReportStartParseFNS(); });
-                    writeReportThread.Start();
-                    B_startParse.Text = "Остановить";
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
+                        writeReportThread = new Thread((ThreadStart)delegate { writeReport.WriteReportStartParseFNS(); });
+                        writeReportThread.Start();
+                        B_startParse.Text = "Остановить";
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
             }
         }
@@ -116,7 +118,7 @@ namespace ReportFNSUtility
             }
             catch
             {
-                MessageBox.Show("Ошибка при подключении");
+                MessageBox.Show("Ошибка при подключении","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
                 return false;
             }
         }
