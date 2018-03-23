@@ -252,7 +252,7 @@ namespace ReportFNSUtility
             }
             catch
             {
-                if (MessageBox.Show("Файл существует. Хотите перезаписать файл?", "Предупреждение", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                if (MessageBox.Show("Файл существует. Хотите перезаписать файл?", "Предупреждение", MessageBoxButtons.YesNo,MessageBoxIcon.Question) == DialogResult.Yes)
                     fileStream = new FileStream(way, FileMode.Create);
             }
             //если не получилось выходим из метода
@@ -531,7 +531,6 @@ namespace ReportFNSUtility
             System.Threading.Thread thread = new System.Threading.Thread((System.Threading.ThreadStart)delegate { reportFS.WriteFile(way); });
             thread.Start();
             thread.Join();
-            Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = Form1.form.progressBar1.Maximum; });
             //создание нового объекта для работы с ККТ
             (ecrCtrl as IDisposable).Dispose();
             if (Form1.form == null)
