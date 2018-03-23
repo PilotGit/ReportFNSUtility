@@ -41,6 +41,12 @@ namespace ReportFNSUtility
         /// Путь к файлу с именем файла
         /// </summary>
         string way;
+        /// <summary>
+        /// отчеты о регистрации ФН
+        /// </summary>
+        Dictionary<uint, Dictionary<uint, byte[]>> dictionary;
+
+        BinaryWriter writer;
         public FileStream fileStream;
         ushort count = 0;
 
@@ -70,6 +76,7 @@ namespace ReportFNSUtility
                 {
                     this.way = way + @"\" + (fileName.IndexOf(".") > 0 ? fileName : fileName + ".fnc");
                 }
+                dictionary = GetDictionaryREG();
             }
         }
         //ЧУТЬ-ЧУТЬ ПЕРЕГРУЗОК__________________________________________________________________
@@ -156,7 +163,7 @@ namespace ReportFNSUtility
             for (byte i = 0; i < regcount + (byte)1; i++)
             {
                 //Обновление прогресбара
-                Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)(i) / ((double)lastDocNum+1)) * 100); });
+                Form1.form?.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)(i) / ((double)lastDocNum + 1)) * 100); });
                 uint fiscalNumber = 0;
                 var ofdTaxId = new Dictionary<uint, byte[]>();
                 if (ecrCtrl.Fw16.FsDirect is Fs.Native.IArchive2 arc)
@@ -218,8 +225,94 @@ namespace ReportFNSUtility
 
             }
         }
+        /// <summary>
+        /// функция для получения массива tlv в байтах
+        /// </summary>
+        /// <param name="tag">тег</param>
+        /// <param name="array">массив данных в байтах, функция для помощи GetByte</param>
+        /// <returns></returns>
+        private byte[] GetTLV(Fw16.Model.TLVTag tag, byte[] array)
+        {
+            byte[] newArray = new byte[4 + array.Length];
+            GetByte((ushort)tag).CopyTo(newArray, 0);
+            GetByte((ushort)array.Length).CopyTo(newArray, 2);
+            array.CopyTo(newArray, 4);
+            return newArray;
+        }
+        /// <summary>
+        /// получения массива TLV в байтах содержит тег 107
+        /// </summary>
+        /// <param name="fsArc">объект аркхивного документа</param>
+        /// <param name="count">номер документа для получения подтверждения</param>
+        /// <returns></returns>
+        private byte[] checkAcknowledg(Fs.Native.IArchive fsArc, uint count)
+        {
+            byte[] acknowlegeTLV = new byte[48];
+            byte[] buff;
+            int currentByte = 0;
 
+            fsArc.GetAcknowledge(count, out Fs.Native.ArcAck arcAck);
 
+            buff = GetTLV(Fw16.Model.TLVTag.RptDocAck, GetByte((ushort)48));
+            buff.CopyTo(acknowlegeTLV, currentByte = buff.Length);
+            buff = GetTLV(Fw16.Model.TLVTag.OfdTaxId, GetByte((ushort)OfdTaxId.Length));
+            buff.CopyTo(acknowlegeTLV, currentByte = buff.Length);
+            buff = GetTLV(Fw16.Model.TLVTag.DateTime, GetByte((ushort)GetByte(arcAck.DT).Length));
+            buff.CopyTo(acknowlegeTLV, currentByte = buff.Length);
+            buff = GetTLV(Fw16.Model.TLVTag.OfdSignature, GetByte((ushort)(arcAck.Signature).Length));
+            buff.CopyTo(acknowlegeTLV, currentByte = buff.Length);
+            return acknowlegeTLV;
+        }
+        /// <summary>
+        /// заполнение head отправте true для обновления head
+        /// </summary>
+        /// <param name="end7"></param>
+        public void headGetStream(bool end7 = false)
+        {
+            try
+            {
+                writer.BaseStream.Seek(0, SeekOrigin.Begin);
+                writer.Write(Encoding.GetEncoding(866).GetBytes(way.Substring(0, 53)));
+                writer.Write(Encoding.GetEncoding(866).GetBytes(Program.nameProgram.Substring(0, 256)));
+                writer.Write(Encoding.GetEncoding(866).GetBytes(Encoding.GetEncoding(866).GetString(dictionary[1][1037])));
+                writer.Write(Encoding.GetEncoding(866).GetBytes(statusData.FsId.Substring(0, 16)));
+                writer.Write((byte)ecrCtrl.Info.FfdVersion);
+                writer.Write(BitConverter.GetBytes(maxShift));
+                writer.Write(BitConverter.GetBytes(lastDocNum));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            if (end7)
+            {
+                UInt32 hash;
+                writer.BaseStream.Seek(0, SeekOrigin.Begin);
+                DamienG.Security.Cryptography.Crc32 crc32 = new DamienG.Security.Cryptography.Crc32();
+                byte[] _hash = crc32.ComputeHash(writer.BaseStream);
+                Array.Reverse(_hash);
+                hash = BitConverter.ToUInt32(_hash, 0);
+                //копируем в memorystream дерево тегов
+                writer.BaseStream.Seek(354, SeekOrigin.Begin);
+                MemoryStream memoryStream = new MemoryStream();
+                writer.BaseStream.CopyTo(memoryStream);
+                //пишем хеш
+                writer.BaseStream.Seek(354, SeekOrigin.Begin);
+                writer.Write(hash);
+                //дописываем дерево тегов
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                memoryStream.CopyTo(writer.BaseStream);
+                writer.BaseStream.Seek(0, SeekOrigin.End);
+                memoryStream.Close();
+            }
+        }
+
+        //private byte[] GetSTLV(int curentDOCCount)
+        //{
+        //    byte[] STLV;
+
+        //    return STLV;
+        //}
         public void WriteReportStartParseFNS()
         {
             if (lastDocNum <= 0)
@@ -265,7 +358,6 @@ namespace ReportFNSUtility
                 Form1.form.Invoke((MethodInvoker)delegate { Form1.form.B_startParse.Text = "Формировать отчет"; });
                 return;
             }
-            fileStream.Close();
 
             Dictionary<uint, Dictionary<uint, byte[]>> dictionary = GetDictionaryREG();
 
@@ -274,6 +366,12 @@ namespace ReportFNSUtility
             SetCurrentStatic(1, dictionary);
             ///Конец !!"заполнение статических переменных первой регистрации"!!
             ///
+
+            //создание потока для записи файлов.
+            writer = new BinaryWriter(fileStream);
+            headGetStream();
+
+
 
             if (Form1.form == null)
             {
