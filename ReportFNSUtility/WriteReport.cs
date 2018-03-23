@@ -531,8 +531,8 @@ namespace ReportFNSUtility
                         {
                             MessageBox.Show(ad.TlvTag.ToString());
                         }
-                        System.Threading.Thread thread = new System.Threading.Thread((System.Threading.ThreadStart)delegate { currentARC.WriteFile(writer); });
-                        thread.Start();
+                        currentARC.WriteFile(writer); 
+                        
                     }
                 }
             }
