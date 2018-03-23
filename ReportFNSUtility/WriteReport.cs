@@ -233,7 +233,7 @@ namespace ReportFNSUtility
         /// <returns></returns>
         private byte[] GetTLV(Fw16.Model.TLVTag tag, byte[] array)
         {
-            byte[] newArray = new byte[4 + array.Length];
+            byte[] newArray = new byte[4+array.Length];
             GetByte((ushort)tag).CopyTo(newArray, 0);
             GetByte((ushort)array.Length).CopyTo(newArray, 2);
             array.CopyTo(newArray, 4);
@@ -247,20 +247,23 @@ namespace ReportFNSUtility
         /// <returns></returns>
         private byte[] checkAcknowledg(Fs.Native.IArchive fsArc, uint count)
         {
-            byte[] acknowlegeTLV = new byte[48];
+            byte[] acknowlegeTLV = new byte[52];
             byte[] buff;
             int currentByte = 0;
 
             fsArc.GetAcknowledge(count, out Fs.Native.ArcAck arcAck);
 
             buff = GetTLV(Fw16.Model.TLVTag.RptDocAck, GetByte((ushort)48));
-            buff.CopyTo(acknowlegeTLV, currentByte = buff.Length);
-            buff = GetTLV(Fw16.Model.TLVTag.OfdTaxId, GetByte((ushort)OfdTaxId.Length));
-            buff.CopyTo(acknowlegeTLV, currentByte = buff.Length);
-            buff = GetTLV(Fw16.Model.TLVTag.DateTime, GetByte((ushort)GetByte(arcAck.DT).Length));
-            buff.CopyTo(acknowlegeTLV, currentByte = buff.Length);
-            buff = GetTLV(Fw16.Model.TLVTag.OfdSignature, GetByte((ushort)(arcAck.Signature).Length));
-            buff.CopyTo(acknowlegeTLV, currentByte = buff.Length);
+            buff.CopyTo(acknowlegeTLV, currentByte);
+            currentByte += buff.Length;
+            buff = GetTLV(Fw16.Model.TLVTag.OfdTaxId, OfdTaxId);
+            buff.CopyTo(acknowlegeTLV, currentByte);
+            currentByte += buff.Length;
+            buff = GetTLV(Fw16.Model.TLVTag.DateTime, GetByte(arcAck.DT));
+            buff.CopyTo(acknowlegeTLV, currentByte);
+            currentByte += buff.Length;
+            buff = GetTLV(Fw16.Model.TLVTag.OfdSignature,arcAck.Signature);
+            buff.CopyTo(acknowlegeTLV, currentByte);
             return acknowlegeTLV;
         }
         /// <summary>
@@ -360,7 +363,7 @@ namespace ReportFNSUtility
             }
 
             Dictionary<uint, Dictionary<uint, byte[]>> dictionary = GetDictionaryREG();
-
+            fileStream.Close();
             ///заполнение статических переменных первой регистрации
             ///
             SetCurrentStatic(1, dictionary);
@@ -368,8 +371,8 @@ namespace ReportFNSUtility
             ///
 
             //создание потока для записи файлов.
-            writer = new BinaryWriter(fileStream);
-            headGetStream();
+            //writer = new BinaryWriter(fileStream);
+            //headGetStream();
 
 
 
@@ -421,7 +424,7 @@ namespace ReportFNSUtility
                                     }
                                 }
                             if (ad.Acknowledged)
-                                checkAcknowledg(fsArc, currentARC, i + 1);
+                                checkAcknowledg(fsArc, i + 1);
                         }
 
                         ///РЕГИСТРАЦИЯ
@@ -629,6 +632,11 @@ namespace ReportFNSUtility
             System.Threading.Thread thread = new System.Threading.Thread((System.Threading.ThreadStart)delegate { reportFS.WriteFile(way); });
             thread.Start();
             thread.Join();
+            fileStream = new FileStream(way, FileMode.OpenOrCreate);
+            BinaryWriter binaryWriter = new BinaryWriter(fileStream);
+            binaryWriter.Seek(0, SeekOrigin.End);
+            binaryWriter.Write(checkAcknowledg(ecrCtrl.Fw16.FsDirect as Fs.Native.IArchive, 1));
+            fileStream.Close();
             //создание нового объекта для работы с ККТ
             (ecrCtrl as IDisposable).Dispose();
             if (Form1.form == null)
