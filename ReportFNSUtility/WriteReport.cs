@@ -43,7 +43,7 @@ namespace ReportFNSUtility
         string way;
         public FileStream fileStream;
         ushort count = 0;
-        private BinaryWriter writer;
+        public BinaryWriter writer;
 
         public WriteReport() { }
         /// <summary>
@@ -283,7 +283,7 @@ namespace ReportFNSUtility
 
             //Открытие потока для записи
             fileStream = new FileStream(way, FileMode.Open);
-            BinaryWriter writer = new BinaryWriter(fileStream);
+            writer = new BinaryWriter(fileStream);
 
             //Написание заголовка
             ReportHeader header = new ReportHeader((Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc"), Program.nameProgram, Encoding.GetEncoding(866).GetString(dictionary[1][1037]), statusData.FsId, (byte)ecrCtrl.Info.FfdVersion, maxShift, lastDocNum);
