@@ -41,7 +41,7 @@
   |reader        | BinaryReader                  |Поток чтения файла отчёта
   
   
-**ReportFS()**
+**ReportFS()** *Устаревщее не используется*
 
 Конструктор без параметров.
 
@@ -51,7 +51,7 @@
   
 ### Методы
 
-**InitHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)**
+**InitHeader(string name, string programm, string numberKKT, string numberFS, byte versionFFD, uint countShift, uint fiscalDoc)** *Устаревщее не используется*
 
 Метод вызывает конструктор заголовка передавая все необходимые поля за исключением хеша.
 
@@ -78,7 +78,7 @@
   |-------------------------------|-------- 
   | Structurs                     | 
   
-  **WriteFile(BinaryWriter writer)**
+  **WriteFile(BinaryWriter writer)** *Устаревщее не используется*
 
 Метод запускает процесс записи отчёта в файл, последовательно вызывая запись заголовка, массива данных длительного хранения и формирование хеша.
 
