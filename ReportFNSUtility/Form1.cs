@@ -69,6 +69,7 @@ namespace ReportFNSUtility
                 writeReportThread.Join();
                 (writeReport.ecrCtrl as IDisposable).Dispose();
                 writeReport.fileStream?.Close();
+                writeReport.writer?.Close();
                 progressBar1.Value = 0;
 
                 B_startParse.Text = "Формировать отчет";
@@ -136,6 +137,7 @@ namespace ReportFNSUtility
                 writeReportThread.Join();
                 (writeReport.ecrCtrl as IDisposable).Dispose();
                 writeReport.fileStream?.Close();
+                writeReport.writer?.Close();
             }
             if (readReportThread?.IsAlive ?? false)
             {
