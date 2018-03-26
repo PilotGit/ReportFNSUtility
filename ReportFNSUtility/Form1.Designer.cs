@@ -159,7 +159,7 @@
             this.GB_PreviewReport.Controls.Add(this.TB_Patch);
             this.GB_PreviewReport.Location = new System.Drawing.Point(286, 12);
             this.GB_PreviewReport.Name = "GB_PreviewReport";
-            this.GB_PreviewReport.Size = new System.Drawing.Size(717, 433);
+            this.GB_PreviewReport.Size = new System.Drawing.Size(717, 441);
             this.GB_PreviewReport.TabIndex = 1;
             this.GB_PreviewReport.TabStop = false;
             this.GB_PreviewReport.Text = "Просмотр отчёта";
@@ -168,7 +168,7 @@
             // 
             this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(6, 406);
+            this.progressBar1.Location = new System.Drawing.Point(6, 414);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(698, 21);
             this.progressBar1.TabIndex = 2;
@@ -180,7 +180,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.Location = new System.Drawing.Point(7, 46);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(697, 354);
+            this.treeView1.Size = new System.Drawing.Size(697, 362);
             this.treeView1.Sorted = true;
             this.treeView1.TabIndex = 4;
             // 
@@ -229,7 +229,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(255, 433);
+            this.tabControl1.Size = new System.Drawing.Size(255, 441);
             this.tabControl1.TabIndex = 2;
             // 
             // T_page_report_Generation
@@ -245,7 +245,7 @@
             this.T_page_report_Generation.Location = new System.Drawing.Point(4, 22);
             this.T_page_report_Generation.Name = "T_page_report_Generation";
             this.T_page_report_Generation.Padding = new System.Windows.Forms.Padding(3);
-            this.T_page_report_Generation.Size = new System.Drawing.Size(247, 407);
+            this.T_page_report_Generation.Size = new System.Drawing.Size(247, 415);
             this.T_page_report_Generation.TabIndex = 0;
             this.T_page_report_Generation.Text = "Формирование отчета";
             // 
