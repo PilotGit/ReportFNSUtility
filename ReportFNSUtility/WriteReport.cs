@@ -61,7 +61,6 @@ namespace ReportFNSUtility
                 statusData = ecrCtrl.Fw16.FsDirect.GetFsStatus();
                 FsId = Encoding.GetEncoding(866).GetBytes(statusData.FsId);
                 lastDocNum = statusData.LastDocNum;
-                reportFS = new ReportFS();
                 way = way == "" ? Application.StartupPath : way;
                 if (fileName == "")
                 {

@@ -137,6 +137,7 @@ namespace ReportFNSUtility
                 writeReportThread.Join();
                 (writeReport.ecrCtrl as IDisposable).Dispose();
                 writeReport.fileStream?.Close();
+                writeReport.writer?.Close();
             }
             if (readReportThread?.IsAlive ?? false)
             {
