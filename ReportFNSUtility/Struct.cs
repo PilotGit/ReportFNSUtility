@@ -21,10 +21,10 @@ namespace ReportFNSUtility
         /// </summary>
         ReportHeader header;
 
-        /// <summary>
-        /// Фискальные даннные длительного хранения
-        /// </summary>
-        List<Structurs> fDLongStorage = new List<Structurs>();
+        ///// <summary>
+        ///// Фискальные даннные длительного хранения
+        ///// </summary>
+        //List<Structurs> fDLongStorage = new List<Structurs>();
 
         /// <summary>
         /// 
@@ -82,40 +82,40 @@ namespace ReportFNSUtility
             header = new ReportHeader(name, programm, numberKKT, numberFS, versionFFD, countShift, fiscalDoc);
         }
 
-        /// <summary>
-        /// Добавить STLV структуру (650XX)
-        /// </summary>
-        /// <param name="tag">Тег добавляемой структуры</param>
-        /// <returns>Добавленная структура типа STLV</returns>
-        public Structurs AddValue(UInt16 tag)
-        {
-            try
-            {
-                fDLongStorage.Add(new STLV(tag, null));
-            }
-            catch
-            {
-                throw new Exception("Произошла непредвиденная ошибка при добавлении значения в структуру отчёта.");
-            }
-            return fDLongStorage.Last();
-        }
+        ///// <summary>
+        ///// Добавить STLV структуру (650XX)
+        ///// </summary>
+        ///// <param name="tag">Тег добавляемой структуры</param>
+        ///// <returns>Добавленная структура типа STLV</returns>
+        //public Structurs AddValue(UInt16 tag)
+        //{
+        //    try
+        //    {
+        //        fDLongStorage.Add(new STLV(tag, null));
+        //    }
+        //    catch
+        //    {
+        //        throw new Exception("Произошла непредвиденная ошибка при добавлении значения в структуру отчёта.");
+        //    }
+        //    return fDLongStorage.Last();
+        //}
 
-        /// <summary>
-        /// Запускает процесс записи данных в файл
-        /// </summary>
-        /// <param name="writer"></param>
-        public void WriteFile(string way)
-        {
-            FileStream fileStream = new FileStream(way, FileMode.Open);
-            BinaryWriter writer = new BinaryWriter(fileStream);
+        ///// <summary>
+        ///// Запускает процесс записи данных в файл
+        ///// </summary>
+        ///// <param name="writer"></param>
+        //public void WriteFile(string way)
+        //{
+        //    FileStream fileStream = new FileStream(way, FileMode.Open);
+        //    BinaryWriter writer = new BinaryWriter(fileStream);
 
-            header.WriteFile(writer);
-            foreach (var item in fDLongStorage)
-            {
-                (item as STLV).WriteFile(writer);
-            }
-            header.AddHesh(writer);
-        }
+        //    header.WriteFile(writer);
+        //    foreach (var item in fDLongStorage)
+        //    {
+        //        (item as STLV).WriteFile(writer);
+        //    }
+        //    header.AddHesh(writer);
+        //}
     }
 
     /// <summary>
