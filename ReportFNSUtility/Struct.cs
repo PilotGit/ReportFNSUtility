@@ -23,33 +23,74 @@ namespace ReportFNSUtility
             private string name;
             public string Name
             {
-                //get { }
-                set { }
+                get => name;
+                set
+                {
+                    if (value.Length >= 53)
+                    {
+                        this.name = value.Substring(0, 53);
+                    }
+                    else
+                    {
+                        this.name = string.Format($"{value,-53}");
+                    }
+                }
             }
 
-            private string program;
-            public string Program
+            private string programm;
+            public string Programm
             {
-                //get { }
-                set { }
+                get => programm;
+                set
+                {
+                    if (value.Length >= 256)
+                    {
+                        this.programm = value.Substring(0, 256);
+                    }
+                    else
+                    {
+                        this.programm = string.Format($"{value,-256}");
+                    }
+                }
             }
 
             private string numberECR;
             public string NumberECR
             {
-                //get { }
-                set { }
+                get => numberECR;
+                set
+                {
+                    if (value.Length >= 20)
+                    {
+                        this.numberECR = value.Substring(0, 20);
+                    }
+                    else
+                    {
+                        this.numberECR = string.Format($"{value,-20}");
+                    }
+                }
             }
 
             private string numberFS;
             public string NumberFS
             {
-                //get { }
-                set { }
+                get => numberFS;
+                set
+                {
+                    if (value.Length >= 16)
+                    {
+                        this.numberFS = value.Substring(0, 16);
+                    }
+                    else
+                    {
+                        this.numberFS = string.Format($"{value,-16}");
+                    }
+                }
             }
 
             private byte versionFFD;
-            public byte VersionFFD {
+            public byte VersionFFD
+            {
                 get => versionFFD;
                 set => versionFFD = value;
             }
@@ -61,11 +102,11 @@ namespace ReportFNSUtility
                 set => countShift = value;
             }
 
-            private uint fiscalDoc;
-            public uint FiscalDoc
+            private uint countFiscalDoc;
+            public uint CountFiscalDoc
             {
-                get => fiscalDoc;
-                set => fiscalDoc = value;
+                get => countFiscalDoc;
+                set => countFiscalDoc = value;
             }
 
             private uint hash;
@@ -73,17 +114,109 @@ namespace ReportFNSUtility
             {
                 get => hash;
             }
-            public ReportHeader(string name=null, string programm = null, string numberKKT = null, string numberFS = null, byte versionFFD = 0, uint countShift = 0, uint fiscalDoc = 0)
-            {
 
+            public ReportHeader(string name = null, string programm = null, string numberKKT = null, string numberFS = null, byte versionFFD = 0, uint countShift = 0, uint fiscalDoc = 0)
+            {
+                Name = name;
+                Programm = programm;
+                NumberECR = numberKKT;
+                NumberFS = numberFS;
+                VersionFFD = versionFFD;
+                CountShift = countShift;
+                CountFiscalDoc = fiscalDoc;
+            }
+            public bool UpdateFromStream(BinaryReader stream)
+            {
+                try
+                {
+                    //Считывание название документа
+                    Encoding encoding = Encoding.GetEncoding(866);
+                    byte[] name = new byte[53];
+                    stream.Read(name, 0, 53);
+                    Name = encoding.GetString(name);
+                    //Считывание названия программы
+                    byte[] programm = new byte[256];
+                    stream.Read(programm, 0, 256);
+                    Programm = encoding.GetString(programm);
+                    //Считывание номера ККТ
+                    byte[] numberECR = new byte[20];
+                    stream.Read(numberECR, 0, 20);
+                    NumberECR = encoding.GetString(numberECR);
+                    //Считывание номер фискального накопителя
+                    byte[] numberFS = new byte[16];
+                    stream.Read(numberFS, 0, 16);
+                    NumberFS = encoding.GetString(numberFS);
+                    //Считывания версии ФФД, количества смен, количества фискальных документов и хеша
+                    this.versionFFD = stream.ReadByte();
+                    this.countShift = stream.ReadUInt32();
+                    this.countFiscalDoc = stream.ReadUInt32();
+                    this.hash = stream.ReadUInt32();
+                    return true;
+                }
+                catch 
+                {
+                    return false;
+                }
+            }
+            public bool WriteToStream(BinaryWriter stream)
+            {
+                try
+                {
+                    stream.Write(Encoding.GetEncoding(866).GetBytes(Name));
+                    stream.Write(Encoding.GetEncoding(866).GetBytes(Programm));
+                    stream.Write(Encoding.GetEncoding(866).GetBytes(NumberECR));
+                    stream.Write(Encoding.GetEncoding(866).GetBytes(NumberFS));
+                    stream.Write(VersionFFD);
+                    stream.Write(BitConverter.GetBytes(CountShift));
+                    stream.Write(BitConverter.GetBytes(CountFiscalDoc));
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            public bool AddHeshToStream(BinaryWriter stream)
+            {
+                try
+                {
+                    //считаем хеш
+                    stream.BaseStream.Seek(0, SeekOrigin.Begin);
+                    Crc32 crc32 = new Crc32();
+                    byte[] _hash = crc32.ComputeHash(stream.BaseStream);
+                    Array.Reverse(_hash);
+                    hash = BitConverter.ToUInt32(_hash, 0);
+                    //копируем в memorystream дерево тегов
+                    stream.BaseStream.Seek(354, SeekOrigin.Begin);
+                    MemoryStream memoryStream = new MemoryStream();
+                    stream.BaseStream.CopyTo(memoryStream);
+                    //пишем хеш
+                    stream.BaseStream.Seek(354, SeekOrigin.Begin);
+                    stream.Write(hash);
+                    //дописываем дерево тегов
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    memoryStream.CopyTo(stream.BaseStream);
+                    memoryStream.Close();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
             }
         }
+
         public class TreeOfTags
         {
+            PosAndLen[] PositionNodeOfStream;
+
+
             public TreeOfTags()
             {
 
             }
+
+            private bool Reset() { return false; }
 
             public bool Update(BinaryReader stream)
             {
@@ -93,6 +226,21 @@ namespace ReportFNSUtility
             public bool GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
             {
                 return false;
+            }
+
+            class PosAndLen
+            {
+                UInt64 position;
+                UInt16 length;
+
+                public ulong Position { get => position; }
+                public ushort Length { get => length; }
+
+                public PosAndLen(UInt64 position, UInt16 length)
+                {
+                    this.position = position;
+                    this.length = length;
+                }
             }
         }
 
@@ -122,17 +270,17 @@ namespace ReportFNSUtility
                 get => len;
                 set
                 {
-                        try
-                        {
-                            UInt16 tmp = (UInt16)(value - this.len);
-                            if (parent != null)
-                                parent.Len += tmp;
-                            this.len = value;
-                        }
-                        catch
-                        {
-                            throw new Exception("Милорд, мы не смогли посчитать наши запасы.");
-                        }
+                    try
+                    {
+                        UInt16 tmp = (UInt16)(value - this.len);
+                        if (parent != null)
+                            parent.Len += tmp;
+                        this.len = value;
+                    }
+                    catch
+                    {
+                        throw new Exception("Милорд, мы не смогли посчитать наши запасы.");
+                    }
                 }
             }
 
@@ -577,7 +725,7 @@ namespace ReportFNSUtility
             Crc32 crc32 = new Crc32();
             byte[] _hash = crc32.ComputeHash(writer.BaseStream);
             Array.Reverse(_hash);
-            hash = BitConverter.ToUInt32(_hash,0);
+            hash = BitConverter.ToUInt32(_hash, 0);
             //копируем в memorystream дерево тегов
             writer.BaseStream.Seek(354, SeekOrigin.Begin);
             MemoryStream memoryStream = new MemoryStream();
