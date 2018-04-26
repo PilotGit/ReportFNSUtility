@@ -13,6 +13,7 @@ namespace ReportFNSUtility
 {
     static class Program
     {
+        // Для скрытия/показа консоли
         [DllImport("kernel32.dll")]
         static extern IntPtr GetConsoleWindow();
 
@@ -21,7 +22,9 @@ namespace ReportFNSUtility
 
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;
-
+        
+        //////////////////////////////////////////
+        
         public static string nameProgram = "FNSUtility V.1.1.2.0(S)";
         public static bool canRewrite = false;
         /// <summary>
@@ -79,6 +82,7 @@ namespace ReportFNSUtility
 
 
         }
+
         /// <summary>
         /// Получить описание enum
         /// </summary>

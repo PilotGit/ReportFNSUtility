@@ -11,6 +11,278 @@ using System.Windows.Forms;
 
 namespace ReportFNSUtility
 {
+    class ReportFNS
+    {
+        public ReportFNS()
+        {
+
+        }
+
+        public class ReportHeader
+        {
+            private string name;
+            public string Name
+            {
+                //get { }
+                set { }
+            }
+
+            private string program;
+            public string Program
+            {
+                //get { }
+                set { }
+            }
+
+            private string numberECR;
+            public string NumberECR
+            {
+                //get { }
+                set { }
+            }
+
+            private string numberFS;
+            public string NumberFS
+            {
+                //get { }
+                set { }
+            }
+
+            private byte versionFFD;
+            public byte VersionFFD {
+                get => versionFFD;
+                set => versionFFD = value;
+            }
+
+            private uint countShift;
+            public uint CountShift
+            {
+                get => countShift;
+                set => countShift = value;
+            }
+
+            private uint fiscalDoc;
+            public uint FiscalDoc
+            {
+                get => fiscalDoc;
+                set => fiscalDoc = value;
+            }
+
+            private uint hash;
+            public uint Hash
+            {
+                get => hash;
+            }
+            public ReportHeader(string name=null, string programm = null, string numberKKT = null, string numberFS = null, byte versionFFD = 0, uint countShift = 0, uint fiscalDoc = 0)
+            {
+
+            }
+        }
+        public class TreeOfTags
+        {
+            public TreeOfTags()
+            {
+
+            }
+
+            public bool Update(BinaryReader stream)
+            {
+                return false;
+            }
+
+            public bool GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Базовый класс для реализации TLV и STLV структур
+        /// </summary>
+        class Structurs
+        {
+            /// <summary>
+            /// STLV структура в которой находится этот объект
+            /// </summary>
+            Structurs parent;
+            /// <summary>
+            /// Тег STLV или TLV структуры
+            /// </summary>
+            UInt16 tag;
+            /// <summary>
+            /// Длинна структуры.
+            /// </summary>
+            UInt16 len;
+
+            /// <summary>
+            /// Свойство для доступа к длинне STLV или TLV структуре
+            /// </summary>
+            public UInt16 Len
+            {
+                get => len;
+                set
+                {
+                        try
+                        {
+                            UInt16 tmp = (UInt16)(value - this.len);
+                            if (parent != null)
+                                parent.Len += tmp;
+                            this.len = value;
+                        }
+                        catch
+                        {
+                            throw new Exception("Милорд, мы не смогли посчитать наши запасы.");
+                        }
+                }
+            }
+
+            /// <summary>
+            /// Тег STLV или TLV структуры
+            /// </summary>
+            public UInt16 Tag { get => tag; }
+
+            /// <summary>
+            /// конструктор используемый для считывания данных из ККТ
+            /// </summary>
+            /// <param name="tag">Тег</param>
+            /// <param name="parent">STLV структура в которою происходит добавление</param>
+            public Structurs(UInt16 tag, Structurs parent)
+            {
+                this.tag = tag;
+                this.parent = parent;
+            }
+        }
+
+        /// <summary>
+        /// Реализация TLV структуры
+        /// </summary>
+        class TLV : Structurs
+        {
+            /// <summary>
+            /// Значение в TLV структуре
+            /// </summary>
+            byte[] value;
+
+            /// <summary>
+            /// конструктор используемый для считывания данных из ККТ
+            /// </summary>
+            /// <param name="tag">Тег</param>
+            /// <param name="parent">Родительная STLV структура.</param>
+            public TLV(UInt16 tag, Structurs parent) : base(tag, parent)
+            {
+                if (parent != null)
+                    parent.Len += 4;
+            }
+
+            /// <summary>
+            /// Присваивает значение TLV структуре
+            /// </summary>
+            /// <param name="value">Значение в виде массива байтов</param>
+            /// <returns>0-операция завершилась успешно</returns>
+            public void AddValue(byte[] value)
+            {
+                this.value = value;
+                Len = (UInt16)value.Length;
+            }
+
+            /// <summary>
+            /// Запись в файл тега, длинны и значения
+            /// </summary>
+            /// <param name="writer">Поток записи</param>
+            public void WriteTostream(BinaryWriter writer)
+            {
+                try
+                {
+                    writer.Write(Tag);
+                    writer.Write(Len);
+                    writer.Write(value);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"tag - {Tag}; Exception message: {ex.Message}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Реализация STLV структуры
+        /// </summary>
+        class STLV : Structurs
+        {
+            /// <summary>
+            /// Структуры в составе STLV структур
+            /// </summary>
+            List<Structurs> value = new List<Structurs>();
+
+            /// <summary>
+            /// конструктор используемый для считывания данных из ККТ
+            /// </summary>
+            /// <param name="tag">Тег</param>
+            /// <param name="parent">STLV структура в которою добавляется эта STLV структура</param>
+            public STLV(UInt16 tag, Structurs parent) : base(tag, parent)
+            {
+                if (parent != null)
+                    parent.Len += 4;
+            }
+
+            /// <summary>
+            /// Добавить значение в STLV структуру
+            /// </summary>
+            /// <param name="tag">Тег добавляемой структуры</param>
+            /// <returns>Добавленная структура типа STLV</returns>
+            public Structurs AddValue(UInt16 tag)
+            {
+                try
+                {
+
+                    if (Program.GetTypeTLV((Fw16.Model.TLVTag)tag) is Fw16.Model.TLVType.STLV)
+                    {
+                        value.Add(new STLV(tag, this));
+                    }
+                    else
+                    {
+                        value.Add(new TLV(tag, this));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Произошла непредвиденная ошибка при добавлении значения в структуру отчёта. \nException\n{ex.Message}");
+                }
+                return value.Last();
+            }
+
+            /// <summary>
+            /// Запись в файл тега длинны и вызов записи в файл для всех вложенных объектов
+            /// </summary>
+            /// <param name="writer">Поток записи</param>
+            public void WriteToStream(BinaryWriter writer)
+            {
+                try
+                {
+                    writer.Write(Tag);
+                    writer.Write(Len);
+                    foreach (var item in value)
+                    {
+                        if (item is TLV itemTlv)
+                        {
+                            itemTlv.WriteTostream(writer);
+                        }
+                        else
+                        {
+                            (item as STLV).WriteToStream(writer);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+        }
+    }
+
+
+
     /// <summary>
     /// Отчёт о считывнии данных из ФН
     /// </summary>

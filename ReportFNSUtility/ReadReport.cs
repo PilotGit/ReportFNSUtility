@@ -40,4 +40,17 @@ namespace ReportFNSUtility
             return 0;
         }
     }
+
+    class ReportReader
+    {
+        public ReportReader()
+        {
+
+        }
+
+        public bool GetNodes(UInt32 startNumberDoc,UInt32 endNumberDoc)
+        {
+            return false;
+        }
+    }
 }
