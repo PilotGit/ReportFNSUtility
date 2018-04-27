@@ -80,21 +80,21 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.T_page_report_Generation = new System.Windows.Forms.TabPage();
             this.T_page_headInfo = new System.Windows.Forms.TabPage();
-            this.TB_8_CheckSum = new System.Windows.Forms.TextBox();
+            this.TB_Hesh = new System.Windows.Forms.TextBox();
             this.L_8_CheckSum = new System.Windows.Forms.Label();
-            this.TB_7_NumberOfFiscalDOC = new System.Windows.Forms.TextBox();
+            this.TB_CountFiscalDoc = new System.Windows.Forms.TextBox();
             this.L_7_NumberOfFiscalDOC = new System.Windows.Forms.Label();
-            this.TB_6_NumberOfShifts = new System.Windows.Forms.TextBox();
+            this.TB_CountShift = new System.Windows.Forms.TextBox();
             this.L_6_NumberOfShifts = new System.Windows.Forms.Label();
-            this.TB_5_NumberFFD = new System.Windows.Forms.TextBox();
+            this.TB_VersionFFD = new System.Windows.Forms.TextBox();
             this.L_5_NumberFFD = new System.Windows.Forms.Label();
-            this.TB_4_NumberFN = new System.Windows.Forms.TextBox();
+            this.TB_NumberFS = new System.Windows.Forms.TextBox();
             this.L_4_NumberFN = new System.Windows.Forms.Label();
-            this.TB_3_RegNumber = new System.Windows.Forms.TextBox();
+            this.TB_NumberECR = new System.Windows.Forms.TextBox();
             this.L_3_RegNumber = new System.Windows.Forms.Label();
-            this.TB_2_UnloadingProgram = new System.Windows.Forms.TextBox();
+            this.TB_Program = new System.Windows.Forms.TextBox();
             this.L_2_UnloadingProgram = new System.Windows.Forms.Label();
-            this.TB_1_saveFile = new System.Windows.Forms.TextBox();
+            this.TB_Name = new System.Windows.Forms.TextBox();
             this.L_1_saveFile = new System.Windows.Forms.Label();
             this.GB_PreviewReport.SuspendLayout();
             this.tabControl2.SuspendLayout();
@@ -655,21 +655,21 @@
             // 
             // T_page_headInfo
             // 
-            this.T_page_headInfo.Controls.Add(this.TB_8_CheckSum);
+            this.T_page_headInfo.Controls.Add(this.TB_Hesh);
             this.T_page_headInfo.Controls.Add(this.L_8_CheckSum);
-            this.T_page_headInfo.Controls.Add(this.TB_7_NumberOfFiscalDOC);
+            this.T_page_headInfo.Controls.Add(this.TB_CountFiscalDoc);
             this.T_page_headInfo.Controls.Add(this.L_7_NumberOfFiscalDOC);
-            this.T_page_headInfo.Controls.Add(this.TB_6_NumberOfShifts);
+            this.T_page_headInfo.Controls.Add(this.TB_CountShift);
             this.T_page_headInfo.Controls.Add(this.L_6_NumberOfShifts);
-            this.T_page_headInfo.Controls.Add(this.TB_5_NumberFFD);
+            this.T_page_headInfo.Controls.Add(this.TB_VersionFFD);
             this.T_page_headInfo.Controls.Add(this.L_5_NumberFFD);
-            this.T_page_headInfo.Controls.Add(this.TB_4_NumberFN);
+            this.T_page_headInfo.Controls.Add(this.TB_NumberFS);
             this.T_page_headInfo.Controls.Add(this.L_4_NumberFN);
-            this.T_page_headInfo.Controls.Add(this.TB_3_RegNumber);
+            this.T_page_headInfo.Controls.Add(this.TB_NumberECR);
             this.T_page_headInfo.Controls.Add(this.L_3_RegNumber);
-            this.T_page_headInfo.Controls.Add(this.TB_2_UnloadingProgram);
+            this.T_page_headInfo.Controls.Add(this.TB_Program);
             this.T_page_headInfo.Controls.Add(this.L_2_UnloadingProgram);
-            this.T_page_headInfo.Controls.Add(this.TB_1_saveFile);
+            this.T_page_headInfo.Controls.Add(this.TB_Name);
             this.T_page_headInfo.Controls.Add(this.L_1_saveFile);
             this.T_page_headInfo.Location = new System.Drawing.Point(4, 22);
             this.T_page_headInfo.Name = "T_page_headInfo";
@@ -680,12 +680,12 @@
             // 
             // TB_8_CheckSum
             // 
-            this.TB_8_CheckSum.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_8_CheckSum.Location = new System.Drawing.Point(4, 302);
-            this.TB_8_CheckSum.Name = "TB_8_CheckSum";
-            this.TB_8_CheckSum.ReadOnly = true;
-            this.TB_8_CheckSum.Size = new System.Drawing.Size(240, 20);
-            this.TB_8_CheckSum.TabIndex = 15;
+            this.TB_Hesh.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_Hesh.Location = new System.Drawing.Point(4, 302);
+            this.TB_Hesh.Name = "TB_8_CheckSum";
+            this.TB_Hesh.ReadOnly = true;
+            this.TB_Hesh.Size = new System.Drawing.Size(240, 20);
+            this.TB_Hesh.TabIndex = 15;
             // 
             // L_8_CheckSum
             // 
@@ -698,12 +698,12 @@
             // 
             // TB_7_NumberOfFiscalDOC
             // 
-            this.TB_7_NumberOfFiscalDOC.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_7_NumberOfFiscalDOC.Location = new System.Drawing.Point(4, 262);
-            this.TB_7_NumberOfFiscalDOC.Name = "TB_7_NumberOfFiscalDOC";
-            this.TB_7_NumberOfFiscalDOC.ReadOnly = true;
-            this.TB_7_NumberOfFiscalDOC.Size = new System.Drawing.Size(240, 20);
-            this.TB_7_NumberOfFiscalDOC.TabIndex = 13;
+            this.TB_CountFiscalDoc.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_CountFiscalDoc.Location = new System.Drawing.Point(4, 262);
+            this.TB_CountFiscalDoc.Name = "TB_7_NumberOfFiscalDOC";
+            this.TB_CountFiscalDoc.ReadOnly = true;
+            this.TB_CountFiscalDoc.Size = new System.Drawing.Size(240, 20);
+            this.TB_CountFiscalDoc.TabIndex = 13;
             // 
             // L_7_NumberOfFiscalDOC
             // 
@@ -716,12 +716,12 @@
             // 
             // TB_6_NumberOfShifts
             // 
-            this.TB_6_NumberOfShifts.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_6_NumberOfShifts.Location = new System.Drawing.Point(4, 222);
-            this.TB_6_NumberOfShifts.Name = "TB_6_NumberOfShifts";
-            this.TB_6_NumberOfShifts.ReadOnly = true;
-            this.TB_6_NumberOfShifts.Size = new System.Drawing.Size(240, 20);
-            this.TB_6_NumberOfShifts.TabIndex = 11;
+            this.TB_CountShift.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_CountShift.Location = new System.Drawing.Point(4, 222);
+            this.TB_CountShift.Name = "TB_6_NumberOfShifts";
+            this.TB_CountShift.ReadOnly = true;
+            this.TB_CountShift.Size = new System.Drawing.Size(240, 20);
+            this.TB_CountShift.TabIndex = 11;
             // 
             // L_6_NumberOfShifts
             // 
@@ -734,12 +734,12 @@
             // 
             // TB_5_NumberFFD
             // 
-            this.TB_5_NumberFFD.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_5_NumberFFD.Location = new System.Drawing.Point(4, 181);
-            this.TB_5_NumberFFD.Name = "TB_5_NumberFFD";
-            this.TB_5_NumberFFD.ReadOnly = true;
-            this.TB_5_NumberFFD.Size = new System.Drawing.Size(240, 20);
-            this.TB_5_NumberFFD.TabIndex = 9;
+            this.TB_VersionFFD.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_VersionFFD.Location = new System.Drawing.Point(4, 181);
+            this.TB_VersionFFD.Name = "TB_5_NumberFFD";
+            this.TB_VersionFFD.ReadOnly = true;
+            this.TB_VersionFFD.Size = new System.Drawing.Size(240, 20);
+            this.TB_VersionFFD.TabIndex = 9;
             // 
             // L_5_NumberFFD
             // 
@@ -752,12 +752,12 @@
             // 
             // TB_4_NumberFN
             // 
-            this.TB_4_NumberFN.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_4_NumberFN.Location = new System.Drawing.Point(4, 141);
-            this.TB_4_NumberFN.Name = "TB_4_NumberFN";
-            this.TB_4_NumberFN.ReadOnly = true;
-            this.TB_4_NumberFN.Size = new System.Drawing.Size(240, 20);
-            this.TB_4_NumberFN.TabIndex = 7;
+            this.TB_NumberFS.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_NumberFS.Location = new System.Drawing.Point(4, 141);
+            this.TB_NumberFS.Name = "TB_4_NumberFN";
+            this.TB_NumberFS.ReadOnly = true;
+            this.TB_NumberFS.Size = new System.Drawing.Size(240, 20);
+            this.TB_NumberFS.TabIndex = 7;
             // 
             // L_4_NumberFN
             // 
@@ -770,12 +770,12 @@
             // 
             // TB_3_RegNumber
             // 
-            this.TB_3_RegNumber.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_3_RegNumber.Location = new System.Drawing.Point(4, 102);
-            this.TB_3_RegNumber.Name = "TB_3_RegNumber";
-            this.TB_3_RegNumber.ReadOnly = true;
-            this.TB_3_RegNumber.Size = new System.Drawing.Size(240, 20);
-            this.TB_3_RegNumber.TabIndex = 5;
+            this.TB_NumberECR.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_NumberECR.Location = new System.Drawing.Point(4, 102);
+            this.TB_NumberECR.Name = "TB_3_RegNumber";
+            this.TB_NumberECR.ReadOnly = true;
+            this.TB_NumberECR.Size = new System.Drawing.Size(240, 20);
+            this.TB_NumberECR.TabIndex = 5;
             // 
             // L_3_RegNumber
             // 
@@ -788,12 +788,12 @@
             // 
             // TB_2_UnloadingProgram
             // 
-            this.TB_2_UnloadingProgram.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_2_UnloadingProgram.Location = new System.Drawing.Point(4, 63);
-            this.TB_2_UnloadingProgram.Name = "TB_2_UnloadingProgram";
-            this.TB_2_UnloadingProgram.ReadOnly = true;
-            this.TB_2_UnloadingProgram.Size = new System.Drawing.Size(240, 20);
-            this.TB_2_UnloadingProgram.TabIndex = 3;
+            this.TB_Program.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_Program.Location = new System.Drawing.Point(4, 63);
+            this.TB_Program.Name = "TB_2_UnloadingProgram";
+            this.TB_Program.ReadOnly = true;
+            this.TB_Program.Size = new System.Drawing.Size(240, 20);
+            this.TB_Program.TabIndex = 3;
             // 
             // L_2_UnloadingProgram
             // 
@@ -806,12 +806,12 @@
             // 
             // TB_1_saveFile
             // 
-            this.TB_1_saveFile.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_1_saveFile.Location = new System.Drawing.Point(4, 24);
-            this.TB_1_saveFile.Name = "TB_1_saveFile";
-            this.TB_1_saveFile.ReadOnly = true;
-            this.TB_1_saveFile.Size = new System.Drawing.Size(240, 20);
-            this.TB_1_saveFile.TabIndex = 1;
+            this.TB_Name.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_Name.Location = new System.Drawing.Point(4, 24);
+            this.TB_Name.Name = "TB_1_saveFile";
+            this.TB_Name.ReadOnly = true;
+            this.TB_Name.Size = new System.Drawing.Size(240, 20);
+            this.TB_Name.TabIndex = 1;
             // 
             // L_1_saveFile
             // 
@@ -881,14 +881,14 @@
         private System.Windows.Forms.Label L_3_RegNumber;
         private System.Windows.Forms.Label L_2_UnloadingProgram;
         public System.Windows.Forms.TabPage T_page_headInfo;
-        public System.Windows.Forms.TextBox TB_1_saveFile;
-        public System.Windows.Forms.TextBox TB_8_CheckSum;
-        public System.Windows.Forms.TextBox TB_7_NumberOfFiscalDOC;
-        public System.Windows.Forms.TextBox TB_6_NumberOfShifts;
-        public System.Windows.Forms.TextBox TB_5_NumberFFD;
-        public System.Windows.Forms.TextBox TB_4_NumberFN;
-        public System.Windows.Forms.TextBox TB_3_RegNumber;
-        public System.Windows.Forms.TextBox TB_2_UnloadingProgram;
+        public System.Windows.Forms.TextBox TB_Name;
+        public System.Windows.Forms.TextBox TB_Hesh;
+        public System.Windows.Forms.TextBox TB_CountFiscalDoc;
+        public System.Windows.Forms.TextBox TB_CountShift;
+        public System.Windows.Forms.TextBox TB_VersionFFD;
+        public System.Windows.Forms.TextBox TB_NumberFS;
+        public System.Windows.Forms.TextBox TB_NumberECR;
+        public System.Windows.Forms.TextBox TB_Program;
         public System.Windows.Forms.TextBox TB_Patch;
         private System.Windows.Forms.TabControl tabControl2;
         private System.Windows.Forms.TabPage tabPage1;

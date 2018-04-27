@@ -16,8 +16,8 @@ namespace ReportFNSUtility
         private ReportHeader _reportHeader;
         private TreeOfTags _treeOfTags;
 
-        internal ReportHeader reportHeader { get => _reportHeader;}
-        internal TreeOfTags treeOfTags { get => _treeOfTags;  }
+        internal ReportHeader reportHeader { get => _reportHeader; }
+        internal TreeOfTags treeOfTags { get => _treeOfTags; }
 
         public ReportFNS()
         {
@@ -44,19 +44,19 @@ namespace ReportFNSUtility
                 }
             }
 
-            private string programm;
-            public string Programm
+            private string program;
+            public string Program
             {
-                get => programm;
+                get => program;
                 set
                 {
                     if (value?.Length >= 256)
                     {
-                        this.programm = value.Substring(0, 256);
+                        this.program = value.Substring(0, 256);
                     }
                     else
                     {
-                        this.programm = string.Format($"{value,-256}");
+                        this.program = string.Format($"{value,-256}");
                     }
                 }
             }
@@ -125,7 +125,7 @@ namespace ReportFNSUtility
             public ReportHeader(string name = null, string programm = null, string numberKKT = null, string numberFS = null, byte versionFFD = 0, uint countShift = 0, uint fiscalDoc = 0)
             {
                 Name = name;
-                Programm = programm;
+                Program = programm;
                 NumberECR = numberKKT;
                 NumberFS = numberFS;
                 VersionFFD = versionFFD;
@@ -144,7 +144,7 @@ namespace ReportFNSUtility
                     //Считывание названия программы
                     byte[] programm = new byte[256];
                     stream.Read(programm, 0, 256);
-                    Programm = encoding.GetString(programm);
+                    Program = encoding.GetString(programm);
                     //Считывание номера ККТ
                     byte[] numberECR = new byte[20];
                     stream.Read(numberECR, 0, 20);
@@ -160,7 +160,7 @@ namespace ReportFNSUtility
                     this.hash = stream.ReadUInt32();
                     return true;
                 }
-                catch 
+                catch
                 {
                     return false;
                 }
@@ -170,7 +170,7 @@ namespace ReportFNSUtility
                 try
                 {
                     stream.Write(Encoding.GetEncoding(866).GetBytes(Name));
-                    stream.Write(Encoding.GetEncoding(866).GetBytes(Programm));
+                    stream.Write(Encoding.GetEncoding(866).GetBytes(Program));
                     stream.Write(Encoding.GetEncoding(866).GetBytes(NumberECR));
                     stream.Write(Encoding.GetEncoding(866).GetBytes(NumberFS));
                     stream.Write(VersionFFD);
@@ -215,7 +215,8 @@ namespace ReportFNSUtility
 
         public class TreeOfTags
         {
-            BinaryReader Stream;
+            MemoryStream memoryStream;
+            BinaryReader streamReader;
 
             PosAndLen[] PositionNodeOfStream;
 
@@ -244,18 +245,119 @@ namespace ReportFNSUtility
             public uint CorrectionOutcomeCount { get => correctionOutcomeCount; set => correctionOutcomeCount = value; }
             UInt64 correctionOutcomeSum;
             public ulong CorrectionOutcomeSum { get => correctionOutcomeSum; set => correctionOutcomeSum = value; }
-            public uint CountDocs { get => (uint)PositionNodeOfStream.Length;  }
+            public uint CountDocs { get => (uint)PositionNodeOfStream.Length; }
 
             public TreeOfTags()
             {
-
             }
 
             private bool Reset() { return false; }
 
             public bool Update(BinaryReader stream)
             {
+                //подготовка переменных
+                streamReader?.BaseStream?.Close();
+                memoryStream?.Close();
+                memoryStream = new MemoryStream();
+                //копирование потоков, создание потока чтения
+                stream.BaseStream.CopyTo(memoryStream);
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                streamReader = new BinaryReader(memoryStream);
+                //формирование массива позиций и длинн документов в потоке
+                List<PosAndLen> _tmpList = new List<PosAndLen>();
+                while (streamReader.BaseStream.Position != streamReader.BaseStream.Length)
+                {
+                    streamReader.ReadUInt16();
+                    UInt16 len = streamReader.ReadUInt16();
+                    _tmpList.Add(new PosAndLen((UInt64)(memoryStream.Position - 4), len));
+                    streamReader.BaseStream.Seek(len, SeekOrigin.Current);
+                }
+                PositionNodeOfStream = _tmpList.ToArray();
+                memoryStream.Seek(0, SeekOrigin.Begin);
+
+                ComputeProperties();
                 return false;
+            }
+
+            private void ComputeProperties()
+            {
+                for (int i = 0; i < PositionNodeOfStream.Length; i++)
+                {
+                    Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> _tmp = new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(streamReader.ReadBytes(PositionNodeOfStream[i].Length + 4));
+                    switch ((_tmp.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)[0].Source.Tag)
+                    {
+                        case Fw16.Model.TLVTag.RptFDStandalone2:
+                            break;
+                        case Fw16.Model.TLVTag.RptFDStandalone3:
+                            break;
+                        case Fw16.Model.TLVTag.RptFD2:
+                            break;
+                        case Fw16.Model.TLVTag.RptFD3:
+                            break;
+                    }
+                    if ((_tmp.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)[0].Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> content650xx)
+                    {
+                        foreach (var tagIn650xx in content650xx)
+                        {
+                            switch (tagIn650xx.Source.Tag)
+                            {/* Я здесь*/
+                                case Fw16.Model.TLVTag.RptFDStandalone2:
+                                    break;
+                                case Fw16.Model.TLVTag.RptFD2:
+                                    break;
+                                case Fw16.Model.TLVTag.RptFDStandalone3:
+                                    break;
+                                case Fw16.Model.TLVTag.RptFD3:
+                                    break;
+                                case Fw16.Model.TLVTag.DocReg:
+                                    break;
+                                case Fw16.Model.TLVTag.DocRegChange:
+                                    break;
+                                case Fw16.Model.TLVTag.DocOpenShift:
+                                    break;
+                                case Fw16.Model.TLVTag.DocReport:
+                                    break;
+                                case Fw16.Model.TLVTag.DocReceipt:
+                                    break;
+                                case Fw16.Model.TLVTag.DocReceiptCorrection:
+                                    break;
+                                case Fw16.Model.TLVTag.DocForm:
+                                    break;
+                                case Fw16.Model.TLVTag.DocFormCorrection:
+                                    break;
+                                case Fw16.Model.TLVTag.DocCloseShift:
+                                    break;
+                                case Fw16.Model.TLVTag.DocRegClose:
+                                    break;
+                                case Fw16.Model.TLVTag.DocAck:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocReg:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocRegChange:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocOpenShift:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocReport:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocReceipt:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocReceiptCorrection:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocForm:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocFormCorrection:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocCloseShift:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocRegClose:
+                                    break;
+                                case Fw16.Model.TLVTag.RptDocAck:
+                                    break;
+                                
+                            }
+                        }
+                    }
+                }
             }
 
             public IEnumerable<TreeNode> GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
@@ -707,14 +809,14 @@ namespace ReportFNSUtility
             Form1.form.Invoke((MethodInvoker)delegate
             {
                 Form1.form.tabControl1.SelectTab(Form1.form.T_page_headInfo);
-                Form1.form.TB_1_saveFile.Text = this.name;
-                Form1.form.TB_2_UnloadingProgram.Text = this.programm;
-                Form1.form.TB_3_RegNumber.Text = this.numberKKT;
-                Form1.form.TB_4_NumberFN.Text = this.numberFS;
-                Form1.form.TB_5_NumberFFD.Text = this.versionFFD.ToString();
-                Form1.form.TB_6_NumberOfShifts.Text = this.countShift.ToString();
-                Form1.form.TB_7_NumberOfFiscalDOC.Text = this.countfiscalDoc.ToString();
-                Form1.form.TB_8_CheckSum.Text = this.hash.ToString();
+                Form1.form.TB_Name.Text = this.name;
+                Form1.form.TB_Program.Text = this.programm;
+                Form1.form.TB_NumberECR.Text = this.numberKKT;
+                Form1.form.TB_NumberFS.Text = this.numberFS;
+                Form1.form.TB_VersionFFD.Text = this.versionFFD.ToString();
+                Form1.form.TB_CountShift.Text = this.countShift.ToString();
+                Form1.form.TB_CountFiscalDoc.Text = this.countfiscalDoc.ToString();
+                Form1.form.TB_Hesh.Text = this.hash.ToString();
                 //Form1.form.treeView1.Nodes.Add("Header");
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_1_saveFile.Text);
                 //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_2_UnloadingProgram.Text = this.programm);

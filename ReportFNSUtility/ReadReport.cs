@@ -51,13 +51,20 @@ namespace ReportFNSUtility
         public void UpdateData(string path)
         {
             FileStream _fs = new FileStream(path, FileMode.Open);
-            if (!Program.reportFNS.reportHeader.UpdateFromStream(new BinaryReader(_fs)))
+            try
             {
-                throw new Exception("Файл повреждён. Не удалось считать заголовок.");
-            }
-            if (!Program.reportFNS.treeOfTags.Update(new BinaryReader(_fs)))
+                if (!Program.reportFNS.reportHeader.UpdateFromStream(new BinaryReader(_fs)))
+                {
+                    throw new Exception("Файл повреждён. Не удалось считать заголовок.");
+                }
+                if (!Program.reportFNS.treeOfTags.Update(new BinaryReader(_fs)))
+                {
+                    throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
+                }
+            } catch (Exception ex)
             {
-                throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
+                _fs.Close();
+                throw ex;
             }
         }
 

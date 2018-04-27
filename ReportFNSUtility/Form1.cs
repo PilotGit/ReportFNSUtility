@@ -78,6 +78,15 @@ namespace ReportFNSUtility
             TB_CorrectionIncomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionIncomeSum)));
             TB_CorrectionOutcomeCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionOutcomeCount)));
             TB_CorrectionOutcomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionOutcomeSum)));
+
+            TB_Name.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Name)));
+            TB_Program.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Program)));
+            TB_NumberECR.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.NumberECR)));
+            TB_NumberFS.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.NumberFS)));
+            TB_VersionFFD.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.VersionFFD)));
+            TB_CountShift.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.CountShift)));
+            TB_CountFiscalDoc.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.CountFiscalDoc)));
+            TB_Hesh.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Hash)));
         }
 
         ////////////////////////////////////////////////////////////////
