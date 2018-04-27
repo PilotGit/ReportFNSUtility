@@ -13,9 +13,16 @@ namespace ReportFNSUtility
 {
     class ReportFNS
     {
+        private ReportHeader _reportHeader;
+        private TreeOfTags _treeOfTags;
+
+        internal ReportHeader reportHeader { get => _reportHeader;}
+        internal TreeOfTags treeOfTags { get => _treeOfTags;  }
+
         public ReportFNS()
         {
-
+            _reportHeader = new ReportHeader();
+            _treeOfTags = new TreeOfTags();
         }
 
         public class ReportHeader
@@ -26,7 +33,7 @@ namespace ReportFNSUtility
                 get => name;
                 set
                 {
-                    if (value.Length >= 53)
+                    if (value?.Length >= 53)
                     {
                         this.name = value.Substring(0, 53);
                     }
@@ -43,7 +50,7 @@ namespace ReportFNSUtility
                 get => programm;
                 set
                 {
-                    if (value.Length >= 256)
+                    if (value?.Length >= 256)
                     {
                         this.programm = value.Substring(0, 256);
                     }
@@ -60,7 +67,7 @@ namespace ReportFNSUtility
                 get => numberECR;
                 set
                 {
-                    if (value.Length >= 20)
+                    if (value?.Length >= 20)
                     {
                         this.numberECR = value.Substring(0, 20);
                     }
@@ -77,7 +84,7 @@ namespace ReportFNSUtility
                 get => numberFS;
                 set
                 {
-                    if (value.Length >= 16)
+                    if (value?.Length >= 16)
                     {
                         this.numberFS = value.Substring(0, 16);
                     }
@@ -208,8 +215,36 @@ namespace ReportFNSUtility
 
         public class TreeOfTags
         {
+            BinaryReader Stream;
+
             PosAndLen[] PositionNodeOfStream;
 
+            UInt32 incomeCount;
+            public uint IncomeCount { get => incomeCount; set => incomeCount = value; }
+
+            UInt64 incomeSum;
+            public ulong IncomeSum { get => incomeSum; set => incomeSum = value; }
+            UInt32 incomeBackCount;
+            public uint IncomeBackCount { get => incomeBackCount; set => incomeBackCount = value; }
+            UInt64 incomeBackSum;
+            public ulong IncomeBackSum { get => incomeBackSum; set => incomeBackSum = value; }
+            UInt32 outcomeCount;
+            public uint OutcomeCount { get => outcomeCount; set => outcomeCount = value; }
+            UInt64 outcomeSum;
+            public ulong OutcomeSum { get => outcomeSum; set => outcomeSum = value; }
+            UInt32 outcomeBackCount;
+            public uint OutcomeBackCount { get => outcomeBackCount; set => outcomeBackCount = value; }
+            UInt64 outcomeBackSum;
+            public ulong OutcomeBackSum { get => outcomeBackSum; set => outcomeBackSum = value; }
+            UInt32 correctionIncomeCount;
+            public uint CorrectionIncomeCount { get => correctionIncomeCount; set => correctionIncomeCount = value; }
+            UInt64 correctionIncomeSum;
+            public ulong CorrectionIncomeSum { get => correctionIncomeSum; set => correctionIncomeSum = value; }
+            UInt32 correctionOutcomeCount;
+            public uint CorrectionOutcomeCount { get => correctionOutcomeCount; set => correctionOutcomeCount = value; }
+            UInt64 correctionOutcomeSum;
+            public ulong CorrectionOutcomeSum { get => correctionOutcomeSum; set => correctionOutcomeSum = value; }
+            public uint CountDocs { get => (uint)PositionNodeOfStream.Length;  }
 
             public TreeOfTags()
             {
@@ -223,9 +258,9 @@ namespace ReportFNSUtility
                 return false;
             }
 
-            public bool GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
+            public IEnumerable<TreeNode> GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
             {
-                return false;
+                yield return null;
             }
 
             class PosAndLen

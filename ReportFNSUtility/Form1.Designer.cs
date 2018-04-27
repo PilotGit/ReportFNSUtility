@@ -37,8 +37,41 @@
             this.L_Port = new System.Windows.Forms.Label();
             this.CB_Port = new System.Windows.Forms.ComboBox();
             this.GB_PreviewReport = new System.Windows.Forms.GroupBox();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.TB_OutcomeBackCount = new System.Windows.Forms.TextBox();
+            this.TB_OutcomeCount = new System.Windows.Forms.TextBox();
+            this.TB_IncomeBackCount = new System.Windows.Forms.TextBox();
+            this.TB_IncomeSum = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
+            this.TB_OutcomeBackSum = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.TB_OutcomeSum = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.TB_IncomeBackSum = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.TB_IncomeCount = new System.Windows.Forms.TextBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.TB_CorrectionOutcomeSum = new System.Windows.Forms.TextBox();
+            this.TB_CorrectionIncomeCount = new System.Windows.Forms.TextBox();
+            this.TB_CorrectionIncomeSum = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.TB_CorrectionOutcomeCount = new System.Windows.Forms.TextBox();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.B_ShowNodes = new System.Windows.Forms.Button();
+            this.NUD_EndNumberDoc = new System.Windows.Forms.NumericUpDown();
+            this.NUD_StartNumberDoc = new System.Windows.Forms.NumericUpDown();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
             this.treeView1 = new System.Windows.Forms.TreeView();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.B_UpdateStop = new System.Windows.Forms.Button();
             this.B_Browse = new System.Windows.Forms.Button();
             this.TB_Patch = new System.Windows.Forms.TextBox();
@@ -63,51 +96,18 @@
             this.L_2_UnloadingProgram = new System.Windows.Forms.Label();
             this.TB_1_saveFile = new System.Windows.Forms.TextBox();
             this.L_1_saveFile = new System.Windows.Forms.Label();
-            this.tabControl2 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
-            this.textBox5 = new System.Windows.Forms.TextBox();
-            this.textBox6 = new System.Windows.Forms.TextBox();
-            this.textBox7 = new System.Windows.Forms.TextBox();
-            this.textBox8 = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.textBox9 = new System.Windows.Forms.TextBox();
-            this.textBox10 = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox11 = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.textBox12 = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label11 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
-            this.button1 = new System.Windows.Forms.Button();
             this.GB_PreviewReport.SuspendLayout();
+            this.tabControl2.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NUD_EndNumberDoc)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NUD_StartNumberDoc)).BeginInit();
             this.tabControl1.SuspendLayout();
             this.T_page_report_Generation.SuspendLayout();
             this.T_page_headInfo.SuspendLayout();
-            this.tabControl2.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.SuspendLayout();
             // 
             // L_fileWay
@@ -205,14 +205,368 @@
             this.GB_PreviewReport.TabStop = false;
             this.GB_PreviewReport.Text = "Просмотр отчёта";
             // 
-            // progressBar1
+            // tabControl2
             // 
-            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            this.tabControl2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar1.Location = new System.Drawing.Point(6, 453);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(846, 21);
-            this.progressBar1.TabIndex = 2;
+            this.tabControl2.Controls.Add(this.tabPage2);
+            this.tabControl2.Controls.Add(this.tabPage1);
+            this.tabControl2.Location = new System.Drawing.Point(6, 46);
+            this.tabControl2.Name = "tabControl2";
+            this.tabControl2.SelectedIndex = 0;
+            this.tabControl2.Size = new System.Drawing.Size(846, 401);
+            this.tabControl2.TabIndex = 5;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.tableLayoutPanel1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(838, 375);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Общая информация";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox2, 1, 0);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 6);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(826, 363);
+            this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Controls.Add(this.TB_OutcomeBackCount);
+            this.groupBox1.Controls.Add(this.TB_OutcomeCount);
+            this.groupBox1.Controls.Add(this.TB_IncomeBackCount);
+            this.groupBox1.Controls.Add(this.TB_IncomeSum);
+            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.TB_OutcomeBackSum);
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.TB_OutcomeSum);
+            this.groupBox1.Controls.Add(this.label2);
+            this.groupBox1.Controls.Add(this.TB_IncomeBackSum);
+            this.groupBox1.Controls.Add(this.label1);
+            this.groupBox1.Controls.Add(this.TB_IncomeCount);
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(407, 357);
+            this.groupBox1.TabIndex = 0;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Чеки";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(271, 30);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(41, 13);
+            this.label6.TabIndex = 13;
+            this.label6.Text = "Сумма";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(135, 30);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(66, 13);
+            this.label5.TabIndex = 12;
+            this.label5.Text = "Количество";
+            // 
+            // TB_OutcomeBackCount
+            // 
+            this.TB_OutcomeBackCount.Location = new System.Drawing.Point(118, 129);
+            this.TB_OutcomeBackCount.Name = "TB_OutcomeBackCount";
+            this.TB_OutcomeBackCount.ReadOnly = true;
+            this.TB_OutcomeBackCount.Size = new System.Drawing.Size(100, 20);
+            this.TB_OutcomeBackCount.TabIndex = 11;
+            // 
+            // TB_OutcomeCount
+            // 
+            this.TB_OutcomeCount.Location = new System.Drawing.Point(118, 103);
+            this.TB_OutcomeCount.Name = "TB_OutcomeCount";
+            this.TB_OutcomeCount.ReadOnly = true;
+            this.TB_OutcomeCount.Size = new System.Drawing.Size(100, 20);
+            this.TB_OutcomeCount.TabIndex = 10;
+            // 
+            // TB_IncomeBackCount
+            // 
+            this.TB_IncomeBackCount.Location = new System.Drawing.Point(118, 77);
+            this.TB_IncomeBackCount.Name = "TB_IncomeBackCount";
+            this.TB_IncomeBackCount.ReadOnly = true;
+            this.TB_IncomeBackCount.Size = new System.Drawing.Size(100, 20);
+            this.TB_IncomeBackCount.TabIndex = 9;
+            // 
+            // TB_IncomeSum
+            // 
+            this.TB_IncomeSum.Location = new System.Drawing.Point(118, 51);
+            this.TB_IncomeSum.Name = "TB_IncomeSum";
+            this.TB_IncomeSum.ReadOnly = true;
+            this.TB_IncomeSum.Size = new System.Drawing.Size(100, 20);
+            this.TB_IncomeSum.TabIndex = 8;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(16, 132);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(93, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "Возврат расхода";
+            // 
+            // TB_OutcomeBackSum
+            // 
+            this.TB_OutcomeBackSum.Location = new System.Drawing.Point(241, 129);
+            this.TB_OutcomeBackSum.Name = "TB_OutcomeBackSum";
+            this.TB_OutcomeBackSum.ReadOnly = true;
+            this.TB_OutcomeBackSum.Size = new System.Drawing.Size(100, 20);
+            this.TB_OutcomeBackSum.TabIndex = 6;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(16, 106);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(43, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Расход";
+            // 
+            // TB_OutcomeSum
+            // 
+            this.TB_OutcomeSum.Location = new System.Drawing.Point(241, 103);
+            this.TB_OutcomeSum.Name = "TB_OutcomeSum";
+            this.TB_OutcomeSum.ReadOnly = true;
+            this.TB_OutcomeSum.Size = new System.Drawing.Size(100, 20);
+            this.TB_OutcomeSum.TabIndex = 4;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(16, 80);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(93, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "Возврат прихода";
+            // 
+            // TB_IncomeBackSum
+            // 
+            this.TB_IncomeBackSum.Location = new System.Drawing.Point(241, 77);
+            this.TB_IncomeBackSum.Name = "TB_IncomeBackSum";
+            this.TB_IncomeBackSum.ReadOnly = true;
+            this.TB_IncomeBackSum.Size = new System.Drawing.Size(100, 20);
+            this.TB_IncomeBackSum.TabIndex = 2;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(16, 54);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(44, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Приход";
+            // 
+            // TB_IncomeCount
+            // 
+            this.TB_IncomeCount.Location = new System.Drawing.Point(241, 51);
+            this.TB_IncomeCount.Name = "TB_IncomeCount";
+            this.TB_IncomeCount.ReadOnly = true;
+            this.TB_IncomeCount.Size = new System.Drawing.Size(100, 20);
+            this.TB_IncomeCount.TabIndex = 0;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.label9);
+            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Controls.Add(this.TB_CorrectionOutcomeSum);
+            this.groupBox2.Controls.Add(this.TB_CorrectionIncomeCount);
+            this.groupBox2.Controls.Add(this.TB_CorrectionIncomeSum);
+            this.groupBox2.Controls.Add(this.label7);
+            this.groupBox2.Controls.Add(this.label8);
+            this.groupBox2.Controls.Add(this.TB_CorrectionOutcomeCount);
+            this.groupBox2.Location = new System.Drawing.Point(416, 3);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(407, 357);
+            this.groupBox2.TabIndex = 1;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Чеки коррекции";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(267, 23);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(41, 13);
+            this.label9.TabIndex = 15;
+            this.label9.Text = "Сумма";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(135, 23);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(66, 13);
+            this.label10.TabIndex = 14;
+            this.label10.Text = "Количество";
+            // 
+            // TB_CorrectionOutcomeSum
+            // 
+            this.TB_CorrectionOutcomeSum.Location = new System.Drawing.Point(237, 80);
+            this.TB_CorrectionOutcomeSum.Name = "TB_CorrectionOutcomeSum";
+            this.TB_CorrectionOutcomeSum.ReadOnly = true;
+            this.TB_CorrectionOutcomeSum.Size = new System.Drawing.Size(100, 20);
+            this.TB_CorrectionOutcomeSum.TabIndex = 19;
+            // 
+            // TB_CorrectionIncomeCount
+            // 
+            this.TB_CorrectionIncomeCount.Location = new System.Drawing.Point(118, 47);
+            this.TB_CorrectionIncomeCount.Name = "TB_CorrectionIncomeCount";
+            this.TB_CorrectionIncomeCount.ReadOnly = true;
+            this.TB_CorrectionIncomeCount.Size = new System.Drawing.Size(100, 20);
+            this.TB_CorrectionIncomeCount.TabIndex = 18;
+            // 
+            // TB_CorrectionIncomeSum
+            // 
+            this.TB_CorrectionIncomeSum.Location = new System.Drawing.Point(237, 47);
+            this.TB_CorrectionIncomeSum.Name = "TB_CorrectionIncomeSum";
+            this.TB_CorrectionIncomeSum.ReadOnly = true;
+            this.TB_CorrectionIncomeSum.Size = new System.Drawing.Size(100, 20);
+            this.TB_CorrectionIncomeSum.TabIndex = 14;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(34, 83);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(43, 13);
+            this.label7.TabIndex = 17;
+            this.label7.Text = "Расход";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(34, 54);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(44, 13);
+            this.label8.TabIndex = 15;
+            this.label8.Text = "Приход";
+            // 
+            // TB_CorrectionOutcomeCount
+            // 
+            this.TB_CorrectionOutcomeCount.Location = new System.Drawing.Point(118, 80);
+            this.TB_CorrectionOutcomeCount.Name = "TB_CorrectionOutcomeCount";
+            this.TB_CorrectionOutcomeCount.ReadOnly = true;
+            this.TB_CorrectionOutcomeCount.Size = new System.Drawing.Size(100, 20);
+            this.TB_CorrectionOutcomeCount.TabIndex = 16;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.B_ShowNodes);
+            this.tabPage1.Controls.Add(this.NUD_EndNumberDoc);
+            this.tabPage1.Controls.Add(this.NUD_StartNumberDoc);
+            this.tabPage1.Controls.Add(this.label12);
+            this.tabPage1.Controls.Add(this.label11);
+            this.tabPage1.Controls.Add(this.treeView1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(838, 375);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Дерево";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // B_ShowNodes
+            // 
+            this.B_ShowNodes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.B_ShowNodes.Enabled = false;
+            this.B_ShowNodes.Location = new System.Drawing.Point(289, 8);
+            this.B_ShowNodes.Name = "B_ShowNodes";
+            this.B_ShowNodes.Size = new System.Drawing.Size(75, 23);
+            this.B_ShowNodes.TabIndex = 6;
+            this.B_ShowNodes.Text = "Отобразить";
+            this.B_ShowNodes.UseVisualStyleBackColor = true;
+            this.B_ShowNodes.Click += new System.EventHandler(this.B_ShowNodes_Click);
+            // 
+            // NUD_EndNumberDoc
+            // 
+            this.NUD_EndNumberDoc.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.NUD_EndNumberDoc.Location = new System.Drawing.Point(165, 11);
+            this.NUD_EndNumberDoc.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.NUD_EndNumberDoc.Name = "NUD_EndNumberDoc";
+            this.NUD_EndNumberDoc.Size = new System.Drawing.Size(100, 20);
+            this.NUD_EndNumberDoc.TabIndex = 9;
+            this.NUD_EndNumberDoc.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // NUD_StartNumberDoc
+            // 
+            this.NUD_StartNumberDoc.Increment = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.NUD_StartNumberDoc.Location = new System.Drawing.Point(32, 11);
+            this.NUD_StartNumberDoc.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.NUD_StartNumberDoc.Name = "NUD_StartNumberDoc";
+            this.NUD_StartNumberDoc.Size = new System.Drawing.Size(100, 20);
+            this.NUD_StartNumberDoc.TabIndex = 8;
+            this.NUD_StartNumberDoc.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(138, 13);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(21, 13);
+            this.label12.TabIndex = 7;
+            this.label12.Text = "По";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(12, 13);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(14, 13);
+            this.label11.TabIndex = 6;
+            this.label11.Text = "С";
             // 
             // treeView1
             // 
@@ -224,6 +578,15 @@
             this.treeView1.Size = new System.Drawing.Size(803, 320);
             this.treeView1.Sorted = true;
             this.treeView1.TabIndex = 4;
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.progressBar1.Location = new System.Drawing.Point(6, 453);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(846, 21);
+            this.progressBar1.TabIndex = 2;
             // 
             // B_UpdateStop
             // 
@@ -311,13 +674,12 @@
             this.T_page_headInfo.Location = new System.Drawing.Point(4, 22);
             this.T_page_headInfo.Name = "T_page_headInfo";
             this.T_page_headInfo.Padding = new System.Windows.Forms.Padding(3);
-            this.T_page_headInfo.Size = new System.Drawing.Size(247, 415);
+            this.T_page_headInfo.Size = new System.Drawing.Size(247, 454);
             this.T_page_headInfo.TabIndex = 1;
             this.T_page_headInfo.Text = "Отчет о считывании";
             // 
             // TB_8_CheckSum
             // 
-            this.TB_8_CheckSum.BackColor = System.Drawing.Color.LightGray;
             this.TB_8_CheckSum.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_8_CheckSum.Location = new System.Drawing.Point(4, 302);
             this.TB_8_CheckSum.Name = "TB_8_CheckSum";
@@ -336,7 +698,6 @@
             // 
             // TB_7_NumberOfFiscalDOC
             // 
-            this.TB_7_NumberOfFiscalDOC.BackColor = System.Drawing.Color.LightGray;
             this.TB_7_NumberOfFiscalDOC.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_7_NumberOfFiscalDOC.Location = new System.Drawing.Point(4, 262);
             this.TB_7_NumberOfFiscalDOC.Name = "TB_7_NumberOfFiscalDOC";
@@ -355,7 +716,6 @@
             // 
             // TB_6_NumberOfShifts
             // 
-            this.TB_6_NumberOfShifts.BackColor = System.Drawing.Color.LightGray;
             this.TB_6_NumberOfShifts.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_6_NumberOfShifts.Location = new System.Drawing.Point(4, 222);
             this.TB_6_NumberOfShifts.Name = "TB_6_NumberOfShifts";
@@ -374,7 +734,6 @@
             // 
             // TB_5_NumberFFD
             // 
-            this.TB_5_NumberFFD.BackColor = System.Drawing.Color.LightGray;
             this.TB_5_NumberFFD.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_5_NumberFFD.Location = new System.Drawing.Point(4, 181);
             this.TB_5_NumberFFD.Name = "TB_5_NumberFFD";
@@ -393,7 +752,6 @@
             // 
             // TB_4_NumberFN
             // 
-            this.TB_4_NumberFN.BackColor = System.Drawing.Color.LightGray;
             this.TB_4_NumberFN.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_4_NumberFN.Location = new System.Drawing.Point(4, 141);
             this.TB_4_NumberFN.Name = "TB_4_NumberFN";
@@ -412,7 +770,6 @@
             // 
             // TB_3_RegNumber
             // 
-            this.TB_3_RegNumber.BackColor = System.Drawing.Color.LightGray;
             this.TB_3_RegNumber.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_3_RegNumber.Location = new System.Drawing.Point(4, 102);
             this.TB_3_RegNumber.Name = "TB_3_RegNumber";
@@ -431,7 +788,6 @@
             // 
             // TB_2_UnloadingProgram
             // 
-            this.TB_2_UnloadingProgram.BackColor = System.Drawing.Color.LightGray;
             this.TB_2_UnloadingProgram.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_2_UnloadingProgram.Location = new System.Drawing.Point(4, 63);
             this.TB_2_UnloadingProgram.Name = "TB_2_UnloadingProgram";
@@ -450,7 +806,6 @@
             // 
             // TB_1_saveFile
             // 
-            this.TB_1_saveFile.BackColor = System.Drawing.Color.LightGray;
             this.TB_1_saveFile.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_1_saveFile.Location = new System.Drawing.Point(4, 24);
             this.TB_1_saveFile.Name = "TB_1_saveFile";
@@ -467,367 +822,6 @@
             this.L_1_saveFile.TabIndex = 0;
             this.L_1_saveFile.Text = "Путь сохранения файла";
             // 
-            // tabControl2
-            // 
-            this.tabControl2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl2.Controls.Add(this.tabPage2);
-            this.tabControl2.Controls.Add(this.tabPage1);
-            this.tabControl2.Location = new System.Drawing.Point(6, 46);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(846, 401);
-            this.tabControl2.TabIndex = 5;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Controls.Add(this.button1);
-            this.tabPage1.Controls.Add(this.numericUpDown2);
-            this.tabPage1.Controls.Add(this.numericUpDown1);
-            this.tabPage1.Controls.Add(this.label12);
-            this.tabPage1.Controls.Add(this.label11);
-            this.tabPage1.Controls.Add(this.treeView1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(838, 375);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Дерево";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.tableLayoutPanel1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(838, 375);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Общая информация";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.textBox5);
-            this.groupBox1.Controls.Add(this.textBox6);
-            this.groupBox1.Controls.Add(this.textBox7);
-            this.groupBox1.Controls.Add(this.textBox8);
-            this.groupBox1.Controls.Add(this.label4);
-            this.groupBox1.Controls.Add(this.textBox4);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.textBox3);
-            this.groupBox1.Controls.Add(this.label2);
-            this.groupBox1.Controls.Add(this.textBox2);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Controls.Add(this.textBox1);
-            this.groupBox1.Location = new System.Drawing.Point(3, 3);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(407, 357);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Чеки";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox2.Controls.Add(this.label9);
-            this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Controls.Add(this.textBox9);
-            this.groupBox2.Controls.Add(this.textBox10);
-            this.groupBox2.Controls.Add(this.textBox12);
-            this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.label8);
-            this.groupBox2.Controls.Add(this.textBox11);
-            this.groupBox2.Location = new System.Drawing.Point(416, 3);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(407, 357);
-            this.groupBox2.TabIndex = 1;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Чеки коррекции";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(118, 51);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 0;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(16, 54);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Приход";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(16, 80);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(93, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Возврат прихода";
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(118, 77);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.ReadOnly = true;
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
-            this.textBox2.TabIndex = 2;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 106);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(43, 13);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "Расход";
-            // 
-            // textBox3
-            // 
-            this.textBox3.Location = new System.Drawing.Point(118, 103);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.ReadOnly = true;
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
-            this.textBox3.TabIndex = 4;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 132);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(93, 13);
-            this.label4.TabIndex = 7;
-            this.label4.Text = "Возврат расхода";
-            // 
-            // textBox4
-            // 
-            this.textBox4.Location = new System.Drawing.Point(118, 129);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.ReadOnly = true;
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
-            this.textBox4.TabIndex = 6;
-            // 
-            // textBox5
-            // 
-            this.textBox5.Location = new System.Drawing.Point(241, 129);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.ReadOnly = true;
-            this.textBox5.Size = new System.Drawing.Size(100, 20);
-            this.textBox5.TabIndex = 11;
-            // 
-            // textBox6
-            // 
-            this.textBox6.Location = new System.Drawing.Point(241, 103);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.ReadOnly = true;
-            this.textBox6.Size = new System.Drawing.Size(100, 20);
-            this.textBox6.TabIndex = 10;
-            // 
-            // textBox7
-            // 
-            this.textBox7.Location = new System.Drawing.Point(241, 77);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.ReadOnly = true;
-            this.textBox7.Size = new System.Drawing.Size(100, 20);
-            this.textBox7.TabIndex = 9;
-            // 
-            // textBox8
-            // 
-            this.textBox8.Location = new System.Drawing.Point(241, 51);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.ReadOnly = true;
-            this.textBox8.Size = new System.Drawing.Size(100, 20);
-            this.textBox8.TabIndex = 8;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(135, 30);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(66, 13);
-            this.label5.TabIndex = 12;
-            this.label5.Text = "Количество";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(271, 30);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(41, 13);
-            this.label6.TabIndex = 13;
-            this.label6.Text = "Сумма";
-            // 
-            // textBox9
-            // 
-            this.textBox9.Location = new System.Drawing.Point(237, 80);
-            this.textBox9.Name = "textBox9";
-            this.textBox9.ReadOnly = true;
-            this.textBox9.Size = new System.Drawing.Size(100, 20);
-            this.textBox9.TabIndex = 19;
-            // 
-            // textBox10
-            // 
-            this.textBox10.Location = new System.Drawing.Point(237, 51);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.ReadOnly = true;
-            this.textBox10.Size = new System.Drawing.Size(100, 20);
-            this.textBox10.TabIndex = 18;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(34, 83);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(43, 13);
-            this.label7.TabIndex = 17;
-            this.label7.Text = "Расход";
-            // 
-            // textBox11
-            // 
-            this.textBox11.Location = new System.Drawing.Point(118, 80);
-            this.textBox11.Name = "textBox11";
-            this.textBox11.ReadOnly = true;
-            this.textBox11.Size = new System.Drawing.Size(100, 20);
-            this.textBox11.TabIndex = 16;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(34, 54);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(44, 13);
-            this.label8.TabIndex = 15;
-            this.label8.Text = "Приход";
-            // 
-            // textBox12
-            // 
-            this.textBox12.Location = new System.Drawing.Point(118, 51);
-            this.textBox12.Name = "textBox12";
-            this.textBox12.ReadOnly = true;
-            this.textBox12.Size = new System.Drawing.Size(100, 20);
-            this.textBox12.TabIndex = 14;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(267, 23);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(41, 13);
-            this.label9.TabIndex = 15;
-            this.label9.Text = "Сумма";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(135, 23);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(66, 13);
-            this.label10.TabIndex = 14;
-            this.label10.Text = "Количество";
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.groupBox2, 1, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 6);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(826, 363);
-            this.tableLayoutPanel1.TabIndex = 2;
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(12, 13);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(14, 13);
-            this.label11.TabIndex = 6;
-            this.label11.Text = "С";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(138, 13);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(21, 13);
-            this.label12.TabIndex = 7;
-            this.label12.Text = "По";
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Location = new System.Drawing.Point(32, 11);
-            this.numericUpDown1.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(100, 20);
-            this.numericUpDown1.TabIndex = 8;
-            this.numericUpDown1.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // numericUpDown2
-            // 
-            this.numericUpDown2.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericUpDown2.Location = new System.Drawing.Point(165, 11);
-            this.numericUpDown2.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDown2.Name = "numericUpDown2";
-            this.numericUpDown2.Size = new System.Drawing.Size(100, 20);
-            this.numericUpDown2.TabIndex = 9;
-            this.numericUpDown2.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // button1
-            // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(289, 8);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "Отобразить";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -840,22 +834,22 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.GB_PreviewReport.ResumeLayout(false);
             this.GB_PreviewReport.PerformLayout();
+            this.tabControl2.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.NUD_EndNumberDoc)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NUD_StartNumberDoc)).EndInit();
             this.tabControl1.ResumeLayout(false);
             this.T_page_report_Generation.ResumeLayout(false);
             this.T_page_report_Generation.PerformLayout();
             this.T_page_headInfo.ResumeLayout(false);
             this.T_page_headInfo.PerformLayout();
-            this.tabControl2.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.tableLayoutPanel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -903,30 +897,30 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox5;
-        private System.Windows.Forms.TextBox textBox6;
-        private System.Windows.Forms.TextBox textBox7;
-        private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.TextBox TB_OutcomeBackCount;
+        private System.Windows.Forms.TextBox TB_OutcomeCount;
+        private System.Windows.Forms.TextBox TB_IncomeBackCount;
+        private System.Windows.Forms.TextBox TB_IncomeSum;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox TB_OutcomeBackSum;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox TB_OutcomeSum;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox TB_IncomeBackSum;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox TB_IncomeCount;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TextBox textBox9;
-        private System.Windows.Forms.TextBox textBox10;
-        private System.Windows.Forms.TextBox textBox12;
+        private System.Windows.Forms.TextBox TB_CorrectionOutcomeSum;
+        private System.Windows.Forms.TextBox TB_CorrectionIncomeCount;
+        private System.Windows.Forms.TextBox TB_CorrectionIncomeSum;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox textBox11;
-        public System.Windows.Forms.Button button1;
-        private System.Windows.Forms.NumericUpDown numericUpDown2;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.TextBox TB_CorrectionOutcomeCount;
+        public System.Windows.Forms.Button B_ShowNodes;
+        private System.Windows.Forms.NumericUpDown NUD_EndNumberDoc;
+        private System.Windows.Forms.NumericUpDown NUD_StartNumberDoc;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label11;
     }

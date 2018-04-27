@@ -22,8 +22,11 @@ namespace ReportFNSUtility
 
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;
-        
+
         //////////////////////////////////////////
+
+        public static ReportReader reportReader;
+        public static ReportFNS reportFNS;
         
         public static string nameProgram = "FNSUtility V.1.1.2.0(S)";
         public static bool canRewrite = false;
@@ -38,6 +41,8 @@ namespace ReportFNSUtility
 
             if (args.Length == 0)
             {
+                reportFNS = new ReportFNS();
+                reportReader = new ReportReader();
                 canRewrite = true;
                 var handle = GetConsoleWindow();
                 ShowWindow(handle, SW_HIDE);

@@ -29,7 +29,7 @@ namespace ReportFNSUtility
         {
             this.path = path;
 
-                reader = new BinaryReader(new FileStream(path, FileMode.Open));
+            reader = new BinaryReader(new FileStream(path, FileMode.Open));
 
         }
 
@@ -48,7 +48,20 @@ namespace ReportFNSUtility
 
         }
 
-        public bool GetNodes(UInt32 startNumberDoc,UInt32 endNumberDoc)
+        public void UpdateData(string path)
+        {
+            FileStream _fs = new FileStream(path, FileMode.Open);
+            if (!Program.reportFNS.reportHeader.UpdateFromStream(new BinaryReader(_fs)))
+            {
+                throw new Exception("Файл повреждён. Не удалось считать заголовок.");
+            }
+            if (!Program.reportFNS.treeOfTags.Update(new BinaryReader(_fs)))
+            {
+                throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
+            }
+        }
+
+        public bool GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
         {
             return false;
         }
