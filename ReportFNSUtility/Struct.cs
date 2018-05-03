@@ -245,7 +245,7 @@ namespace ReportFNSUtility
                 {
                     streamReader.ReadUInt16();
                     Int16 len = streamReader.ReadInt16();
-                    _tmpList.Add(new PosAndLen((memoryStream.Position - 4), len));
+                    _tmpList.Add(new PosAndLen((memoryStream.Position - 4), len + 4));
                     streamReader.BaseStream.Seek(len, SeekOrigin.Current);
                 }
                 PositionNodeOfStream = _tmpList.ToArray();
@@ -357,7 +357,7 @@ namespace ReportFNSUtility
                 }
                 if (tLVWrapper.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> _tmpList)
                 {
-                    node = new TreeNode($"[{tLVWrapper.Source.Tag}]   {tLVWrapper.Description}");
+                    node = new TreeNode($"[{(int)tLVWrapper.Source.Tag}]   {tLVWrapper.Description}");
                     foreach (var _tmpWrap in _tmpList)
                     {
                         node.Nodes.Add(CreateNode(_tmpWrap));
@@ -365,7 +365,7 @@ namespace ReportFNSUtility
                 }
                 else
                 {
-                    node = new TreeNode($"[{tLVWrapper.Source.Tag}]   {tLVWrapper.Value}   {tLVWrapper.Description}");
+                    node = new TreeNode($"[{(int)tLVWrapper.Source.Tag}]   {tLVWrapper.Value}   {tLVWrapper.Description}");
                 }
                 return node;
             }
