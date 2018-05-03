@@ -16,8 +16,8 @@ namespace ReportFNSUtility
         private ReportHeader _reportHeader;
         private TreeOfTags _treeOfTags;
 
-        internal ReportHeader reportHeader { get => _reportHeader; }
-        internal TreeOfTags treeOfTags { get => _treeOfTags; }
+        public ReportHeader reportHeader { get => _reportHeader; }
+        public TreeOfTags treeOfTags { get => _treeOfTags; }
 
         public ReportFNS()
         {
@@ -158,9 +158,20 @@ namespace ReportFNSUtility
                     this.countShift = stream.ReadUInt32();
                     this.countFiscalDoc = stream.ReadUInt32();
                     this.hash = stream.ReadUInt32();
+                    stream.BaseStream.Seek(0, SeekOrigin.Begin);
+                    MemoryStream _tmpMemory = new MemoryStream();
+                    _tmpMemory.Write(stream.ReadBytes(354), 0, 354);
+                    stream.ReadUInt32();
+                    stream.BaseStream.CopyTo(_tmpMemory);
+                    
+                    stream.BaseStream.CopyTo(_tmpMemory);
+                    if (ComputeHesh(_tmpMemory) != hash)
+                    {
+                        throw new Exception("Файл повреждён. Хеш не совпадает с посчитанным.");
+                    }
                     return true;
                 }
-                catch
+                catch (Exception ex)
                 {
                     return false;
                 }
@@ -183,33 +194,14 @@ namespace ReportFNSUtility
                     return false;
                 }
             }
-            public bool AddHeshToStream(BinaryWriter stream)
+            public uint ComputeHesh(Stream stream)
             {
-                try
-                {
-                    //считаем хеш
-                    stream.BaseStream.Seek(0, SeekOrigin.Begin);
-                    Crc32 crc32 = new Crc32();
-                    byte[] _hash = crc32.ComputeHash(stream.BaseStream);
-                    Array.Reverse(_hash);
-                    hash = BitConverter.ToUInt32(_hash, 0);
-                    //копируем в memorystream дерево тегов
-                    stream.BaseStream.Seek(354, SeekOrigin.Begin);
-                    MemoryStream memoryStream = new MemoryStream();
-                    stream.BaseStream.CopyTo(memoryStream);
-                    //пишем хеш
-                    stream.BaseStream.Seek(354, SeekOrigin.Begin);
-                    stream.Write(hash);
-                    //дописываем дерево тегов
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    memoryStream.CopyTo(stream.BaseStream);
-                    memoryStream.Close();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
+                //считаем хеш
+                stream.Seek(0, SeekOrigin.Begin);
+                Crc32 crc32 = new Crc32();
+                byte[] _hash = crc32.ComputeHash(stream);
+                Array.Reverse(_hash);
+                return BitConverter.ToUInt32(_hash, 0);
             }
         }
 

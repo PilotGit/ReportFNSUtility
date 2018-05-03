@@ -186,6 +186,8 @@ namespace ReportFNSUtility
                     UInt32 _end = (UInt32)NUD_EndNumberDoc.Value;
                     if (_start <= _end && _start != 0 && _end != 0)
                     {
+                        _start--;
+                        _end--;
                         showNodesThread = new Thread((ThreadStart)delegate
                         {
                             if (!Program.reportReader.GetNodes(_start, _end))
