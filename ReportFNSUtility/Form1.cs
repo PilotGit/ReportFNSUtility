@@ -24,7 +24,7 @@ namespace ReportFNSUtility
             InitializeComponent();
             Form1.form = this;
             form.Text = Program.nameProgram;
-            treeView1.TreeViewNodeSorter = new TreeSorter();
+            TV_TreeTags.TreeViewNodeSorter = new TreeSorter();
             OpenFD_binFile.InitialDirectory = Application.StartupPath;
             Bind();
         }
@@ -133,7 +133,13 @@ namespace ReportFNSUtility
             {
                 try
                 {
-                    treeView1.Nodes.Clear();
+                    if (showNodesThread?.IsAlive ?? false)
+                    {
+                        showNodesThread.Abort();
+                        showNodesThread.Join();
+                        B_ShowNodes.Text = "Отобразить";
+                    }
+                    B_ShowNodes.Enabled = false;
                     readReportThread = new Thread((ThreadStart)delegate
                     {
                         try
@@ -157,6 +163,7 @@ namespace ReportFNSUtility
                         {
                             B_UpdateStop.Text = "Обновить";
                             UpdateProgressBar(0);
+                            TV_TreeTags.Nodes.Clear();
                         });
                     });
                     readReportThread.Start();
@@ -181,7 +188,7 @@ namespace ReportFNSUtility
             {
                 try
                 {
-                    treeView1.Nodes.Clear();
+                    TV_TreeTags.Nodes.Clear();
                     UInt32 _start = (UInt32)NUD_StartNumberDoc.Value;
                     UInt32 _end = (UInt32)NUD_EndNumberDoc.Value;
                     if (_start <= _end && _start != 0 && _end != 0)

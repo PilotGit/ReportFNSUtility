@@ -70,7 +70,7 @@
             this.NUD_StartNumberDoc = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.label11 = new System.Windows.Forms.Label();
-            this.treeView1 = new System.Windows.Forms.TreeView();
+            this.TV_TreeTags = new System.Windows.Forms.TreeView();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.B_UpdateStop = new System.Windows.Forms.Button();
             this.B_Browse = new System.Windows.Forms.Button();
@@ -485,7 +485,7 @@
             this.tabPage1.Controls.Add(this.NUD_StartNumberDoc);
             this.tabPage1.Controls.Add(this.label12);
             this.tabPage1.Controls.Add(this.label11);
-            this.tabPage1.Controls.Add(this.treeView1);
+            this.tabPage1.Controls.Add(this.TV_TreeTags);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -570,14 +570,14 @@
             // 
             // treeView1
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.TV_TreeTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.treeView1.Location = new System.Drawing.Point(15, 37);
-            this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(803, 320);
-            this.treeView1.Sorted = true;
-            this.treeView1.TabIndex = 4;
+            this.TV_TreeTags.Location = new System.Drawing.Point(15, 37);
+            this.TV_TreeTags.Name = "treeView1";
+            this.TV_TreeTags.Size = new System.Drawing.Size(803, 320);
+            this.TV_TreeTags.Sorted = true;
+            this.TV_TreeTags.TabIndex = 4;
             // 
             // progressBar1
             // 
@@ -859,7 +859,7 @@
         private System.Windows.Forms.ComboBox CB_Port;
         private System.Windows.Forms.Button B_Browse;
         private System.Windows.Forms.OpenFileDialog OpenFD_binFile;
-        public System.Windows.Forms.TreeView treeView1;
+        public System.Windows.Forms.TreeView TV_TreeTags;
         public System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Label L_fileWay;
         private System.Windows.Forms.Label L_fileName;

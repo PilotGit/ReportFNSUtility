@@ -57,7 +57,11 @@ namespace ReportFNSUtility
                 {
                     throw new Exception("Файл повреждён. Не удалось считать заголовок.");
                 }
-                if (!Program.reportFNS.treeOfTags.Update(new BinaryReader(_fs)))
+                if (!Program.reportFNS.reportHeader.ChekHash(_fs))
+                {
+                    throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
+                }
+                if (!Program.reportFNS.treeOfTags.UpdateFromStream(new BinaryReader(_fs)))
                 {
                     throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
                 }
@@ -73,7 +77,7 @@ namespace ReportFNSUtility
         {
             foreach (var item in Program.reportFNS.treeOfTags.GetNodes(startNumberDoc, endNumberDoc))
             {
-                Form1.form.Invoke((MethodInvoker)delegate { Form1.form.treeView1.Nodes.Add(item); });
+                Form1.form.Invoke((MethodInvoker)delegate { Form1.form.TV_TreeTags.Nodes.Add(item); });
             }
             return true;
         }

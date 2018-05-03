@@ -134,65 +134,49 @@ namespace ReportFNSUtility
             }
             public bool UpdateFromStream(BinaryReader stream)
             {
-                try
-                {
-                    //Считывание название документа
-                    Encoding encoding = Encoding.GetEncoding(866);
-                    byte[] name = new byte[53];
-                    stream.Read(name, 0, 53);
-                    Name = encoding.GetString(name);
-                    //Считывание названия программы
-                    byte[] programm = new byte[256];
-                    stream.Read(programm, 0, 256);
-                    Program = encoding.GetString(programm);
-                    //Считывание номера ККТ
-                    byte[] numberECR = new byte[20];
-                    stream.Read(numberECR, 0, 20);
-                    NumberECR = encoding.GetString(numberECR);
-                    //Считывание номер фискального накопителя
-                    byte[] numberFS = new byte[16];
-                    stream.Read(numberFS, 0, 16);
-                    NumberFS = encoding.GetString(numberFS);
-                    //Считывания версии ФФД, количества смен, количества фискальных документов и хеша
-                    this.versionFFD = stream.ReadByte();
-                    this.countShift = stream.ReadUInt32();
-                    this.countFiscalDoc = stream.ReadUInt32();
-                    this.hash = stream.ReadUInt32();
-                    stream.BaseStream.Seek(0, SeekOrigin.Begin);
-                    MemoryStream _tmpMemory = new MemoryStream();
-                    _tmpMemory.Write(stream.ReadBytes(354), 0, 354);
-                    stream.ReadUInt32();
-                    stream.BaseStream.CopyTo(_tmpMemory);
-                    
-                    stream.BaseStream.CopyTo(_tmpMemory);
-                    if (ComputeHesh(_tmpMemory) != hash)
-                    {
-                        throw new Exception("Файл повреждён. Хеш не совпадает с посчитанным.");
-                    }
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    return false;
-                }
+                //Считывание название документа
+                Encoding encoding = Encoding.GetEncoding(866);
+                byte[] name = new byte[53];
+                stream.Read(name, 0, 53);
+                Name = encoding.GetString(name);
+                //Считывание названия программы
+                byte[] programm = new byte[256];
+                stream.Read(programm, 0, 256);
+                Program = encoding.GetString(programm);
+                //Считывание номера ККТ
+                byte[] numberECR = new byte[20];
+                stream.Read(numberECR, 0, 20);
+                NumberECR = encoding.GetString(numberECR);
+                //Считывание номер фискального накопителя
+                byte[] numberFS = new byte[16];
+                stream.Read(numberFS, 0, 16);
+                NumberFS = encoding.GetString(numberFS);
+                //Считывания версии ФФД, количества смен, количества фискальных документов и хеша
+                this.versionFFD = stream.ReadByte();
+                this.countShift = stream.ReadUInt32();
+                this.countFiscalDoc = stream.ReadUInt32();
+                this.hash = stream.ReadUInt32();
+                return true;
             }
-            public bool WriteToStream(BinaryWriter stream)
+            public bool ChekHash(Stream stream)
             {
-                try
-                {
-                    stream.Write(Encoding.GetEncoding(866).GetBytes(Name));
-                    stream.Write(Encoding.GetEncoding(866).GetBytes(Program));
-                    stream.Write(Encoding.GetEncoding(866).GetBytes(NumberECR));
-                    stream.Write(Encoding.GetEncoding(866).GetBytes(NumberFS));
-                    stream.Write(VersionFFD);
-                    stream.Write(BitConverter.GetBytes(CountShift));
-                    stream.Write(BitConverter.GetBytes(CountFiscalDoc));
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
+                //подготовка
+                long _pos = stream.Position;
+                stream.Seek(0, SeekOrigin.Begin);
+                MemoryStream _tmpMemory = new MemoryStream();
+                byte[] _tmpBytes = new byte[354];
+                //копирование потока в поток памяти без хеша
+                stream.Read(_tmpBytes, 0, 354);
+                _tmpMemory.Write(_tmpBytes, 0, 354);
+                stream.Read(_tmpBytes, 0, 4);
+                stream.CopyTo(_tmpMemory);
+                //Возвращаем позицию в потоке в исходную
+                stream.Seek(_pos, SeekOrigin.Begin);
+                //Вычисление хеша и закрытие потока
+                uint _hash = ComputeHesh(_tmpMemory);
+                _tmpMemory.Close();
+                //Возврат результата сравнения
+                return _hash == hash;
             }
             public uint ComputeHesh(Stream stream)
             {
@@ -245,7 +229,7 @@ namespace ReportFNSUtility
 
             private bool Reset() { return false; }
 
-            public bool Update(BinaryReader stream)
+            public bool UpdateFromStream(BinaryReader stream)
             {
                 //подготовка переменных
                 streamReader?.BaseStream?.Close();
@@ -616,7 +600,7 @@ namespace ReportFNSUtility
         public ReportFS(BinaryReader reader)
         {
             header = new ReportHeader(reader);
-            TreeNodeCollection nodes = Form1.form.treeView1.Nodes;
+            TreeNodeCollection nodes = Form1.form.TV_TreeTags.Nodes;
             Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
