@@ -175,7 +175,7 @@ namespace ReportFNSUtility
             {
                 showNodesThread?.Abort();
                 showNodesThread.Join();
-                B_UpdateStop.Text = "Отобразить";
+                B_ShowNodes.Text = "Отобразить";
             }
             else
             {

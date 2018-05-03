@@ -268,14 +268,15 @@ namespace ReportFNSUtility
                 while (streamReader.BaseStream.Position != streamReader.BaseStream.Length)
                 {
                     streamReader.ReadUInt16();
-                    UInt16 len = streamReader.ReadUInt16();
-                    _tmpList.Add(new PosAndLen((UInt64)(memoryStream.Position - 4), len));
+                    Int16 len = streamReader.ReadInt16();
+                    _tmpList.Add(new PosAndLen((memoryStream.Position - 4), len));
                     streamReader.BaseStream.Seek(len, SeekOrigin.Current);
                 }
                 PositionNodeOfStream = _tmpList.ToArray();
                 memoryStream.Seek(0, SeekOrigin.Begin);
 
-                ComputeProperties();
+                //ComputeProperties();
+                return true;
                 return false;
             }
 
@@ -353,7 +354,7 @@ namespace ReportFNSUtility
                                     break;
                                 case Fw16.Model.TLVTag.RptDocAck:
                                     break;
-                                
+
                             }
                         }
                     }
@@ -362,18 +363,46 @@ namespace ReportFNSUtility
 
             public IEnumerable<TreeNode> GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
             {
-                yield return null;
+                for (uint i = startNumberDoc; i <= endNumberDoc; i++)
+                {
+                    memoryStream.Seek(PositionNodeOfStream[i].Position, SeekOrigin.Begin);
+                    byte[] _tmp = new byte[PositionNodeOfStream[i].Length];
+                    memoryStream.Read(_tmp, 0, PositionNodeOfStream[i].Length);
+                    yield return CreateNode(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(_tmp));
+                }
+            }
+
+            private TreeNode CreateNode(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper)
+            {
+                TreeNode node;
+                if (tLVWrapper.Source.Tag == Fw16.Model.TLVTag._Anonymous)
+                {
+                    return CreateNode((tLVWrapper.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)[0]);
+                }
+                if (tLVWrapper.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> _tmpList)
+                {
+                    node = new TreeNode($"[{tLVWrapper.Source.Tag}]   {tLVWrapper.Description}");
+                    foreach (var _tmpWrap in _tmpList)
+                    {
+                        node.Nodes.Add(CreateNode(_tmpWrap));
+                    }
+                }
+                else
+                {
+                    node = new TreeNode($"[{tLVWrapper.Source.Tag}]   {tLVWrapper.Value}   {tLVWrapper.Description}");
+                }
+                return node;
             }
 
             class PosAndLen
             {
-                UInt64 position;
-                UInt16 length;
+                Int64 position;
+                Int16 length;
 
-                public ulong Position { get => position; }
-                public ushort Length { get => length; }
+                public long Position { get => position; }
+                public short Length { get => length; }
 
-                public PosAndLen(UInt64 position, UInt16 length)
+                public PosAndLen(Int64 position, Int16 length)
                 {
                     this.position = position;
                     this.length = length;

@@ -61,7 +61,8 @@ namespace ReportFNSUtility
                 {
                     throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 _fs.Close();
                 throw ex;
@@ -70,7 +71,11 @@ namespace ReportFNSUtility
 
         public bool GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
         {
-            return false;
+            foreach (var item in Program.reportFNS.treeOfTags.GetNodes(startNumberDoc, endNumberDoc))
+            {
+                Form1.form.Invoke((MethodInvoker)delegate { Form1.form.treeView1.Nodes.Add(item); });
+            }
+            return true;
         }
     }
 }
