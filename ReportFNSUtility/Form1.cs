@@ -89,6 +89,22 @@ namespace ReportFNSUtility
             TB_Hesh.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Hash)));
         }
 
+        private void ReadValue()
+        {
+            TB_IncomeCount.DataBindings[0].ReadValue();
+            TB_IncomeSum.DataBindings[0].ReadValue();
+            TB_IncomeBackSum.DataBindings[0].ReadValue();
+            TB_IncomeBackCount.DataBindings[0].ReadValue();
+            TB_OutcomeBackCount.DataBindings[0].ReadValue();
+            TB_OutcomeBackSum.DataBindings[0].ReadValue();
+            TB_OutcomeCount.DataBindings[0].ReadValue();
+            TB_OutcomeSum.DataBindings[0].ReadValue();
+            TB_CorrectionIncomeCount.DataBindings[0].ReadValue();
+            TB_CorrectionIncomeSum.DataBindings[0].ReadValue();
+            TB_CorrectionOutcomeCount.DataBindings[0].ReadValue();
+            TB_CorrectionOutcomeSum.DataBindings[0].ReadValue();
+        }
+
         ////////////////////////////////////////////////////////////////
 
         private void B_Browse_Click(object sender, EventArgs e)
@@ -164,6 +180,7 @@ namespace ReportFNSUtility
                             B_UpdateStop.Text = "Обновить";
                             UpdateProgressBar(0);
                             TV_TreeTags.Nodes.Clear();
+                            ReadValue();
                         });
                     });
                     readReportThread.Start();

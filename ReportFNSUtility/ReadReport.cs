@@ -65,6 +65,7 @@ namespace ReportFNSUtility
                 {
                     throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
                 }
+                _fs.Close();
             }
             catch (Exception ex)
             {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -199,28 +200,30 @@ namespace ReportFNSUtility
             UInt32 incomeCount;
             public uint IncomeCount { get => incomeCount; set => incomeCount = value; }
 
-            UInt64 incomeSum;
-            public ulong IncomeSum { get => incomeSum; set => incomeSum = value; }
+            decimal incomeSum;
+            public decimal IncomeSum { get => incomeSum; set => incomeSum = value; }
             UInt32 incomeBackCount;
             public uint IncomeBackCount { get => incomeBackCount; set => incomeBackCount = value; }
-            UInt64 incomeBackSum;
-            public ulong IncomeBackSum { get => incomeBackSum; set => incomeBackSum = value; }
+            decimal incomeBackSum;
+            public decimal IncomeBackSum { get => incomeBackSum; set => incomeBackSum = value; }
             UInt32 outcomeCount;
             public uint OutcomeCount { get => outcomeCount; set => outcomeCount = value; }
-            UInt64 outcomeSum;
-            public ulong OutcomeSum { get => outcomeSum; set => outcomeSum = value; }
+            decimal outcomeSum;
+            public decimal OutcomeSum { get => outcomeSum; set => outcomeSum = value; }
             UInt32 outcomeBackCount;
             public uint OutcomeBackCount { get => outcomeBackCount; set => outcomeBackCount = value; }
-            UInt64 outcomeBackSum;
-            public ulong OutcomeBackSum { get => outcomeBackSum; set => outcomeBackSum = value; }
+            decimal outcomeBackSum;
+            public decimal OutcomeBackSum { get => outcomeBackSum; set => outcomeBackSum = value; }
             UInt32 correctionIncomeCount;
             public uint CorrectionIncomeCount { get => correctionIncomeCount; set => correctionIncomeCount = value; }
-            UInt64 correctionIncomeSum;
-            public ulong CorrectionIncomeSum { get => correctionIncomeSum; set => correctionIncomeSum = value; }
+            decimal correctionIncomeSum;
+            public decimal CorrectionIncomeSum { get => correctionIncomeSum; set => correctionIncomeSum = value; }
             UInt32 correctionOutcomeCount;
             public uint CorrectionOutcomeCount { get => correctionOutcomeCount; set => correctionOutcomeCount = value; }
-            UInt64 correctionOutcomeSum;
-            public ulong CorrectionOutcomeSum { get => correctionOutcomeSum; set => correctionOutcomeSum = value; }
+            decimal correctionOutcomeSum;
+
+
+            public decimal CorrectionOutcomeSum { get => correctionOutcomeSum; set => correctionOutcomeSum = value; }
             public uint CountDocs { get => (uint)PositionNodeOfStream.Length; }
 
             public TreeOfTags()
@@ -245,94 +248,101 @@ namespace ReportFNSUtility
                 {
                     streamReader.ReadUInt16();
                     Int16 len = streamReader.ReadInt16();
-                    _tmpList.Add(new PosAndLen((memoryStream.Position - 4), len + 4));
+                    _tmpList.Add(new PosAndLen((memoryStream.Position - 4), (short)(len + 4)));
                     streamReader.BaseStream.Seek(len, SeekOrigin.Current);
                 }
                 PositionNodeOfStream = _tmpList.ToArray();
                 memoryStream.Seek(0, SeekOrigin.Begin);
-
-                //ComputeProperties();
+                ComputeProperties();
                 return true;
-                return false;
             }
 
             private void ComputeProperties()
             {
                 for (int i = 0; i < PositionNodeOfStream.Length; i++)
                 {
-                    Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> _tmp = new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(streamReader.ReadBytes(PositionNodeOfStream[i].Length + 4));
-                    switch ((_tmp.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)[0].Source.Tag)
+                    Form1.form.Invoke((MethodInvoker)delegate { Form1.form.UpdateProgressBar(i, PositionNodeOfStream.Length); });
+                    int docType = 0;
+                    Fw16.Model.ReceiptKind receiptKind = Fw16.Model.ReceiptKind.NotAvailable;
+                    decimal sum = 0;
+                    memoryStream.Seek(PositionNodeOfStream[i].Position, SeekOrigin.Begin);
+                    byte[] _tmp = new byte[PositionNodeOfStream[i].Length];
+                    memoryStream.Read(_tmp, 0, PositionNodeOfStream[i].Length);
+                    foreach (var item in new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(_tmp).Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
                     {
-                        case Fw16.Model.TLVTag.RptFDStandalone2:
+                        recGetDataDoc(item, ref docType, ref receiptKind, ref sum);
+                    }
+                    switch (docType)
+                    {
+                        case 1:
+                            switch (receiptKind)
+                            {
+                                case Fw16.Model.ReceiptKind.Income:
+                                    Form1.form.Invoke((MethodInvoker)delegate
+                                    {
+                                        IncomeCount++;
+                                    });
+                                    IncomeSum += sum;
+                                    break;
+                                case Fw16.Model.ReceiptKind.IncomeBack:
+                                    IncomeBackCount++;
+                                    IncomeBackSum += sum;
+                                    break;
+                                case Fw16.Model.ReceiptKind.Outcome:
+                                    OutcomeCount++;
+                                    OutcomeSum += sum;
+                                    break;
+                                case Fw16.Model.ReceiptKind.OutcomeBack:
+                                    OutcomeBackCount++;
+                                    outcomeBackSum += sum;
+                                    break;
+                            }
                             break;
-                        case Fw16.Model.TLVTag.RptFDStandalone3:
-                            break;
-                        case Fw16.Model.TLVTag.RptFD2:
-                            break;
-                        case Fw16.Model.TLVTag.RptFD3:
+                        case 2:
+                            switch (receiptKind)
+                            {
+                                case Fw16.Model.ReceiptKind.Income:
+                                    CorrectionIncomeCount++;
+                                    CorrectionIncomeSum += sum;
+                                    break;
+                                case Fw16.Model.ReceiptKind.Outcome:
+                                    CorrectionOutcomeCount++;
+                                    CorrectionOutcomeSum += sum;
+                                    break;
+                            }
                             break;
                     }
-                    if ((_tmp.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)[0].Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> content650xx)
-                    {
-                        foreach (var tagIn650xx in content650xx)
-                        {
-                            switch (tagIn650xx.Source.Tag)
-                            {/* Я здесь*/
-                                case Fw16.Model.TLVTag.RptFDStandalone2:
-                                    break;
-                                case Fw16.Model.TLVTag.RptFD2:
-                                    break;
-                                case Fw16.Model.TLVTag.RptFDStandalone3:
-                                    break;
-                                case Fw16.Model.TLVTag.RptFD3:
-                                    break;
-                                case Fw16.Model.TLVTag.DocReg:
-                                    break;
-                                case Fw16.Model.TLVTag.DocRegChange:
-                                    break;
-                                case Fw16.Model.TLVTag.DocOpenShift:
-                                    break;
-                                case Fw16.Model.TLVTag.DocReport:
-                                    break;
-                                case Fw16.Model.TLVTag.DocReceipt:
-                                    break;
-                                case Fw16.Model.TLVTag.DocReceiptCorrection:
-                                    break;
-                                case Fw16.Model.TLVTag.DocForm:
-                                    break;
-                                case Fw16.Model.TLVTag.DocFormCorrection:
-                                    break;
-                                case Fw16.Model.TLVTag.DocCloseShift:
-                                    break;
-                                case Fw16.Model.TLVTag.DocRegClose:
-                                    break;
-                                case Fw16.Model.TLVTag.DocAck:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocReg:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocRegChange:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocOpenShift:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocReport:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocReceipt:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocReceiptCorrection:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocForm:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocFormCorrection:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocCloseShift:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocRegClose:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocAck:
-                                    break;
+                }
+                //IncomeSum /= 100;
+                //IncomeBackSum /= 100;
+                //OutcomeSum /= 100;
+                //outcomeBackSum /= 100;
+            }
 
-                            }
-                        }
+            public void recGetDataDoc(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper, ref int docType, ref Fw16.Model.ReceiptKind receiptKind, ref decimal sum)
+            {
+                switch ((int)tLVWrapper.Source.Tag)
+                {
+                    case 103://чек
+                        docType = 1;
+                        break;
+                    case 131://чек коррекции
+                        docType = 2;
+                        break;
+                    case 1054://признак рассчёта
+                        receiptKind = (Fw16.Model.ReceiptKind)tLVWrapper.Value;
+                        break;
+                    case 1020://сумма
+                        sum = Decimal.Parse(tLVWrapper.Value.ToString());
+                        break;
+                    default:
+                        break;
+                }
+                if (tLVWrapper.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> list)
+                {
+                    foreach (var item in list)
+                    {
+                        recGetDataDoc(item, ref docType, ref receiptKind, ref sum);
                     }
                 }
             }
