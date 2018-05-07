@@ -10,11 +10,10 @@ namespace ReportFNSUtility
 {
     class ReportReader
     {
-        public ReportReader()
-        {
-
-        }
-
+        /// <summary>
+        /// Обновление данных в заголовке и дереве тегов из входной строки
+        /// </summary>
+        /// <param name="path">Строка, указывающая абсолютный путь к файлу</param>
         public void UpdateData(string path)
         {
             FileStream _fs = new FileStream(path, FileMode.Open);
@@ -42,7 +41,12 @@ namespace ReportFNSUtility
                 _fs.Close();
             }
         }
-        
+        /// <summary>
+        /// Выводит документы в treeView
+        /// </summary>
+        /// <param name="startIndexDoc">Начальный индекс документа</param>
+        /// <param name="endIndexDoc">Конечный индекс документа</param>
+        /// <returns>УСпешность завершения операции</returns>
         public bool GetNodes(UInt32 startIndexDoc, UInt32 endIndexDoc)
         {
             foreach (var item in Program.reportFNS.treeOfTags.GetNodes(startIndexDoc, endIndexDoc))

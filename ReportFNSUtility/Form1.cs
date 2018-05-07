@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static ReportFNSUtility.ReportFNS.TreeOfTags.Statistic;
 
 namespace ReportFNSUtility
 {
@@ -64,14 +66,15 @@ namespace ReportFNSUtility
 
         public void ReadHeader()
         {
-            TB_Name.Text = Program.reportFNS.reportHeader.Name;
-            TB_Program.Text = Program.reportFNS.reportHeader.NameProgram;
-            TB_NumberECR.Text = Program.reportFNS.reportHeader.NumberECR;
-            TB_NumberFS.Text = Program.reportFNS.reportHeader.NumberFS;
-            TB_VersionFFD.Text = Program.reportFNS.reportHeader.VersionFFD.ToString();
-            TB_CountShift.Text = Program.reportFNS.reportHeader.CountShift.ToString();
-            TB_CountFiscalDoc.Text = Program.reportFNS.reportHeader.CountFiscalDoc.ToString();
-            TB_Hash.Text = Program.reportFNS.reportHeader.Hash.ToString("X");
+            var _header = Program.reportFNS.reportHeader;
+            TB_Name.Text = _header.Name;
+            TB_Program.Text = _header.NameProgram;
+            TB_NumberECR.Text = _header.NumberECR;
+            TB_NumberFS.Text = _header.NumberFS;
+            TB_VersionFFD.Text = _header.VersionFFD.ToString();
+            TB_CountShift.Text = _header.CountShift.ToString();
+            TB_CountFiscalDoc.Text = _header.CountFiscalDoc.ToString();
+            TB_Hash.Text = _header.Hash.ToString("X");
         }
         private void ClearHeder()
         {
@@ -86,28 +89,33 @@ namespace ReportFNSUtility
         }
         public void ReadStats()
         {
-            TB_CorrectionIncomeCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.correctionIncomeCount].ToString();
-            TB_CorrectionIncomeSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.correctionIncomeSum].ToString();
-            TB_CorrectionOutcomeCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.correctionOutcomeCount].ToString();
-            TB_CorrectionOutcomeSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.correctionOutcomeSum].ToString();
-            TB_IncomeBackCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.incomeBackCount].ToString();
-            TB_IncomeBackSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.incomeBackSum].ToString();
-            TB_IncomeCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.incomeCount].ToString();
-            TB_IncomeSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.incomeSum].ToString();
-            TB_OutcomeBackCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.outcomeBackCount].ToString();
-            TB_OutcomeBackSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.outcomeBackSum].ToString();
-            TB_OutcomeCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.outcomeCount].ToString();
-            TB_OutcomeSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.outcomeSum].ToString();
+            var _stat = Program.reportFNS.treeOfTags.Stat;
+            TB_CorrectionIncomeCount.Text = _stat[StatsName.correctionIncomeCount].ToString();
+            TB_CorrectionIncomeSum.Text = _stat[StatsName.correctionIncomeSum].ToString();
+            TB_CorrectionOutcomeCount.Text = _stat[StatsName.correctionOutcomeCount].ToString();
+            TB_CorrectionOutcomeSum.Text = _stat[StatsName.correctionOutcomeSum].ToString();
+            TB_IncomeBackCount.Text = _stat[StatsName.incomeBackCount].ToString();
+            TB_IncomeBackSum.Text = _stat[StatsName.incomeBackSum].ToString();
+            TB_IncomeCount.Text = _stat[StatsName.incomeCount].ToString();
+            TB_IncomeSum.Text = _stat[StatsName.incomeSum].ToString();
+            TB_OutcomeBackCount.Text = _stat[StatsName.outcomeBackCount].ToString();
+            TB_OutcomeBackSum.Text = _stat[StatsName.outcomeBackSum].ToString();
+            TB_OutcomeCount.Text = _stat[StatsName.outcomeCount].ToString();
+            TB_OutcomeSum.Text = _stat[StatsName.outcomeSum].ToString();
         }
 
         ////////////////////////////////////////////////////////////////
-
+        /// <summary>
+        /// Обработка нажатия на кнопку "обзор". Вывод окна выбора файла.
+        /// </summary>
         private void B_Browse_Click(object sender, EventArgs e)
         {
             if (OpenFD_binFile.ShowDialog() == DialogResult.OK)
                 TB_Patch.Text = OpenFD_binFile.FileName;
         }
-
+        /// <summary>
+        /// Запускает или останавливает считывание файла в зависисмости от состояния потока.
+        /// </summary>
         public void B_UpdateStop_Click(object sender, EventArgs e)
         {
             if (readReportThread?.IsAlive ?? false)
@@ -141,7 +149,7 @@ namespace ReportFNSUtility
                                     NUD_EndNumberDoc.Maximum = NUD_StartNumberDoc.Maximum = Program.reportFNS.treeOfTags.CountDocs;
                                 });
                             }
-                            Program.form.ReadHeader();
+                            Program.form.Invoke((MethodInvoker)delegate { ReadHeader(); });
                         }
                         catch (Exception ex)
                         {
@@ -164,6 +172,9 @@ namespace ReportFNSUtility
             }
         }
 
+        /// <summary>
+        /// Запускает или останавливает заполнение дерева в зависимости от состояния потока.
+        /// </summary>
         private void B_ShowNodes_Click(object sender, EventArgs e)
         {
             if (showNodesThread?.IsAlive ?? false)
@@ -293,6 +304,21 @@ namespace ReportFNSUtility
                 TB_fileName.Text = "По умолчанию";
                 TB_fileName.ForeColor = SystemColors.ActiveCaption;
             }
+        }
+    }
+
+    class TreeSorter : IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            TreeNode tx = x as TreeNode;
+            TreeNode ty = y as TreeNode;
+
+            if (ty.Parent == null)
+            {
+                return -1;
+            }
+            return string.Compare(tx.Text, ty.Text);
         }
     }
 }

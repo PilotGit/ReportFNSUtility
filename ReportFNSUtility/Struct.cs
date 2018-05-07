@@ -46,19 +46,19 @@ namespace ReportFNSUtility
                 }
             }
 
-            private string program;
+            private string nameProgram;
             public string NameProgram
             {
-                get => program;
+                get => nameProgram;
                 set
                 {
                     if (value?.Length >= 256)
                     {
-                        this.program = value.Substring(0, 256);
+                        this.nameProgram = value.Substring(0, 256);
                     }
                     else
                     {
-                        this.program = string.Format($"{value,-256}");
+                        this.nameProgram = string.Format($"{value,-256}");
                     }
                 }
             }
@@ -134,6 +134,11 @@ namespace ReportFNSUtility
                 CountShift = countShift;
                 CountFiscalDoc = fiscalDoc;
             }
+            /// <summary>
+            /// Обновляет данные заголовка согласно переданному потоку чтения
+            /// </summary>
+            /// <param name="stream">поток чтения</param>
+            /// <returns></returns>
             public bool UpdateFromStream(BinaryReader stream)
             {
                 //Проеверка длиннны потока на присутствие в ней заголовка.
@@ -168,6 +173,11 @@ namespace ReportFNSUtility
                     return false;
                 }
             }
+            /// <summary>
+            /// Сверяет хеш написанный в файле и посчитанный программой.
+            /// </summary>
+            /// <param name="stream">Поток данных для вычисления и вычленения хеша</param>
+            /// <returns>bool, совпадают ли хеши.</returns>
             public bool ChekHash(Stream stream)
             {
                 //подготовка
@@ -179,22 +189,29 @@ namespace ReportFNSUtility
                 stream.Read(_tmpBytes, 0, 354);
                 _tmpMemory.Write(_tmpBytes, 0, 354);
                 stream.Read(_tmpBytes, 0, 4);
+                UInt32 _hashInStream = BitConverter.ToUInt32(_tmpBytes, 0);
                 stream.CopyTo(_tmpMemory);
                 //Возвращаем позицию в потоке в исходную
                 stream.Seek(_pos, SeekOrigin.Begin);
                 //Вычисление хеша и закрытие потока
-                uint _hash = ComputeHesh(_tmpMemory);
+                uint _hashCompute = ComputeHesh(_tmpMemory);
                 _tmpMemory.Close();
                 //Возврат результата сравнения
-                return _hash == hash;
+                return _hashCompute == _hashInStream;
             }
+            /// <summary>
+            /// Возвращает хеш CRC-32 для переданного потока
+            /// </summary>
+            /// <param name="stream">Поток данных</param>
+            /// <returns>Uint, Хеш для переданного потока</returns>
             public uint ComputeHesh(Stream stream)
             {
-                //считаем хеш
+                long _pos = stream.Position;
                 stream.Seek(0, SeekOrigin.Begin);
                 Crc32 crc32 = new Crc32();
                 byte[] _hash = crc32.ComputeHash(stream);
                 Array.Reverse(_hash);
+                stream.Seek(_pos, SeekOrigin.Begin);
                 return BitConverter.ToUInt32(_hash, 0);
             }
         }
@@ -216,9 +233,11 @@ namespace ReportFNSUtility
             {
                 stat = new Statistic();
             }
-
-            private bool Reset() { return false; }
-
+            /// <summary>
+            /// Создаёт копию переданного потока данных и вычисляет все позиции документов в потоке. После создаёт поток формирования статистики.
+            /// </summary>
+            /// <param name="stream"></param>
+            /// <returns></returns>
             public bool UpdateFromStream(BinaryReader stream)
             {
                 //подготовка переменных
@@ -251,7 +270,12 @@ namespace ReportFNSUtility
                 computeStats.Start();
                 return true;
             }
-
+            /// <summary>
+            /// Возвращает ветку представляющую один документ.
+            /// </summary>
+            /// <param name="startNumberDoc">Начальный индекс выводимых документов</param>
+            /// <param name="endNumberDoc">Конечный индекс выводимых документов</param>
+            /// <returns>Ветка, представляющая один документ</returns>
             public IEnumerable<TreeNode> GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
             {
                 for (uint i = startNumberDoc; i <= endNumberDoc; i++)
@@ -262,7 +286,11 @@ namespace ReportFNSUtility
                     yield return CreateNode(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(_tmp));
                 }
             }
-
+            /// <summary>
+            /// Рекурсивная функция формирующая ветвь
+            /// </summary>
+            /// <param name="tLVWrapper">tlVWraper, документа</param>
+            /// <returns></returns>
             private TreeNode CreateNode(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper)
             {
                 TreeNode node;
@@ -302,6 +330,9 @@ namespace ReportFNSUtility
 
             public class Statistic
             {
+                /// <summary>
+                /// Элементы статистики
+                /// </summary>
                 public enum StatsName
                 {
                     err = 0,
@@ -325,7 +356,11 @@ namespace ReportFNSUtility
                 {
                     stat = new decimal[Enum.GetValues(typeof(StatsName)).Length];
                 }
-
+                /// <summary>
+                /// Возвращает значение указанного элемента статистики
+                /// </summary>
+                /// <param name="index">Наименование элемента статистики</param>
+                /// <returns>Decimal, значение элемента статистики</returns>
                 public decimal this[StatsName index]
                 {
                     get
@@ -338,7 +373,11 @@ namespace ReportFNSUtility
                         stat[(int)index] = value;
                     }
                 }
-
+                /// <summary>
+                /// Создаёт копию переденного потока и вычисляет статистику для документов зашифрованных в потоке.
+                /// </summary>
+                /// <param name="stream">Поток данных</param>
+                /// <param name="PositionNodeOfStream">Позиции и длянны в байтах документов в потоке</param>
                 public void UpdateFromStream(Stream stream, PosAndLen[] PositionNodeOfStream)
                 {
                     MemoryStream memoryStream = new MemoryStream();
@@ -406,7 +445,13 @@ namespace ReportFNSUtility
                         memoryStream.Close();
                     }
                 }
-
+                /// <summary>
+                /// Рекурсивная функция подсчитывающая статистику в переданном документе
+                /// </summary>
+                /// <param name="tLVWrapper">Документ</param>
+                /// <param name="docType">Тип документа</param>
+                /// <param name="receiptKind">Тип рассчёта</param>
+                /// <param name="sum">Сумма</param>
                 public void GetDataDoc(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper, ref Fs.Native.DocumentType docType, ref Fw16.Model.ReceiptKind receiptKind, ref decimal sum)
                 {
                     switch ((int)tLVWrapper.Source.Tag)
@@ -434,7 +479,9 @@ namespace ReportFNSUtility
                         }
                     }
                 }
-
+                /// <summary>
+                /// Сбрасывает всю статистику
+                /// </summary>
                 public void Reset()
                 {
                     for (int i = 0; i < stat.Length; i++)
@@ -1043,24 +1090,4 @@ namespace ReportFNSUtility
         }
     }
 
-    class TreeSorter : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            TreeNode tx = x as TreeNode;
-            TreeNode ty = y as TreeNode;
-
-            if (ty.Parent == null)
-            {
-                return -1;
-            }
-
-            if ((tx.Parent?.Text ?? "") == "Header")
-            {
-                return 1;
-            }
-
-            return string.Compare(tx.Text, ty.Text);
-        }
-    }
 }
