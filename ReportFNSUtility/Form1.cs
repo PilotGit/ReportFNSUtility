@@ -71,9 +71,19 @@ namespace ReportFNSUtility
             TB_VersionFFD.Text = Program.reportFNS.reportHeader.VersionFFD.ToString();
             TB_CountShift.Text = Program.reportFNS.reportHeader.CountShift.ToString();
             TB_CountFiscalDoc.Text = Program.reportFNS.reportHeader.CountFiscalDoc.ToString();
-            TB_Hash.Text = Program.reportFNS.reportHeader.Hash.ToString();
+            TB_Hash.Text = Program.reportFNS.reportHeader.Hash.ToString("X");
         }
-
+        private void ClearHeder()
+        {
+            TB_Name.Text = "";
+            TB_Program.Text = "";
+            TB_NumberECR.Text = "";
+            TB_NumberFS.Text = "";
+            TB_VersionFFD.Text = "";
+            TB_CountShift.Text = "";
+            TB_CountFiscalDoc.Text = "";
+            TB_Hash.Text = "";
+        }
         public void ReadStats()
         {
             TB_CorrectionIncomeCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.correctionIncomeCount].ToString();
@@ -121,6 +131,7 @@ namespace ReportFNSUtility
                     {
                         try
                         {
+                            ClearHeder();
                             Program.reportReader.UpdateData(TB_Patch.Text);
                             if (Program.reportFNS.treeOfTags.CountDocs > 0)
                             {
@@ -130,6 +141,7 @@ namespace ReportFNSUtility
                                     NUD_EndNumberDoc.Maximum = NUD_StartNumberDoc.Maximum = Program.reportFNS.treeOfTags.CountDocs;
                                 });
                             }
+                            Program.form.ReadHeader();
                         }
                         catch (Exception ex)
                         {

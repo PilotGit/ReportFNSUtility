@@ -161,7 +161,6 @@ namespace ReportFNSUtility
                     this.countShift = stream.ReadUInt32();
                     this.countFiscalDoc = stream.ReadUInt32();
                     this.hash = stream.ReadUInt32();
-                    Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadHeader(); });
                     return true;
                 }
                 else
@@ -248,7 +247,7 @@ namespace ReportFNSUtility
                 }
                 PositionNodeOfStream = _tmpList.ToArray();
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                computeStats = new Thread((ThreadStart)delegate { Stat.UpdateFromStream(memoryStream, PositionNodeOfStream); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); });
+                computeStats = new Thread((ThreadStart)delegate { Stat.Reset(); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); Stat.UpdateFromStream(memoryStream, PositionNodeOfStream); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); });
                 computeStats.Start();
                 return true;
             }
@@ -690,7 +689,6 @@ namespace ReportFNSUtility
             this.hash = reader.ReadUInt32();
             Program.form.Invoke((MethodInvoker)delegate
             {
-                Program.form.tabControl1.SelectTab(Program.form.T_page_headInfo);
                 Program.form.TB_Name.Text = this.name;
                 Program.form.TB_Program.Text = this.programm;
                 Program.form.TB_NumberECR.Text = this.numberKKT;

@@ -42,7 +42,7 @@ namespace ReportFNSUtility
                 _fs.Close();
             }
         }
-
+        
         public bool GetNodes(UInt32 startIndexDoc, UInt32 endIndexDoc)
         {
             foreach (var item in Program.reportFNS.treeOfTags.GetNodes(startIndexDoc, endIndexDoc))
