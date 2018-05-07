@@ -124,16 +124,6 @@ namespace ReportFNSUtility
                 get => hash;
             }
 
-            public ReportHeader(string name = null, string programm = null, string numberKKT = null, string numberFS = null, byte versionFFD = 0, uint countShift = 0, uint fiscalDoc = 0)
-            {
-                Name = name;
-                NameProgram = programm;
-                NumberECR = numberKKT;
-                NumberFS = numberFS;
-                VersionFFD = versionFFD;
-                CountShift = countShift;
-                CountFiscalDoc = fiscalDoc;
-            }
             /// <summary>
             /// Обновляет данные заголовка согласно переданному потоку чтения
             /// </summary>
@@ -219,15 +209,14 @@ namespace ReportFNSUtility
         public class TreeOfTags
         {
             MemoryStream memoryStream;
-            BinaryReader streamReader;
             Thread computeStats;
 
-            PosAndLen[] PositionNodeOfStream;
+            PosAndLen[] Nodes;
 
             Statistic stat;
 
-            public uint CountDocs { get => (uint)PositionNodeOfStream.Length; }
-            internal Statistic Stat { get => stat; }
+            public uint CountDocs { get => (uint)Nodes.Length; }
+            public Statistic Stat { get => stat; }
 
             public TreeOfTags()
             {
@@ -246,7 +235,6 @@ namespace ReportFNSUtility
                     computeStats?.Abort();
                     computeStats?.Join();
                 }
-                streamReader?.BaseStream?.Close();
                 memoryStream?.Close();
                 memoryStream = new MemoryStream();
                 //копирование потоков, создание потока чтения 
@@ -254,7 +242,7 @@ namespace ReportFNSUtility
                 stream.BaseStream.CopyTo(memoryStream);
                 if (memoryStream.Length < 8) return false;
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                streamReader = new BinaryReader(memoryStream);
+                BinaryReader streamReader = new BinaryReader(memoryStream);
                 //формирование массива позиций и длинн документов в потоке
                 List<PosAndLen> _tmpList = new List<PosAndLen>();
                 while (streamReader.BaseStream.Position != streamReader.BaseStream.Length)
@@ -264,9 +252,9 @@ namespace ReportFNSUtility
                     _tmpList.Add(new PosAndLen((memoryStream.Position - 4), (short)(len + 4)));
                     streamReader.BaseStream.Seek(len, SeekOrigin.Current);
                 }
-                PositionNodeOfStream = _tmpList.ToArray();
+                Nodes = _tmpList.ToArray();
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                computeStats = new Thread((ThreadStart)delegate { Stat.Reset(); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); Stat.UpdateFromStream(memoryStream, PositionNodeOfStream); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); });
+                computeStats = new Thread((ThreadStart)delegate { Stat.Reset(); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); Stat.UpdateFromStream(memoryStream, Nodes); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); });
                 computeStats.Start();
                 return true;
             }
@@ -280,9 +268,9 @@ namespace ReportFNSUtility
             {
                 for (uint i = startNumberDoc; i <= endNumberDoc; i++)
                 {
-                    memoryStream.Seek(PositionNodeOfStream[i].Position, SeekOrigin.Begin);
-                    byte[] _tmp = new byte[PositionNodeOfStream[i].Length];
-                    memoryStream.Read(_tmp, 0, PositionNodeOfStream[i].Length);
+                    memoryStream.Seek(Nodes[i].Position, SeekOrigin.Begin);
+                    byte[] _tmp = new byte[Nodes[i].Length];
+                    memoryStream.Read(_tmp, 0, Nodes[i].Length);
                     yield return CreateNode(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(_tmp));
                 }
             }
@@ -350,11 +338,11 @@ namespace ReportFNSUtility
                     correctionOutcomeSum
                 }
 
-                decimal[] stat;
+                decimal[] stats;
 
                 public Statistic()
                 {
-                    stat = new decimal[Enum.GetValues(typeof(StatsName)).Length];
+                    stats = new decimal[Enum.GetValues(typeof(StatsName)).Length];
                 }
                 /// <summary>
                 /// Возвращает значение указанного элемента статистики
@@ -365,20 +353,20 @@ namespace ReportFNSUtility
                 {
                     get
                     {
-                        return stat[(int)index];
+                        return stats[(int)index];
                     }
 
                     set
                     {
-                        stat[(int)index] = value;
+                        stats[(int)index] = value;
                     }
                 }
                 /// <summary>
                 /// Создаёт копию переденного потока и вычисляет статистику для документов зашифрованных в потоке.
                 /// </summary>
                 /// <param name="stream">Поток данных</param>
-                /// <param name="PositionNodeOfStream">Позиции и длянны в байтах документов в потоке</param>
-                public void UpdateFromStream(Stream stream, PosAndLen[] PositionNodeOfStream)
+                /// <param name="nodes">Позиции и длянны в байтах документов в потоке</param>
+                public void UpdateFromStream(Stream stream, PosAndLen[] nodes)
                 {
                     MemoryStream memoryStream = new MemoryStream();
                     long _pos = stream.Position;
@@ -387,18 +375,18 @@ namespace ReportFNSUtility
                     stream.Seek(_pos, SeekOrigin.Begin);
                     try
                     {
-                        for (int i = 0; i < PositionNodeOfStream.Length; i++)
+                        for (int i = 0; i < nodes.Length; i++)
                         {
-                            Program.form.Invoke((MethodInvoker)delegate { Program.form.UpdateProgressBar(i + 1, PositionNodeOfStream.Length); });
+                            Program.form.Invoke((MethodInvoker)delegate { Program.form.UpdateProgressBar(i + 1, nodes.Length); });
                             Fs.Native.DocumentType docType = Fs.Native.DocumentType.NoDocument;
                             Fw16.Model.ReceiptKind receiptKind = Fw16.Model.ReceiptKind.NotAvailable;
                             decimal sum = 0;
-                            memoryStream.Seek(PositionNodeOfStream[i].Position, SeekOrigin.Begin);
-                            byte[] _tmp = new byte[PositionNodeOfStream[i].Length];
-                            memoryStream.Read(_tmp, 0, PositionNodeOfStream[i].Length);
+                            memoryStream.Seek(nodes[i].Position, SeekOrigin.Begin);
+                            byte[] _tmp = new byte[nodes[i].Length];
+                            memoryStream.Read(_tmp, 0, nodes[i].Length);
                             foreach (var item in new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(_tmp).Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
                             {
-                                GetDataDoc(item, ref docType, ref receiptKind, ref sum);
+                                GetStatsDoc(item, ref docType, ref receiptKind, ref sum);
                             }
                             switch (docType)
                             {
@@ -452,7 +440,7 @@ namespace ReportFNSUtility
                 /// <param name="docType">Тип документа</param>
                 /// <param name="receiptKind">Тип рассчёта</param>
                 /// <param name="sum">Сумма</param>
-                public void GetDataDoc(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper, ref Fs.Native.DocumentType docType, ref Fw16.Model.ReceiptKind receiptKind, ref decimal sum)
+                public void GetStatsDoc(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper, ref Fs.Native.DocumentType docType, ref Fw16.Model.ReceiptKind receiptKind, ref decimal sum)
                 {
                     switch ((int)tLVWrapper.Source.Tag)
                     {
@@ -475,7 +463,7 @@ namespace ReportFNSUtility
                     {
                         foreach (var item in list)
                         {
-                            GetDataDoc(item, ref docType, ref receiptKind, ref sum);
+                            GetStatsDoc(item, ref docType, ref receiptKind, ref sum);
                         }
                     }
                 }
@@ -484,9 +472,9 @@ namespace ReportFNSUtility
                 /// </summary>
                 public void Reset()
                 {
-                    for (int i = 0; i < stat.Length; i++)
+                    for (int i = 0; i < stats.Length; i++)
                     {
-                        stat[i] = 0;
+                        stats[i] = 0;
                     }
                 }
             }
