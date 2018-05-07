@@ -47,7 +47,7 @@ namespace ReportFNSUtility
         {
             foreach (var item in Program.reportFNS.treeOfTags.GetNodes(startIndexDoc, endIndexDoc))
             {
-                Form1.form.Invoke((MethodInvoker)delegate { Form1.form.TV_TreeTags.Nodes.Add(item); });
+                Program.form.Invoke((MethodInvoker)delegate { Program.form.TV_TreeTags.Nodes.Add(item); });
             }
             return true;
         }

@@ -21,11 +21,10 @@ namespace ReportFNSUtility
         public Form1()
         {
             InitializeComponent();
-            Form1.form = this;
-            form.Text = Program.nameProgram;
+            form = this;
+            this.Text = Program.nameProgram;
             TV_TreeTags.TreeViewNodeSorter = new TreeSorter();
             OpenFD_binFile.InitialDirectory = Application.StartupPath;
-            Bind();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -63,16 +62,16 @@ namespace ReportFNSUtility
             (ecrCtrl as IDisposable)?.Dispose();
         }
 
-        private void Bind()
+        public void ReadHeader()
         {
-            TB_Name.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Name)));
-            TB_Program.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Program)));
-            TB_NumberECR.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.NumberECR)));
-            TB_NumberFS.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.NumberFS)));
-            TB_VersionFFD.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.VersionFFD)));
-            TB_CountShift.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.CountShift)));
-            TB_CountFiscalDoc.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.CountFiscalDoc)));
-            TB_Hesh.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Hash)));
+            TB_Name.Text = Program.reportFNS.reportHeader.Name;
+            TB_Program.Text = Program.reportFNS.reportHeader.NameProgram;
+            TB_NumberECR.Text = Program.reportFNS.reportHeader.NumberECR;
+            TB_NumberFS.Text = Program.reportFNS.reportHeader.NumberFS;
+            TB_VersionFFD.Text = Program.reportFNS.reportHeader.VersionFFD.ToString();
+            TB_CountShift.Text = Program.reportFNS.reportHeader.CountShift.ToString();
+            TB_CountFiscalDoc.Text = Program.reportFNS.reportHeader.CountFiscalDoc.ToString();
+            TB_Hash.Text = Program.reportFNS.reportHeader.Hash.ToString();
         }
 
         public void ReadStats()
@@ -125,7 +124,7 @@ namespace ReportFNSUtility
                             Program.reportReader.UpdateData(TB_Patch.Text);
                             if (Program.reportFNS.treeOfTags.CountDocs > 0)
                             {
-                                Form1.form.Invoke((MethodInvoker)delegate
+                                Program.form.Invoke((MethodInvoker)delegate
                                 {
                                     B_ShowNodes.Enabled = true;
                                     NUD_EndNumberDoc.Maximum = NUD_StartNumberDoc.Maximum = Program.reportFNS.treeOfTags.CountDocs;
@@ -137,7 +136,7 @@ namespace ReportFNSUtility
                             B_ShowNodes.Enabled = false;
                             MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                         }
-                        Form1.form.Invoke((MethodInvoker)delegate
+                        Program.form.Invoke((MethodInvoker)delegate
                         {
                             B_UpdateStop.Text = "Обновить";
                             TV_TreeTags.Nodes.Clear();
@@ -176,12 +175,12 @@ namespace ReportFNSUtility
                         {
                             if (!Program.reportReader.GetNodes(_start, _end))
                             {
-                                Form1.form.Invoke((MethodInvoker)delegate
+                                Program.form.Invoke((MethodInvoker)delegate
                                 {
                                     MessageBox.Show("Не удалось обновить дерево тегов согласно переданным параметрам.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 });
                             }
-                            Form1.form.Invoke((MethodInvoker)delegate
+                            Program.form.Invoke((MethodInvoker)delegate
                             {
                                 B_ShowNodes.Text = "Отобразить";
                                 UpdateProgressBar(0);

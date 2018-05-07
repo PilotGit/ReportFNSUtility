@@ -80,7 +80,7 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.T_page_report_Generation = new System.Windows.Forms.TabPage();
             this.T_page_headInfo = new System.Windows.Forms.TabPage();
-            this.TB_Hesh = new System.Windows.Forms.TextBox();
+            this.TB_Hash = new System.Windows.Forms.TextBox();
             this.L_8_CheckSum = new System.Windows.Forms.Label();
             this.TB_CountFiscalDoc = new System.Windows.Forms.TextBox();
             this.L_7_NumberOfFiscalDOC = new System.Windows.Forms.Label();
@@ -655,7 +655,7 @@
             // 
             // T_page_headInfo
             // 
-            this.T_page_headInfo.Controls.Add(this.TB_Hesh);
+            this.T_page_headInfo.Controls.Add(this.TB_Hash);
             this.T_page_headInfo.Controls.Add(this.L_8_CheckSum);
             this.T_page_headInfo.Controls.Add(this.TB_CountFiscalDoc);
             this.T_page_headInfo.Controls.Add(this.L_7_NumberOfFiscalDOC);
@@ -680,12 +680,12 @@
             // 
             // TB_Hesh
             // 
-            this.TB_Hesh.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.TB_Hesh.Location = new System.Drawing.Point(4, 302);
-            this.TB_Hesh.Name = "TB_Hesh";
-            this.TB_Hesh.ReadOnly = true;
-            this.TB_Hesh.Size = new System.Drawing.Size(240, 20);
-            this.TB_Hesh.TabIndex = 15;
+            this.TB_Hash.Cursor = System.Windows.Forms.Cursors.Arrow;
+            this.TB_Hash.Location = new System.Drawing.Point(4, 302);
+            this.TB_Hash.Name = "TB_Hesh";
+            this.TB_Hash.ReadOnly = true;
+            this.TB_Hash.Size = new System.Drawing.Size(240, 20);
+            this.TB_Hash.TabIndex = 15;
             // 
             // L_8_CheckSum
             // 
@@ -882,7 +882,7 @@
         private System.Windows.Forms.Label L_2_UnloadingProgram;
         public System.Windows.Forms.TabPage T_page_headInfo;
         public System.Windows.Forms.TextBox TB_Name;
-        public System.Windows.Forms.TextBox TB_Hesh;
+        public System.Windows.Forms.TextBox TB_Hash;
         public System.Windows.Forms.TextBox TB_CountFiscalDoc;
         public System.Windows.Forms.TextBox TB_CountShift;
         public System.Windows.Forms.TextBox TB_VersionFFD;
