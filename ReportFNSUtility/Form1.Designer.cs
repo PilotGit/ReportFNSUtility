@@ -316,7 +316,7 @@
             // 
             // TB_IncomeSum
             // 
-            this.TB_IncomeSum.Location = new System.Drawing.Point(118, 51);
+            this.TB_IncomeSum.Location = new System.Drawing.Point(241, 51);
             this.TB_IncomeSum.Name = "TB_IncomeSum";
             this.TB_IncomeSum.ReadOnly = true;
             this.TB_IncomeSum.Size = new System.Drawing.Size(100, 20);
@@ -384,7 +384,7 @@
             // 
             // TB_IncomeCount
             // 
-            this.TB_IncomeCount.Location = new System.Drawing.Point(241, 51);
+            this.TB_IncomeCount.Location = new System.Drawing.Point(118, 51);
             this.TB_IncomeCount.Name = "TB_IncomeCount";
             this.TB_IncomeCount.ReadOnly = true;
             this.TB_IncomeCount.Size = new System.Drawing.Size(100, 20);
@@ -568,13 +568,13 @@
             this.label11.TabIndex = 6;
             this.label11.Text = "С";
             // 
-            // treeView1
+            // TV_TreeTags
             // 
             this.TV_TreeTags.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TV_TreeTags.Location = new System.Drawing.Point(15, 37);
-            this.TV_TreeTags.Name = "treeView1";
+            this.TV_TreeTags.Name = "TV_TreeTags";
             this.TV_TreeTags.Size = new System.Drawing.Size(803, 320);
             this.TV_TreeTags.Sorted = true;
             this.TV_TreeTags.TabIndex = 4;
@@ -678,11 +678,11 @@
             this.T_page_headInfo.TabIndex = 1;
             this.T_page_headInfo.Text = "Отчет о считывании";
             // 
-            // TB_8_CheckSum
+            // TB_Hesh
             // 
             this.TB_Hesh.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_Hesh.Location = new System.Drawing.Point(4, 302);
-            this.TB_Hesh.Name = "TB_8_CheckSum";
+            this.TB_Hesh.Name = "TB_Hesh";
             this.TB_Hesh.ReadOnly = true;
             this.TB_Hesh.Size = new System.Drawing.Size(240, 20);
             this.TB_Hesh.TabIndex = 15;
@@ -696,11 +696,11 @@
             this.L_8_CheckSum.TabIndex = 14;
             this.L_8_CheckSum.Text = "Контрольная сумма";
             // 
-            // TB_7_NumberOfFiscalDOC
+            // TB_CountFiscalDoc
             // 
             this.TB_CountFiscalDoc.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_CountFiscalDoc.Location = new System.Drawing.Point(4, 262);
-            this.TB_CountFiscalDoc.Name = "TB_7_NumberOfFiscalDOC";
+            this.TB_CountFiscalDoc.Name = "TB_CountFiscalDoc";
             this.TB_CountFiscalDoc.ReadOnly = true;
             this.TB_CountFiscalDoc.Size = new System.Drawing.Size(240, 20);
             this.TB_CountFiscalDoc.TabIndex = 13;
@@ -714,11 +714,11 @@
             this.L_7_NumberOfFiscalDOC.TabIndex = 12;
             this.L_7_NumberOfFiscalDOC.Text = "Количество фискальных документов";
             // 
-            // TB_6_NumberOfShifts
+            // TB_CountShift
             // 
             this.TB_CountShift.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_CountShift.Location = new System.Drawing.Point(4, 222);
-            this.TB_CountShift.Name = "TB_6_NumberOfShifts";
+            this.TB_CountShift.Name = "TB_CountShift";
             this.TB_CountShift.ReadOnly = true;
             this.TB_CountShift.Size = new System.Drawing.Size(240, 20);
             this.TB_CountShift.TabIndex = 11;
@@ -732,11 +732,11 @@
             this.L_6_NumberOfShifts.TabIndex = 10;
             this.L_6_NumberOfShifts.Text = "Количество смен";
             // 
-            // TB_5_NumberFFD
+            // TB_VersionFFD
             // 
             this.TB_VersionFFD.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_VersionFFD.Location = new System.Drawing.Point(4, 181);
-            this.TB_VersionFFD.Name = "TB_5_NumberFFD";
+            this.TB_VersionFFD.Name = "TB_VersionFFD";
             this.TB_VersionFFD.ReadOnly = true;
             this.TB_VersionFFD.Size = new System.Drawing.Size(240, 20);
             this.TB_VersionFFD.TabIndex = 9;
@@ -750,11 +750,11 @@
             this.L_5_NumberFFD.TabIndex = 8;
             this.L_5_NumberFFD.Text = "Номер версии ФФД ";
             // 
-            // TB_4_NumberFN
+            // TB_NumberFS
             // 
             this.TB_NumberFS.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_NumberFS.Location = new System.Drawing.Point(4, 141);
-            this.TB_NumberFS.Name = "TB_4_NumberFN";
+            this.TB_NumberFS.Name = "TB_NumberFS";
             this.TB_NumberFS.ReadOnly = true;
             this.TB_NumberFS.Size = new System.Drawing.Size(240, 20);
             this.TB_NumberFS.TabIndex = 7;
@@ -768,11 +768,11 @@
             this.L_4_NumberFN.TabIndex = 6;
             this.L_4_NumberFN.Text = "Номер ФН";
             // 
-            // TB_3_RegNumber
+            // TB_NumberECR
             // 
             this.TB_NumberECR.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_NumberECR.Location = new System.Drawing.Point(4, 102);
-            this.TB_NumberECR.Name = "TB_3_RegNumber";
+            this.TB_NumberECR.Name = "TB_NumberECR";
             this.TB_NumberECR.ReadOnly = true;
             this.TB_NumberECR.Size = new System.Drawing.Size(240, 20);
             this.TB_NumberECR.TabIndex = 5;
@@ -786,11 +786,11 @@
             this.L_3_RegNumber.TabIndex = 4;
             this.L_3_RegNumber.Text = "Регистрационный номер ККТ";
             // 
-            // TB_2_UnloadingProgram
+            // TB_Program
             // 
             this.TB_Program.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_Program.Location = new System.Drawing.Point(4, 63);
-            this.TB_Program.Name = "TB_2_UnloadingProgram";
+            this.TB_Program.Name = "TB_Program";
             this.TB_Program.ReadOnly = true;
             this.TB_Program.Size = new System.Drawing.Size(240, 20);
             this.TB_Program.TabIndex = 3;
@@ -804,11 +804,11 @@
             this.L_2_UnloadingProgram.TabIndex = 2;
             this.L_2_UnloadingProgram.Text = "Программа выгрузки ";
             // 
-            // TB_1_saveFile
+            // TB_Name
             // 
             this.TB_Name.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.TB_Name.Location = new System.Drawing.Point(4, 24);
-            this.TB_Name.Name = "TB_1_saveFile";
+            this.TB_Name.Name = "TB_Name";
             this.TB_Name.ReadOnly = true;
             this.TB_Name.Size = new System.Drawing.Size(240, 20);
             this.TB_Name.TabIndex = 1;

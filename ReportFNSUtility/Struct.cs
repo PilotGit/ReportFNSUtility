@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -194,40 +195,18 @@ namespace ReportFNSUtility
         {
             MemoryStream memoryStream;
             BinaryReader streamReader;
+            Thread computeStats;
 
             PosAndLen[] PositionNodeOfStream;
 
-            UInt32 incomeCount;
-            public uint IncomeCount { get => incomeCount; set => incomeCount = value; }
+            Statistic stat;
 
-            decimal incomeSum;
-            public decimal IncomeSum { get => incomeSum; set => incomeSum = value; }
-            UInt32 incomeBackCount;
-            public uint IncomeBackCount { get => incomeBackCount; set => incomeBackCount = value; }
-            decimal incomeBackSum;
-            public decimal IncomeBackSum { get => incomeBackSum; set => incomeBackSum = value; }
-            UInt32 outcomeCount;
-            public uint OutcomeCount { get => outcomeCount; set => outcomeCount = value; }
-            decimal outcomeSum;
-            public decimal OutcomeSum { get => outcomeSum; set => outcomeSum = value; }
-            UInt32 outcomeBackCount;
-            public uint OutcomeBackCount { get => outcomeBackCount; set => outcomeBackCount = value; }
-            decimal outcomeBackSum;
-            public decimal OutcomeBackSum { get => outcomeBackSum; set => outcomeBackSum = value; }
-            UInt32 correctionIncomeCount;
-            public uint CorrectionIncomeCount { get => correctionIncomeCount; set => correctionIncomeCount = value; }
-            decimal correctionIncomeSum;
-            public decimal CorrectionIncomeSum { get => correctionIncomeSum; set => correctionIncomeSum = value; }
-            UInt32 correctionOutcomeCount;
-            public uint CorrectionOutcomeCount { get => correctionOutcomeCount; set => correctionOutcomeCount = value; }
-            decimal correctionOutcomeSum;
-
-
-            public decimal CorrectionOutcomeSum { get => correctionOutcomeSum; set => correctionOutcomeSum = value; }
             public uint CountDocs { get => (uint)PositionNodeOfStream.Length; }
+            internal Statistic Stat { get => stat; }
 
             public TreeOfTags()
             {
+                stat = new Statistic();
             }
 
             private bool Reset() { return false; }
@@ -235,10 +214,16 @@ namespace ReportFNSUtility
             public bool UpdateFromStream(BinaryReader stream)
             {
                 //подготовка переменных
+                if (computeStats?.IsAlive ?? false)
+                {
+                    computeStats?.Abort();
+                    computeStats?.Join();
+                }
                 streamReader?.BaseStream?.Close();
                 memoryStream?.Close();
                 memoryStream = new MemoryStream();
-                //копирование потоков, создание потока чтения
+                //копирование потоков, создание потока чтения 
+                stream.BaseStream.Seek(358, SeekOrigin.Begin);
                 stream.BaseStream.CopyTo(memoryStream);
                 memoryStream.Seek(0, SeekOrigin.Begin);
                 streamReader = new BinaryReader(memoryStream);
@@ -253,98 +238,9 @@ namespace ReportFNSUtility
                 }
                 PositionNodeOfStream = _tmpList.ToArray();
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                ComputeProperties();
+                computeStats = new Thread((ThreadStart)delegate { Stat.UpdateFromStream(memoryStream, PositionNodeOfStream); Form1.form.Invoke((MethodInvoker)delegate { Form1.form.ReadStats(); }); });
+                computeStats.Start();
                 return true;
-            }
-
-            private void ComputeProperties()
-            {
-                for (int i = 0; i < PositionNodeOfStream.Length; i++)
-                {
-                    Form1.form.Invoke((MethodInvoker)delegate { Form1.form.UpdateProgressBar(i, PositionNodeOfStream.Length); });
-                    int docType = 0;
-                    Fw16.Model.ReceiptKind receiptKind = Fw16.Model.ReceiptKind.NotAvailable;
-                    decimal sum = 0;
-                    memoryStream.Seek(PositionNodeOfStream[i].Position, SeekOrigin.Begin);
-                    byte[] _tmp = new byte[PositionNodeOfStream[i].Length];
-                    memoryStream.Read(_tmp, 0, PositionNodeOfStream[i].Length);
-                    foreach (var item in new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(_tmp).Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
-                    {
-                        recGetDataDoc(item, ref docType, ref receiptKind, ref sum);
-                    }
-                    switch (docType)
-                    {
-                        case 1:
-                            switch (receiptKind)
-                            {
-                                case Fw16.Model.ReceiptKind.Income:
-                                    Form1.form.Invoke((MethodInvoker)delegate
-                                    {
-                                        IncomeCount++;
-                                    });
-                                    IncomeSum += sum;
-                                    break;
-                                case Fw16.Model.ReceiptKind.IncomeBack:
-                                    IncomeBackCount++;
-                                    IncomeBackSum += sum;
-                                    break;
-                                case Fw16.Model.ReceiptKind.Outcome:
-                                    OutcomeCount++;
-                                    OutcomeSum += sum;
-                                    break;
-                                case Fw16.Model.ReceiptKind.OutcomeBack:
-                                    OutcomeBackCount++;
-                                    outcomeBackSum += sum;
-                                    break;
-                            }
-                            break;
-                        case 2:
-                            switch (receiptKind)
-                            {
-                                case Fw16.Model.ReceiptKind.Income:
-                                    CorrectionIncomeCount++;
-                                    CorrectionIncomeSum += sum;
-                                    break;
-                                case Fw16.Model.ReceiptKind.Outcome:
-                                    CorrectionOutcomeCount++;
-                                    CorrectionOutcomeSum += sum;
-                                    break;
-                            }
-                            break;
-                    }
-                }
-                //IncomeSum /= 100;
-                //IncomeBackSum /= 100;
-                //OutcomeSum /= 100;
-                //outcomeBackSum /= 100;
-            }
-
-            public void recGetDataDoc(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper, ref int docType, ref Fw16.Model.ReceiptKind receiptKind, ref decimal sum)
-            {
-                switch ((int)tLVWrapper.Source.Tag)
-                {
-                    case 103://чек
-                        docType = 1;
-                        break;
-                    case 131://чек коррекции
-                        docType = 2;
-                        break;
-                    case 1054://признак рассчёта
-                        receiptKind = (Fw16.Model.ReceiptKind)tLVWrapper.Value;
-                        break;
-                    case 1020://сумма
-                        sum = Decimal.Parse(tLVWrapper.Value.ToString());
-                        break;
-                    default:
-                        break;
-                }
-                if (tLVWrapper.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> list)
-                {
-                    foreach (var item in list)
-                    {
-                        recGetDataDoc(item, ref docType, ref receiptKind, ref sum);
-                    }
-                }
             }
 
             public IEnumerable<TreeNode> GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
@@ -380,7 +276,7 @@ namespace ReportFNSUtility
                 return node;
             }
 
-            class PosAndLen
+            public class PosAndLen
             {
                 Int64 position;
                 Int16 length;
@@ -392,6 +288,150 @@ namespace ReportFNSUtility
                 {
                     this.position = position;
                     this.length = length;
+                }
+            }
+
+            public class Statistic
+            {
+                public enum StatsName
+                {
+                    err = 0,
+                    incomeCount = 1,
+                    incomeSum,
+                    incomeBackCount,
+                    incomeBackSum,
+                    outcomeCount,
+                    outcomeSum,
+                    outcomeBackCount,
+                    outcomeBackSum,
+                    correctionIncomeCount,
+                    correctionIncomeSum,
+                    correctionOutcomeCount,
+                    correctionOutcomeSum
+                }
+
+                decimal[] stat;
+
+                public Statistic()
+                {                    
+                    stat = new decimal[Enum.GetValues(typeof(StatsName)).Length];
+                }
+
+                public decimal this[StatsName index]
+                {
+                    get
+                    {
+                        return stat[(int)index];
+                    }
+
+                    set
+                    {
+                        stat[(int)index] = value;
+                    }
+                }
+
+                public void UpdateFromStream(Stream stream, PosAndLen[] PositionNodeOfStream)
+                {
+                    MemoryStream memoryStream = new MemoryStream();
+                    long _pos = stream.Position;
+                    stream.Seek(0, SeekOrigin.Begin);
+                    stream.CopyTo(memoryStream);
+                    stream.Seek(_pos, SeekOrigin.Begin);
+                    try
+                    {
+                        for (int i = 0; i < PositionNodeOfStream.Length; i++)
+                        {
+                            Form1.form.Invoke((MethodInvoker)delegate { Form1.form.UpdateProgressBar(i+1, PositionNodeOfStream.Length); });
+                            Fs.Native.DocumentType docType = Fs.Native.DocumentType.NoDocument;
+                            Fw16.Model.ReceiptKind receiptKind = Fw16.Model.ReceiptKind.NotAvailable;
+                            decimal sum = 0;
+                            memoryStream.Seek(PositionNodeOfStream[i].Position, SeekOrigin.Begin);
+                            byte[] _tmp = new byte[PositionNodeOfStream[i].Length];
+                            memoryStream.Read(_tmp, 0, PositionNodeOfStream[i].Length);
+                            foreach (var item in new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(_tmp).Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
+                            {
+                                GetDataDoc(item, ref docType, ref receiptKind, ref sum);
+                            }
+                            switch (docType)
+                            {
+                                case Fs.Native.DocumentType.Receipt:
+                                    switch (receiptKind)
+                                    {
+                                        case Fw16.Model.ReceiptKind.Income:
+                                            this[StatsName.incomeCount]++;
+                                            this[StatsName.incomeSum] += sum;
+                                            break;
+                                        case Fw16.Model.ReceiptKind.IncomeBack:
+                                            this[StatsName.incomeBackCount]++;
+                                            this[StatsName.incomeBackSum] += sum;
+                                            break;
+                                        case Fw16.Model.ReceiptKind.Outcome:
+                                            this[StatsName.outcomeCount]++;
+                                            this[StatsName.outcomeSum] += sum;
+                                            break;
+                                        case Fw16.Model.ReceiptKind.OutcomeBack:
+                                            this[StatsName.outcomeBackCount]++;
+                                            this[StatsName.outcomeBackSum] += sum;
+                                            break;
+                                    }
+                                    break;
+                                case Fs.Native.DocumentType.ReciptCorrection:
+                                    switch (receiptKind)
+                                    {
+                                        case Fw16.Model.ReceiptKind.Income:
+                                            this[StatsName.correctionIncomeCount]++;
+                                            this[StatsName.correctionIncomeSum] += sum;
+                                            break;
+                                        case Fw16.Model.ReceiptKind.Outcome:
+                                            this[StatsName.correctionOutcomeCount]++;
+                                            this[StatsName.correctionOutcomeSum] += sum;
+                                            break;
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        Form1.form.Invoke((MethodInvoker)delegate { Form1.form.UpdateProgressBar(0); });
+                        memoryStream.Close();
+                    }
+                }
+
+                public void GetDataDoc(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper, ref Fs.Native.DocumentType docType, ref Fw16.Model.ReceiptKind receiptKind, ref decimal sum)
+                {
+                    switch ((int)tLVWrapper.Source.Tag)
+                    {
+                        case 103://чек
+                            docType = Fs.Native.DocumentType.Receipt;
+                            break;
+                        case 131://чек коррекции
+                            docType = Fs.Native.DocumentType.ReciptCorrection;
+                            break;
+                        case 1054://признак рассчёта
+                            receiptKind = (Fw16.Model.ReceiptKind)tLVWrapper.Value;
+                            break;
+                        case 1020://сумма
+                            sum = Decimal.Parse(tLVWrapper.Value.ToString());
+                            break;
+                        default:
+                            break;
+                    }
+                    if (tLVWrapper.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> list)
+                    {
+                        foreach (var item in list)
+                        {
+                            GetDataDoc(item, ref docType, ref receiptKind, ref sum);
+                        }
+                    }
+                }
+
+                public void Reset()
+                {
+                    for (int i = 0; i < stat.Length; i++)
+                    {
+                        stat[i] = 0;
+                    }
                 }
             }
         }

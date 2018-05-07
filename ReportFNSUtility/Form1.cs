@@ -15,7 +15,6 @@ namespace ReportFNSUtility
     public partial class Form1 : Form
     {
         Thread readReportThread, writeReportThread, showNodesThread;
-        ReadReport readReport;
         WriteReport writeReport;
         public static Form1 form = null;
         Fw16.EcrCtrl ecrCtrl;
@@ -66,19 +65,6 @@ namespace ReportFNSUtility
 
         private void Bind()
         {
-            TB_IncomeCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.IncomeCount)));
-            TB_IncomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.IncomeSum)));
-            TB_IncomeBackSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.IncomeBackSum)));
-            TB_IncomeBackCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.IncomeBackCount)));
-            TB_OutcomeBackCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.OutcomeBackCount)));
-            TB_OutcomeBackSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.OutcomeBackSum)));
-            TB_OutcomeCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.OutcomeCount)));
-            TB_OutcomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.OutcomeSum)));
-            TB_CorrectionIncomeCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionIncomeCount)));
-            TB_CorrectionIncomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionIncomeSum)));
-            TB_CorrectionOutcomeCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionOutcomeCount)));
-            TB_CorrectionOutcomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionOutcomeSum)));
-
             TB_Name.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Name)));
             TB_Program.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Program)));
             TB_NumberECR.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.NumberECR)));
@@ -89,20 +75,20 @@ namespace ReportFNSUtility
             TB_Hesh.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Hash)));
         }
 
-        private void ReadValue()
+        public void ReadStats()
         {
-            TB_IncomeCount.DataBindings[0].ReadValue();
-            TB_IncomeSum.DataBindings[0].ReadValue();
-            TB_IncomeBackSum.DataBindings[0].ReadValue();
-            TB_IncomeBackCount.DataBindings[0].ReadValue();
-            TB_OutcomeBackCount.DataBindings[0].ReadValue();
-            TB_OutcomeBackSum.DataBindings[0].ReadValue();
-            TB_OutcomeCount.DataBindings[0].ReadValue();
-            TB_OutcomeSum.DataBindings[0].ReadValue();
-            TB_CorrectionIncomeCount.DataBindings[0].ReadValue();
-            TB_CorrectionIncomeSum.DataBindings[0].ReadValue();
-            TB_CorrectionOutcomeCount.DataBindings[0].ReadValue();
-            TB_CorrectionOutcomeSum.DataBindings[0].ReadValue();
+            TB_CorrectionIncomeCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.correctionIncomeCount].ToString();
+            TB_CorrectionIncomeSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.correctionIncomeSum].ToString();
+            TB_CorrectionOutcomeCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.correctionOutcomeCount].ToString();
+            TB_CorrectionOutcomeSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.correctionOutcomeSum].ToString();
+            TB_IncomeBackCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.incomeBackCount].ToString();
+            TB_IncomeBackSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.incomeBackSum].ToString();
+            TB_IncomeCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.incomeCount].ToString();
+            TB_IncomeSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.incomeSum].ToString();
+            TB_OutcomeBackCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.outcomeBackCount].ToString();
+            TB_OutcomeBackSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.outcomeBackSum].ToString();
+            TB_OutcomeCount.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.outcomeCount].ToString();
+            TB_OutcomeSum.Text = Program.reportFNS.treeOfTags.Stat[ReportFNS.TreeOfTags.Statistic.StatsName.outcomeSum].ToString();
         }
 
         ////////////////////////////////////////////////////////////////
@@ -115,30 +101,6 @@ namespace ReportFNSUtility
 
         public void B_UpdateStop_Click(object sender, EventArgs e)
         {
-            //if (readReportThread?.IsAlive ?? false)
-            //{
-            //    readReportThread?.Abort();
-            //    readReportThread.Join();
-            //    B_UpdateStop.Text = "Обновить";
-            //}
-            //else
-            //{
-            //    try
-            //    {
-            //        readReport?.reader?.BaseStream?.Close();
-            //        treeView1.Nodes.Clear();
-            //        readReport = new ReadReport(TB_Patch.Text);
-
-            //        readReportThread = new Thread((ThreadStart)delegate { readReport.Read(); });
-            //        readReportThread.Start();
-            //        B_UpdateStop.Text = "Остановить";
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        MessageBox.Show(ex.Message);
-            //    }
-            //}
-            //////
             if (readReportThread?.IsAlive ?? false)
             {
                 readReportThread?.Abort();
@@ -178,9 +140,7 @@ namespace ReportFNSUtility
                         Form1.form.Invoke((MethodInvoker)delegate
                         {
                             B_UpdateStop.Text = "Обновить";
-                            UpdateProgressBar(0);
                             TV_TreeTags.Nodes.Clear();
-                            ReadValue();
                         });
                     });
                     readReportThread.Start();
@@ -265,7 +225,6 @@ namespace ReportFNSUtility
                 {
                     try
                     {
-                        readReport?.reader?.BaseStream?.Close();
                         writeReport = new WriteReport(ecrCtrl, TB_fileWay.Text, TB_fileName.ForeColor == SystemColors.ActiveCaption ? "" : TB_fileName.Text);
 
                         writeReportThread = new Thread((ThreadStart)delegate { writeReport.WriteReportStartParseFNS(); });
