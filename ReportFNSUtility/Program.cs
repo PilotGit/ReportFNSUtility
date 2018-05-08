@@ -27,6 +27,7 @@ namespace ReportFNSUtility
 
         public static ReportReader reportReader;
         public static ReportFNS reportFNS;
+        public static Form1 form;
         
         public static string nameProgram = "FNSUtility V.1.1.2.0(S)";
         public static bool canRewrite = false;
@@ -46,7 +47,7 @@ namespace ReportFNSUtility
                 canRewrite = true;
                 var handle = GetConsoleWindow();
                 ShowWindow(handle, SW_HIDE);
-                Form1 form = new Form1();
+                form = new Form1();
                 Application.Run(form);
             }
             else

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,24 +10,23 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static ReportFNSUtility.ReportFNS.TreeOfTags.Statistic;
 
 namespace ReportFNSUtility
 {
     public partial class Form1 : Form
     {
         Thread readReportThread, writeReportThread, showNodesThread;
-        ReadReport readReport;
         WriteReport writeReport;
         public static Form1 form = null;
         Fw16.EcrCtrl ecrCtrl;
         public Form1()
         {
             InitializeComponent();
-            Form1.form = this;
-            form.Text = Program.nameProgram;
-            treeView1.TreeViewNodeSorter = new TreeSorter();
+            form = this;
+            this.Text = Program.nameProgram;
+            TV_TreeTags.TreeViewNodeSorter = new TreeSorter();
             OpenFD_binFile.InitialDirectory = Application.StartupPath;
-            Bind();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -64,65 +64,60 @@ namespace ReportFNSUtility
             (ecrCtrl as IDisposable)?.Dispose();
         }
 
-        private void Bind()
+        public void ReadHeader()
         {
-            TB_IncomeCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.IncomeCount)));
-            TB_IncomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.IncomeSum)));
-            TB_IncomeBackSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.IncomeBackSum)));
-            TB_IncomeBackCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.IncomeBackCount)));
-            TB_OutcomeBackCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.OutcomeBackCount)));
-            TB_OutcomeBackSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.OutcomeBackSum)));
-            TB_OutcomeCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.OutcomeCount)));
-            TB_OutcomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.OutcomeSum)));
-            TB_CorrectionIncomeCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionIncomeCount)));
-            TB_CorrectionIncomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionIncomeSum)));
-            TB_CorrectionOutcomeCount.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionOutcomeCount)));
-            TB_CorrectionOutcomeSum.DataBindings.Add(new Binding("Text", Program.reportFNS.treeOfTags, nameof(Program.reportFNS.treeOfTags.CorrectionOutcomeSum)));
-
-            TB_Name.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Name)));
-            TB_Program.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Program)));
-            TB_NumberECR.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.NumberECR)));
-            TB_NumberFS.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.NumberFS)));
-            TB_VersionFFD.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.VersionFFD)));
-            TB_CountShift.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.CountShift)));
-            TB_CountFiscalDoc.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.CountFiscalDoc)));
-            TB_Hesh.DataBindings.Add(new Binding("Text", Program.reportFNS.reportHeader, nameof(Program.reportFNS.reportHeader.Hash)));
+            var _header = Program.reportFNS.reportHeader;
+            TB_Name.Text = _header.Name;
+            TB_Program.Text = _header.NameProgram;
+            TB_NumberECR.Text = _header.NumberECR;
+            TB_NumberFS.Text = _header.NumberFS;
+            TB_VersionFFD.Text = _header.VersionFFD.ToString();
+            TB_CountShift.Text = _header.CountShift.ToString();
+            TB_CountFiscalDoc.Text = _header.CountFiscalDoc.ToString();
+            TB_Hash.Text = _header.Hash.ToString("X");
+        }
+        private void ClearHeder()
+        {
+            TB_Name.Text = "";
+            TB_Program.Text = "";
+            TB_NumberECR.Text = "";
+            TB_NumberFS.Text = "";
+            TB_VersionFFD.Text = "";
+            TB_CountShift.Text = "";
+            TB_CountFiscalDoc.Text = "";
+            TB_Hash.Text = "";
+        }
+        public void ReadStats()
+        {
+            var _stat = Program.reportFNS.treeOfTags.Stat;
+            TB_CorrectionIncomeCount.Text = _stat[StatsName.correctionIncomeCount].ToString();
+            TB_CorrectionIncomeSum.Text = _stat[StatsName.correctionIncomeSum].ToString();
+            TB_CorrectionOutcomeCount.Text = _stat[StatsName.correctionOutcomeCount].ToString();
+            TB_CorrectionOutcomeSum.Text = _stat[StatsName.correctionOutcomeSum].ToString();
+            TB_IncomeBackCount.Text = _stat[StatsName.incomeBackCount].ToString();
+            TB_IncomeBackSum.Text = _stat[StatsName.incomeBackSum].ToString();
+            TB_IncomeCount.Text = _stat[StatsName.incomeCount].ToString();
+            TB_IncomeSum.Text = _stat[StatsName.incomeSum].ToString();
+            TB_OutcomeBackCount.Text = _stat[StatsName.outcomeBackCount].ToString();
+            TB_OutcomeBackSum.Text = _stat[StatsName.outcomeBackSum].ToString();
+            TB_OutcomeCount.Text = _stat[StatsName.outcomeCount].ToString();
+            TB_OutcomeSum.Text = _stat[StatsName.outcomeSum].ToString();
         }
 
         ////////////////////////////////////////////////////////////////
-
+        /// <summary>
+        /// Обработка нажатия на кнопку "обзор". Вывод окна выбора файла.
+        /// </summary>
         private void B_Browse_Click(object sender, EventArgs e)
         {
             if (OpenFD_binFile.ShowDialog() == DialogResult.OK)
                 TB_Patch.Text = OpenFD_binFile.FileName;
         }
-
+        /// <summary>
+        /// Запускает или останавливает считывание файла в зависисмости от состояния потока.
+        /// </summary>
         public void B_UpdateStop_Click(object sender, EventArgs e)
         {
-            //if (readReportThread?.IsAlive ?? false)
-            //{
-            //    readReportThread?.Abort();
-            //    readReportThread.Join();
-            //    B_UpdateStop.Text = "Обновить";
-            //}
-            //else
-            //{
-            //    try
-            //    {
-            //        readReport?.reader?.BaseStream?.Close();
-            //        treeView1.Nodes.Clear();
-            //        readReport = new ReadReport(TB_Patch.Text);
-
-            //        readReportThread = new Thread((ThreadStart)delegate { readReport.Read(); });
-            //        readReportThread.Start();
-            //        B_UpdateStop.Text = "Остановить";
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        MessageBox.Show(ex.Message);
-            //    }
-            //}
-            //////
             if (readReportThread?.IsAlive ?? false)
             {
                 readReportThread?.Abort();
@@ -133,30 +128,38 @@ namespace ReportFNSUtility
             {
                 try
                 {
-                    treeView1.Nodes.Clear();
+                    if (showNodesThread?.IsAlive ?? false)
+                    {
+                        showNodesThread.Abort();
+                        showNodesThread.Join();
+                        B_ShowNodes.Text = "Отобразить";
+                    }
+                    B_ShowNodes.Enabled = false;
                     readReportThread = new Thread((ThreadStart)delegate
                     {
                         try
                         {
+                            ClearHeder();
                             Program.reportReader.UpdateData(TB_Patch.Text);
                             if (Program.reportFNS.treeOfTags.CountDocs > 0)
                             {
-                                Form1.form.Invoke((MethodInvoker)delegate
+                                Program.form.Invoke((MethodInvoker)delegate
                                 {
                                     B_ShowNodes.Enabled = true;
                                     NUD_EndNumberDoc.Maximum = NUD_StartNumberDoc.Maximum = Program.reportFNS.treeOfTags.CountDocs;
                                 });
                             }
+                            Program.form.Invoke((MethodInvoker)delegate { ReadHeader(); });
                         }
                         catch (Exception ex)
                         {
                             B_ShowNodes.Enabled = false;
                             MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                         }
-                        Form1.form.Invoke((MethodInvoker)delegate
+                        Program.form.Invoke((MethodInvoker)delegate
                         {
                             B_UpdateStop.Text = "Обновить";
-                            UpdateProgressBar(0);
+                            TV_TreeTags.Nodes.Clear();
                         });
                     });
                     readReportThread.Start();
@@ -169,33 +172,38 @@ namespace ReportFNSUtility
             }
         }
 
+        /// <summary>
+        /// Запускает или останавливает заполнение дерева в зависимости от состояния потока.
+        /// </summary>
         private void B_ShowNodes_Click(object sender, EventArgs e)
         {
             if (showNodesThread?.IsAlive ?? false)
             {
                 showNodesThread?.Abort();
                 showNodesThread.Join();
-                B_UpdateStop.Text = "Отобразить";
+                B_ShowNodes.Text = "Отобразить";
             }
             else
             {
                 try
                 {
-                    treeView1.Nodes.Clear();
+                    TV_TreeTags.Nodes.Clear();
                     UInt32 _start = (UInt32)NUD_StartNumberDoc.Value;
                     UInt32 _end = (UInt32)NUD_EndNumberDoc.Value;
                     if (_start <= _end && _start != 0 && _end != 0)
                     {
+                        _start--;
+                        _end--;
                         showNodesThread = new Thread((ThreadStart)delegate
                         {
                             if (!Program.reportReader.GetNodes(_start, _end))
                             {
-                                Form1.form.Invoke((MethodInvoker)delegate
+                                Program.form.Invoke((MethodInvoker)delegate
                                 {
                                     MessageBox.Show("Не удалось обновить дерево тегов согласно переданным параметрам.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 });
                             }
-                            Form1.form.Invoke((MethodInvoker)delegate
+                            Program.form.Invoke((MethodInvoker)delegate
                             {
                                 B_ShowNodes.Text = "Отобразить";
                                 UpdateProgressBar(0);
@@ -239,7 +247,6 @@ namespace ReportFNSUtility
                 {
                     try
                     {
-                        readReport?.reader?.BaseStream?.Close();
                         writeReport = new WriteReport(ecrCtrl, TB_fileWay.Text, TB_fileName.ForeColor == SystemColors.ActiveCaption ? "" : TB_fileName.Text);
 
                         writeReportThread = new Thread((ThreadStart)delegate { writeReport.WriteReportStartParseFNS(); });
@@ -297,6 +304,21 @@ namespace ReportFNSUtility
                 TB_fileName.Text = "По умолчанию";
                 TB_fileName.ForeColor = SystemColors.ActiveCaption;
             }
+        }
+    }
+
+    class TreeSorter : IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            TreeNode tx = x as TreeNode;
+            TreeNode ty = y as TreeNode;
+
+            if (ty.Parent == null)
+            {
+                return -1;
+            }
+            return string.Compare(tx.Text, ty.Text);
         }
     }
 }

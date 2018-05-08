@@ -8,46 +8,12 @@ using System.Windows.Forms;
 
 namespace ReportFNSUtility
 {
-
-    class ReadReport
-    {
-        /// <summary>
-        /// Путь к файлу отчёта
-        /// </summary>
-        String path;
-        /// <summary>
-        /// Двоичный reader потока файла отчёта
-        /// </summary>
-        public BinaryReader reader;
-        /// <summary>
-        /// Отчёт о счиывании данных с фискального накопителя
-        /// </summary>
-        ReportFS reportFS;
-
-
-        public ReadReport(string path)
-        {
-            this.path = path;
-
-            reader = new BinaryReader(new FileStream(path, FileMode.Open));
-
-        }
-
-        public int Read()
-        {
-            reportFS = new ReportFS(reader);
-            reader.Close();
-            return 0;
-        }
-    }
-
     class ReportReader
     {
-        public ReportReader()
-        {
-
-        }
-
+        /// <summary>
+        /// Обновление данных в заголовке и дереве тегов из входной строки
+        /// </summary>
+        /// <param name="path">Строка, указывающая абсолютный путь к файлу</param>
         public void UpdateData(string path)
         {
             FileStream _fs = new FileStream(path, FileMode.Open);
@@ -57,20 +23,37 @@ namespace ReportFNSUtility
                 {
                     throw new Exception("Файл повреждён. Не удалось считать заголовок.");
                 }
-                if (!Program.reportFNS.treeOfTags.Update(new BinaryReader(_fs)))
+                if (!Program.reportFNS.reportHeader.ChekHash(_fs))
                 {
                     throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
                 }
-            } catch (Exception ex)
+                if (!Program.reportFNS.treeOfTags.UpdateFromStream(new BinaryReader(_fs)))
+                {
+                    throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
+                }
+            }
+            catch (Exception ex)
             {
-                _fs.Close();
                 throw ex;
             }
+            finally
+            {
+                _fs.Close();
+            }
         }
-
-        public bool GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
+        /// <summary>
+        /// Выводит документы в treeView
+        /// </summary>
+        /// <param name="startIndexDoc">Начальный индекс документа</param>
+        /// <param name="endIndexDoc">Конечный индекс документа</param>
+        /// <returns>УСпешность завершения операции</returns>
+        public bool GetNodes(UInt32 startIndexDoc, UInt32 endIndexDoc)
         {
-            return false;
+            foreach (var item in Program.reportFNS.treeOfTags.GetNodes(startIndexDoc, endIndexDoc))
+            {
+                Program.form.Invoke((MethodInvoker)delegate { Program.form.TV_TreeTags.Nodes.Add(item); });
+            }
+            return true;
         }
     }
 }

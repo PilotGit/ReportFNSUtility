@@ -2,10 +2,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,8 +18,8 @@ namespace ReportFNSUtility
         private ReportHeader _reportHeader;
         private TreeOfTags _treeOfTags;
 
-        internal ReportHeader reportHeader { get => _reportHeader; }
-        internal TreeOfTags treeOfTags { get => _treeOfTags; }
+        public ReportHeader reportHeader { get => _reportHeader; }
+        public TreeOfTags treeOfTags { get => _treeOfTags; }
 
         public ReportFNS()
         {
@@ -44,19 +46,19 @@ namespace ReportFNSUtility
                 }
             }
 
-            private string program;
-            public string Program
+            private string nameProgram;
+            public string NameProgram
             {
-                get => program;
+                get => nameProgram;
                 set
                 {
                     if (value?.Length >= 256)
                     {
-                        this.program = value.Substring(0, 256);
+                        this.nameProgram = value.Substring(0, 256);
                     }
                     else
                     {
-                        this.program = string.Format($"{value,-256}");
+                        this.nameProgram = string.Format($"{value,-256}");
                     }
                 }
             }
@@ -122,19 +124,15 @@ namespace ReportFNSUtility
                 get => hash;
             }
 
-            public ReportHeader(string name = null, string programm = null, string numberKKT = null, string numberFS = null, byte versionFFD = 0, uint countShift = 0, uint fiscalDoc = 0)
-            {
-                Name = name;
-                Program = programm;
-                NumberECR = numberKKT;
-                NumberFS = numberFS;
-                VersionFFD = versionFFD;
-                CountShift = countShift;
-                CountFiscalDoc = fiscalDoc;
-            }
+            /// <summary>
+            /// Обновляет данные заголовка согласно переданному потоку чтения
+            /// </summary>
+            /// <param name="stream">поток чтения</param>
+            /// <returns></returns>
             public bool UpdateFromStream(BinaryReader stream)
             {
-                try
+                //Проеверка длиннны потока на присутствие в ней заголовка.
+                if (stream.BaseStream.Length >= 358)
                 {
                     //Считывание название документа
                     Encoding encoding = Encoding.GetEncoding(866);
@@ -144,7 +142,7 @@ namespace ReportFNSUtility
                     //Считывание названия программы
                     byte[] programm = new byte[256];
                     stream.Read(programm, 0, 256);
-                    Program = encoding.GetString(programm);
+                    NameProgram = encoding.GetString(programm);
                     //Считывание номера ККТ
                     byte[] numberECR = new byte[20];
                     stream.Read(numberECR, 0, 20);
@@ -160,410 +158,328 @@ namespace ReportFNSUtility
                     this.hash = stream.ReadUInt32();
                     return true;
                 }
-                catch
+                else
                 {
                     return false;
                 }
             }
-            public bool WriteToStream(BinaryWriter stream)
+            /// <summary>
+            /// Сверяет хеш написанный в файле и посчитанный программой.
+            /// </summary>
+            /// <param name="stream">Поток данных для вычисления и вычленения хеша</param>
+            /// <returns>bool, совпадают ли хеши.</returns>
+            public bool ChekHash(Stream stream)
             {
-                try
-                {
-                    stream.Write(Encoding.GetEncoding(866).GetBytes(Name));
-                    stream.Write(Encoding.GetEncoding(866).GetBytes(Program));
-                    stream.Write(Encoding.GetEncoding(866).GetBytes(NumberECR));
-                    stream.Write(Encoding.GetEncoding(866).GetBytes(NumberFS));
-                    stream.Write(VersionFFD);
-                    stream.Write(BitConverter.GetBytes(CountShift));
-                    stream.Write(BitConverter.GetBytes(CountFiscalDoc));
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
+                //подготовка
+                long _pos = stream.Position;
+                stream.Seek(0, SeekOrigin.Begin);
+                MemoryStream _tmpMemory = new MemoryStream();
+                byte[] _tmpBytes = new byte[354];
+                //копирование потока в поток памяти без хеша
+                stream.Read(_tmpBytes, 0, 354);
+                _tmpMemory.Write(_tmpBytes, 0, 354);
+                stream.Read(_tmpBytes, 0, 4);
+                UInt32 _hashInStream = BitConverter.ToUInt32(_tmpBytes, 0);
+                stream.CopyTo(_tmpMemory);
+                //Возвращаем позицию в потоке в исходную
+                stream.Seek(_pos, SeekOrigin.Begin);
+                //Вычисление хеша и закрытие потока
+                uint _hashCompute = ComputeHesh(_tmpMemory);
+                _tmpMemory.Close();
+                //Возврат результата сравнения
+                return _hashCompute == _hashInStream;
             }
-            public bool AddHeshToStream(BinaryWriter stream)
+            /// <summary>
+            /// Возвращает хеш CRC-32 для переданного потока
+            /// </summary>
+            /// <param name="stream">Поток данных</param>
+            /// <returns>Uint, Хеш для переданного потока</returns>
+            public uint ComputeHesh(Stream stream)
             {
-                try
-                {
-                    //считаем хеш
-                    stream.BaseStream.Seek(0, SeekOrigin.Begin);
-                    Crc32 crc32 = new Crc32();
-                    byte[] _hash = crc32.ComputeHash(stream.BaseStream);
-                    Array.Reverse(_hash);
-                    hash = BitConverter.ToUInt32(_hash, 0);
-                    //копируем в memorystream дерево тегов
-                    stream.BaseStream.Seek(354, SeekOrigin.Begin);
-                    MemoryStream memoryStream = new MemoryStream();
-                    stream.BaseStream.CopyTo(memoryStream);
-                    //пишем хеш
-                    stream.BaseStream.Seek(354, SeekOrigin.Begin);
-                    stream.Write(hash);
-                    //дописываем дерево тегов
-                    memoryStream.Seek(0, SeekOrigin.Begin);
-                    memoryStream.CopyTo(stream.BaseStream);
-                    memoryStream.Close();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
+                long _pos = stream.Position;
+                stream.Seek(0, SeekOrigin.Begin);
+                Crc32 crc32 = new Crc32();
+                byte[] _hash = crc32.ComputeHash(stream);
+                Array.Reverse(_hash);
+                stream.Seek(_pos, SeekOrigin.Begin);
+                return BitConverter.ToUInt32(_hash, 0);
             }
         }
 
         public class TreeOfTags
         {
             MemoryStream memoryStream;
-            BinaryReader streamReader;
+            Thread computeStats;
 
-            PosAndLen[] PositionNodeOfStream;
+            PosAndLen[] Nodes;
 
-            UInt32 incomeCount;
-            public uint IncomeCount { get => incomeCount; set => incomeCount = value; }
+            Statistic stat;
 
-            UInt64 incomeSum;
-            public ulong IncomeSum { get => incomeSum; set => incomeSum = value; }
-            UInt32 incomeBackCount;
-            public uint IncomeBackCount { get => incomeBackCount; set => incomeBackCount = value; }
-            UInt64 incomeBackSum;
-            public ulong IncomeBackSum { get => incomeBackSum; set => incomeBackSum = value; }
-            UInt32 outcomeCount;
-            public uint OutcomeCount { get => outcomeCount; set => outcomeCount = value; }
-            UInt64 outcomeSum;
-            public ulong OutcomeSum { get => outcomeSum; set => outcomeSum = value; }
-            UInt32 outcomeBackCount;
-            public uint OutcomeBackCount { get => outcomeBackCount; set => outcomeBackCount = value; }
-            UInt64 outcomeBackSum;
-            public ulong OutcomeBackSum { get => outcomeBackSum; set => outcomeBackSum = value; }
-            UInt32 correctionIncomeCount;
-            public uint CorrectionIncomeCount { get => correctionIncomeCount; set => correctionIncomeCount = value; }
-            UInt64 correctionIncomeSum;
-            public ulong CorrectionIncomeSum { get => correctionIncomeSum; set => correctionIncomeSum = value; }
-            UInt32 correctionOutcomeCount;
-            public uint CorrectionOutcomeCount { get => correctionOutcomeCount; set => correctionOutcomeCount = value; }
-            UInt64 correctionOutcomeSum;
-            public ulong CorrectionOutcomeSum { get => correctionOutcomeSum; set => correctionOutcomeSum = value; }
-            public uint CountDocs { get => (uint)PositionNodeOfStream.Length; }
+            public uint CountDocs { get => (uint)Nodes.Length; }
+            public Statistic Stat { get => stat; }
 
             public TreeOfTags()
             {
+                stat = new Statistic();
             }
-
-            private bool Reset() { return false; }
-
-            public bool Update(BinaryReader stream)
+            /// <summary>
+            /// Создаёт копию переданного потока данных и вычисляет все позиции документов в потоке. После создаёт поток формирования статистики.
+            /// </summary>
+            /// <param name="stream"></param>
+            /// <returns></returns>
+            public bool UpdateFromStream(BinaryReader stream)
             {
                 //подготовка переменных
-                streamReader?.BaseStream?.Close();
+                if (computeStats?.IsAlive ?? false)
+                {
+                    computeStats?.Abort();
+                    computeStats?.Join();
+                }
                 memoryStream?.Close();
                 memoryStream = new MemoryStream();
-                //копирование потоков, создание потока чтения
+                //копирование потоков, создание потока чтения 
+                stream.BaseStream.Seek(358, SeekOrigin.Begin);
                 stream.BaseStream.CopyTo(memoryStream);
+                if (memoryStream.Length < 8) return false;
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                streamReader = new BinaryReader(memoryStream);
+                BinaryReader streamReader = new BinaryReader(memoryStream);
                 //формирование массива позиций и длинн документов в потоке
                 List<PosAndLen> _tmpList = new List<PosAndLen>();
                 while (streamReader.BaseStream.Position != streamReader.BaseStream.Length)
                 {
                     streamReader.ReadUInt16();
-                    UInt16 len = streamReader.ReadUInt16();
-                    _tmpList.Add(new PosAndLen((UInt64)(memoryStream.Position - 4), len));
+                    Int16 len = streamReader.ReadInt16();
+                    _tmpList.Add(new PosAndLen((memoryStream.Position - 4), (short)(len + 4)));
                     streamReader.BaseStream.Seek(len, SeekOrigin.Current);
                 }
-                PositionNodeOfStream = _tmpList.ToArray();
+                Nodes = _tmpList.ToArray();
                 memoryStream.Seek(0, SeekOrigin.Begin);
-
-                ComputeProperties();
-                return false;
+                computeStats = new Thread((ThreadStart)delegate { Stat.Reset(); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); Stat.UpdateFromStream(memoryStream, Nodes); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); });
+                computeStats.Start();
+                return true;
             }
-
-            private void ComputeProperties()
-            {
-                for (int i = 0; i < PositionNodeOfStream.Length; i++)
-                {
-                    Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> _tmp = new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(streamReader.ReadBytes(PositionNodeOfStream[i].Length + 4));
-                    switch ((_tmp.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)[0].Source.Tag)
-                    {
-                        case Fw16.Model.TLVTag.RptFDStandalone2:
-                            break;
-                        case Fw16.Model.TLVTag.RptFDStandalone3:
-                            break;
-                        case Fw16.Model.TLVTag.RptFD2:
-                            break;
-                        case Fw16.Model.TLVTag.RptFD3:
-                            break;
-                    }
-                    if ((_tmp.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)[0].Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> content650xx)
-                    {
-                        foreach (var tagIn650xx in content650xx)
-                        {
-                            switch (tagIn650xx.Source.Tag)
-                            {/* Я здесь*/
-                                case Fw16.Model.TLVTag.RptFDStandalone2:
-                                    break;
-                                case Fw16.Model.TLVTag.RptFD2:
-                                    break;
-                                case Fw16.Model.TLVTag.RptFDStandalone3:
-                                    break;
-                                case Fw16.Model.TLVTag.RptFD3:
-                                    break;
-                                case Fw16.Model.TLVTag.DocReg:
-                                    break;
-                                case Fw16.Model.TLVTag.DocRegChange:
-                                    break;
-                                case Fw16.Model.TLVTag.DocOpenShift:
-                                    break;
-                                case Fw16.Model.TLVTag.DocReport:
-                                    break;
-                                case Fw16.Model.TLVTag.DocReceipt:
-                                    break;
-                                case Fw16.Model.TLVTag.DocReceiptCorrection:
-                                    break;
-                                case Fw16.Model.TLVTag.DocForm:
-                                    break;
-                                case Fw16.Model.TLVTag.DocFormCorrection:
-                                    break;
-                                case Fw16.Model.TLVTag.DocCloseShift:
-                                    break;
-                                case Fw16.Model.TLVTag.DocRegClose:
-                                    break;
-                                case Fw16.Model.TLVTag.DocAck:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocReg:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocRegChange:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocOpenShift:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocReport:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocReceipt:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocReceiptCorrection:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocForm:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocFormCorrection:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocCloseShift:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocRegClose:
-                                    break;
-                                case Fw16.Model.TLVTag.RptDocAck:
-                                    break;
-                                
-                            }
-                        }
-                    }
-                }
-            }
-
+            /// <summary>
+            /// Возвращает ветку представляющую один документ.
+            /// </summary>
+            /// <param name="startNumberDoc">Начальный индекс выводимых документов</param>
+            /// <param name="endNumberDoc">Конечный индекс выводимых документов</param>
+            /// <returns>Ветка, представляющая один документ</returns>
             public IEnumerable<TreeNode> GetNodes(UInt32 startNumberDoc, UInt32 endNumberDoc)
             {
-                yield return null;
+                for (uint i = startNumberDoc; i <= endNumberDoc; i++)
+                {
+                    memoryStream.Seek(Nodes[i].Position, SeekOrigin.Begin);
+                    byte[] _tmp = new byte[Nodes[i].Length];
+                    memoryStream.Read(_tmp, 0, Nodes[i].Length);
+                    yield return CreateNode(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(_tmp));
+                }
+            }
+            /// <summary>
+            /// Рекурсивная функция формирующая ветвь
+            /// </summary>
+            /// <param name="tLVWrapper">tlVWraper, документа</param>
+            /// <returns></returns>
+            private TreeNode CreateNode(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper)
+            {
+                TreeNode node;
+                if (tLVWrapper.Source.Tag == Fw16.Model.TLVTag._Anonymous)
+                {
+                    return CreateNode((tLVWrapper.Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)[0]);
+                }
+                if (tLVWrapper.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> _tmpList)
+                {
+                    node = new TreeNode($"[{(int)tLVWrapper.Source.Tag}]   {tLVWrapper.Description}");
+                    foreach (var _tmpWrap in _tmpList)
+                    {
+                        node.Nodes.Add(CreateNode(_tmpWrap));
+                    }
+                }
+                else
+                {
+                    node = new TreeNode($"[{(int)tLVWrapper.Source.Tag}]   {tLVWrapper.Value}   {tLVWrapper.Description}");
+                }
+                return node;
             }
 
-            class PosAndLen
+            public class PosAndLen
             {
-                UInt64 position;
-                UInt16 length;
+                Int64 position;
+                Int16 length;
 
-                public ulong Position { get => position; }
-                public ushort Length { get => length; }
+                public long Position { get => position; }
+                public short Length { get => length; }
 
-                public PosAndLen(UInt64 position, UInt16 length)
+                public PosAndLen(Int64 position, Int16 length)
                 {
                     this.position = position;
                     this.length = length;
                 }
             }
-        }
 
-        /// <summary>
-        /// Базовый класс для реализации TLV и STLV структур
-        /// </summary>
-        class Structurs
-        {
-            /// <summary>
-            /// STLV структура в которой находится этот объект
-            /// </summary>
-            Structurs parent;
-            /// <summary>
-            /// Тег STLV или TLV структуры
-            /// </summary>
-            UInt16 tag;
-            /// <summary>
-            /// Длинна структуры.
-            /// </summary>
-            UInt16 len;
-
-            /// <summary>
-            /// Свойство для доступа к длинне STLV или TLV структуре
-            /// </summary>
-            public UInt16 Len
+            public class Statistic
             {
-                get => len;
-                set
+                /// <summary>
+                /// Элементы статистики
+                /// </summary>
+                public enum StatsName
                 {
+                    err = 0,
+                    incomeCount = 1,
+                    incomeSum,
+                    incomeBackCount,
+                    incomeBackSum,
+                    outcomeCount,
+                    outcomeSum,
+                    outcomeBackCount,
+                    outcomeBackSum,
+                    correctionIncomeCount,
+                    correctionIncomeSum,
+                    correctionOutcomeCount,
+                    correctionOutcomeSum
+                }
+
+                decimal[] stats;
+
+                public Statistic()
+                {
+                    stats = new decimal[Enum.GetValues(typeof(StatsName)).Length];
+                }
+                /// <summary>
+                /// Возвращает значение указанного элемента статистики
+                /// </summary>
+                /// <param name="index">Наименование элемента статистики</param>
+                /// <returns>Decimal, значение элемента статистики</returns>
+                public decimal this[StatsName index]
+                {
+                    get
+                    {
+                        return stats[(int)index];
+                    }
+
+                    set
+                    {
+                        stats[(int)index] = value;
+                    }
+                }
+                /// <summary>
+                /// Создаёт копию переденного потока и вычисляет статистику для документов зашифрованных в потоке.
+                /// </summary>
+                /// <param name="stream">Поток данных</param>
+                /// <param name="nodes">Позиции и длянны в байтах документов в потоке</param>
+                public void UpdateFromStream(Stream stream, PosAndLen[] nodes)
+                {
+                    MemoryStream memoryStream = new MemoryStream();
+                    long _pos = stream.Position;
+                    stream.Seek(0, SeekOrigin.Begin);
+                    stream.CopyTo(memoryStream);
+                    stream.Seek(_pos, SeekOrigin.Begin);
                     try
                     {
-                        UInt16 tmp = (UInt16)(value - this.len);
-                        if (parent != null)
-                            parent.Len += tmp;
-                        this.len = value;
-                    }
-                    catch
-                    {
-                        throw new Exception("Милорд, мы не смогли посчитать наши запасы.");
-                    }
-                }
-            }
-
-            /// <summary>
-            /// Тег STLV или TLV структуры
-            /// </summary>
-            public UInt16 Tag { get => tag; }
-
-            /// <summary>
-            /// конструктор используемый для считывания данных из ККТ
-            /// </summary>
-            /// <param name="tag">Тег</param>
-            /// <param name="parent">STLV структура в которою происходит добавление</param>
-            public Structurs(UInt16 tag, Structurs parent)
-            {
-                this.tag = tag;
-                this.parent = parent;
-            }
-        }
-
-        /// <summary>
-        /// Реализация TLV структуры
-        /// </summary>
-        class TLV : Structurs
-        {
-            /// <summary>
-            /// Значение в TLV структуре
-            /// </summary>
-            byte[] value;
-
-            /// <summary>
-            /// конструктор используемый для считывания данных из ККТ
-            /// </summary>
-            /// <param name="tag">Тег</param>
-            /// <param name="parent">Родительная STLV структура.</param>
-            public TLV(UInt16 tag, Structurs parent) : base(tag, parent)
-            {
-                if (parent != null)
-                    parent.Len += 4;
-            }
-
-            /// <summary>
-            /// Присваивает значение TLV структуре
-            /// </summary>
-            /// <param name="value">Значение в виде массива байтов</param>
-            /// <returns>0-операция завершилась успешно</returns>
-            public void AddValue(byte[] value)
-            {
-                this.value = value;
-                Len = (UInt16)value.Length;
-            }
-
-            /// <summary>
-            /// Запись в файл тега, длинны и значения
-            /// </summary>
-            /// <param name="writer">Поток записи</param>
-            public void WriteTostream(BinaryWriter writer)
-            {
-                try
-                {
-                    writer.Write(Tag);
-                    writer.Write(Len);
-                    writer.Write(value);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"tag - {Tag}; Exception message: {ex.Message}");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Реализация STLV структуры
-        /// </summary>
-        class STLV : Structurs
-        {
-            /// <summary>
-            /// Структуры в составе STLV структур
-            /// </summary>
-            List<Structurs> value = new List<Structurs>();
-
-            /// <summary>
-            /// конструктор используемый для считывания данных из ККТ
-            /// </summary>
-            /// <param name="tag">Тег</param>
-            /// <param name="parent">STLV структура в которою добавляется эта STLV структура</param>
-            public STLV(UInt16 tag, Structurs parent) : base(tag, parent)
-            {
-                if (parent != null)
-                    parent.Len += 4;
-            }
-
-            /// <summary>
-            /// Добавить значение в STLV структуру
-            /// </summary>
-            /// <param name="tag">Тег добавляемой структуры</param>
-            /// <returns>Добавленная структура типа STLV</returns>
-            public Structurs AddValue(UInt16 tag)
-            {
-                try
-                {
-
-                    if (Program.GetTypeTLV((Fw16.Model.TLVTag)tag) is Fw16.Model.TLVType.STLV)
-                    {
-                        value.Add(new STLV(tag, this));
-                    }
-                    else
-                    {
-                        value.Add(new TLV(tag, this));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Произошла непредвиденная ошибка при добавлении значения в структуру отчёта. \nException\n{ex.Message}");
-                }
-                return value.Last();
-            }
-
-            /// <summary>
-            /// Запись в файл тега длинны и вызов записи в файл для всех вложенных объектов
-            /// </summary>
-            /// <param name="writer">Поток записи</param>
-            public void WriteToStream(BinaryWriter writer)
-            {
-                try
-                {
-                    writer.Write(Tag);
-                    writer.Write(Len);
-                    foreach (var item in value)
-                    {
-                        if (item is TLV itemTlv)
+                        for (int i = 0; i < nodes.Length; i++)
                         {
-                            itemTlv.WriteTostream(writer);
+                            Program.form.Invoke((MethodInvoker)delegate { Program.form.UpdateProgressBar(i + 1, nodes.Length); });
+                            Fs.Native.DocumentType docType = Fs.Native.DocumentType.NoDocument;
+                            Fw16.Model.ReceiptKind receiptKind = Fw16.Model.ReceiptKind.NotAvailable;
+                            decimal sum = 0;
+                            memoryStream.Seek(nodes[i].Position, SeekOrigin.Begin);
+                            byte[] _tmp = new byte[nodes[i].Length];
+                            memoryStream.Read(_tmp, 0, nodes[i].Length);
+                            foreach (var item in new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(_tmp).Value as List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>>)
+                            {
+                                GetStatsDoc(item, ref docType, ref receiptKind, ref sum);
+                            }
+                            switch (docType)
+                            {
+                                case Fs.Native.DocumentType.Receipt:
+                                    switch (receiptKind)
+                                    {
+                                        case Fw16.Model.ReceiptKind.Income:
+                                            this[StatsName.incomeCount]++;
+                                            this[StatsName.incomeSum] += sum;
+                                            break;
+                                        case Fw16.Model.ReceiptKind.IncomeBack:
+                                            this[StatsName.incomeBackCount]++;
+                                            this[StatsName.incomeBackSum] += sum;
+                                            break;
+                                        case Fw16.Model.ReceiptKind.Outcome:
+                                            this[StatsName.outcomeCount]++;
+                                            this[StatsName.outcomeSum] += sum;
+                                            break;
+                                        case Fw16.Model.ReceiptKind.OutcomeBack:
+                                            this[StatsName.outcomeBackCount]++;
+                                            this[StatsName.outcomeBackSum] += sum;
+                                            break;
+                                    }
+                                    break;
+                                case Fs.Native.DocumentType.ReciptCorrection:
+                                    switch (receiptKind)
+                                    {
+                                        case Fw16.Model.ReceiptKind.Income:
+                                            this[StatsName.correctionIncomeCount]++;
+                                            this[StatsName.correctionIncomeSum] += sum;
+                                            break;
+                                        case Fw16.Model.ReceiptKind.Outcome:
+                                            this[StatsName.correctionOutcomeCount]++;
+                                            this[StatsName.correctionOutcomeSum] += sum;
+                                            break;
+                                    }
+                                    break;
+                            }
                         }
-                        else
+                    }
+                    finally
+                    {
+                        Program.form.Invoke((MethodInvoker)delegate { Program.form.UpdateProgressBar(0); });
+                        memoryStream.Close();
+                    }
+                }
+                /// <summary>
+                /// Рекурсивная функция подсчитывающая статистику в переданном документе
+                /// </summary>
+                /// <param name="tLVWrapper">Документ</param>
+                /// <param name="docType">Тип документа</param>
+                /// <param name="receiptKind">Тип рассчёта</param>
+                /// <param name="sum">Сумма</param>
+                public void GetStatsDoc(Fw16.Model.TLVWrapper<Fw16.Model.TLVTag> tLVWrapper, ref Fs.Native.DocumentType docType, ref Fw16.Model.ReceiptKind receiptKind, ref decimal sum)
+                {
+                    switch ((int)tLVWrapper.Source.Tag)
+                    {
+                        case 103://чек
+                            docType = Fs.Native.DocumentType.Receipt;
+                            break;
+                        case 131://чек коррекции
+                            docType = Fs.Native.DocumentType.ReciptCorrection;
+                            break;
+                        case 1054://признак рассчёта
+                            receiptKind = (Fw16.Model.ReceiptKind)tLVWrapper.Value;
+                            break;
+                        case 1020://сумма
+                            sum = Decimal.Parse(tLVWrapper.Value.ToString());
+                            break;
+                        default:
+                            break;
+                    }
+                    if (tLVWrapper.Value is List<Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>> list)
+                    {
+                        foreach (var item in list)
                         {
-                            (item as STLV).WriteToStream(writer);
+                            GetStatsDoc(item, ref docType, ref receiptKind, ref sum);
                         }
                     }
                 }
-                catch (Exception ex)
+                /// <summary>
+                /// Сбрасывает всю статистику
+                /// </summary>
+                public void Reset()
                 {
-                    throw ex;
+                    for (int i = 0; i < stats.Length; i++)
+                    {
+                        stats[i] = 0;
+                    }
                 }
             }
         }
+
     }
 
 
@@ -595,24 +511,24 @@ namespace ReportFNSUtility
         public ReportFS(BinaryReader reader)
         {
             header = new ReportHeader(reader);
-            TreeNodeCollection nodes = Form1.form.treeView1.Nodes;
-            Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
+            TreeNodeCollection nodes = Program.form.TV_TreeTags.Nodes;
+            Program.form.Invoke((MethodInvoker)delegate { Program.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
                 reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 reader.BaseStream.Seek(-4, SeekOrigin.Current);
                 fdLongStorage.Add(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(reader.ReadBytes(len + 4)));
-                Form1.form?.GB_PreviewReport?.Invoke((MethodInvoker)delegate
+                Program.form?.GB_PreviewReport?.Invoke((MethodInvoker)delegate
                 {
                     STLV.ShowTree(fdLongStorage.Last(), nodes);
                 });
-                Form1.form.Invoke((MethodInvoker)delegate { Form1.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
+                Program.form.Invoke((MethodInvoker)delegate { Program.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
             }
-            Form1.form.Invoke((MethodInvoker)delegate
+            Program.form.Invoke((MethodInvoker)delegate
             {
-                Form1.form.progressBar1.Value = 0;
-                Form1.form.B_UpdateStop.Text = "Обновить";
+                Program.form.progressBar1.Value = 0;
+                Program.form.B_UpdateStop.Text = "Обновить";
             });
         }
 
@@ -806,26 +722,25 @@ namespace ReportFNSUtility
             this.countShift = reader.ReadUInt32();
             this.countfiscalDoc = reader.ReadUInt32();
             this.hash = reader.ReadUInt32();
-            Form1.form.Invoke((MethodInvoker)delegate
+            Program.form.Invoke((MethodInvoker)delegate
             {
-                Form1.form.tabControl1.SelectTab(Form1.form.T_page_headInfo);
-                Form1.form.TB_Name.Text = this.name;
-                Form1.form.TB_Program.Text = this.programm;
-                Form1.form.TB_NumberECR.Text = this.numberKKT;
-                Form1.form.TB_NumberFS.Text = this.numberFS;
-                Form1.form.TB_VersionFFD.Text = this.versionFFD.ToString();
-                Form1.form.TB_CountShift.Text = this.countShift.ToString();
-                Form1.form.TB_CountFiscalDoc.Text = this.countfiscalDoc.ToString();
-                Form1.form.TB_Hesh.Text = this.hash.ToString();
-                //Form1.form.treeView1.Nodes.Add("Header");
-                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_1_saveFile.Text);
-                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_2_UnloadingProgram.Text = this.programm);
-                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_3_RegNumber.Text = this.numberKKT);
-                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_4_NumberFN.Text = this.numberFS);
-                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_5_NumberFFD.Text = this.versionFFD.ToString());
-                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_6_NumberOfShifts.Text = this.countShift.ToString());
-                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_7_NumberOfFiscalDOC.Text = this.countfiscalDoc.ToString());
-                //Form1.form.treeView1.Nodes[0].Nodes.Add(Form1.form.TB_8_CheckSum.Text = this.hesh.ToString());
+                Program.form.TB_Name.Text = this.name;
+                Program.form.TB_Program.Text = this.programm;
+                Program.form.TB_NumberECR.Text = this.numberKKT;
+                Program.form.TB_NumberFS.Text = this.numberFS;
+                Program.form.TB_VersionFFD.Text = this.versionFFD.ToString();
+                Program.form.TB_CountShift.Text = this.countShift.ToString();
+                Program.form.TB_CountFiscalDoc.Text = this.countfiscalDoc.ToString();
+                Program.form.TB_Hash.Text = this.hash.ToString();
+                //Program.form.treeView1.Nodes.Add("Header");
+                //Program.form.treeView1.Nodes[0].Nodes.Add(Program.form.TB_1_saveFile.Text);
+                //Program.form.treeView1.Nodes[0].Nodes.Add(Program.form.TB_2_UnloadingProgram.Text = this.programm);
+                //Program.form.treeView1.Nodes[0].Nodes.Add(Program.form.TB_3_RegNumber.Text = this.numberKKT);
+                //Program.form.treeView1.Nodes[0].Nodes.Add(Program.form.TB_4_NumberFN.Text = this.numberFS);
+                //Program.form.treeView1.Nodes[0].Nodes.Add(Program.form.TB_5_NumberFFD.Text = this.versionFFD.ToString());
+                //Program.form.treeView1.Nodes[0].Nodes.Add(Program.form.TB_6_NumberOfShifts.Text = this.countShift.ToString());
+                //Program.form.treeView1.Nodes[0].Nodes.Add(Program.form.TB_7_NumberOfFiscalDOC.Text = this.countfiscalDoc.ToString());
+                //Program.form.treeView1.Nodes[0].Nodes.Add(Program.form.TB_8_CheckSum.Text = this.hesh.ToString());
             });
         }
 
@@ -1163,24 +1078,4 @@ namespace ReportFNSUtility
         }
     }
 
-    class TreeSorter : IComparer
-    {
-        public int Compare(object x, object y)
-        {
-            TreeNode tx = x as TreeNode;
-            TreeNode ty = y as TreeNode;
-
-            if (ty.Parent == null)
-            {
-                return -1;
-            }
-
-            if ((tx.Parent?.Text ?? "") == "Header")
-            {
-                return 1;
-            }
-
-            return string.Compare(tx.Text, ty.Text);
-        }
-    }
 }
