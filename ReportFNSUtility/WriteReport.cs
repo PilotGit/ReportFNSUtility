@@ -28,7 +28,7 @@ namespace ReportFNSUtility
         /// статус фискального накопителя
         /// </summary>
         Fs.Native.StatusData statusData;
-        uint maxShift;
+        uint maxShift=0;
         /// <summary>
         /// фискальные данные 650XX
         /// </summary>
@@ -248,14 +248,32 @@ namespace ReportFNSUtility
                 );
         }
 
+        public string CutString(string str,int len)
+        {
+            if(str.Length>len)
+                str = str.Substring(str.Length-len, len);
+            else
+            {
+                str=str.PadRight(len);
+            }
+            return str;
+        }
+
         /// <summary>
         /// Записывает в поток все поля заголовка кроме хеша.
         /// </summary>
         /// <param name="writer">Поток записи</param>
         private void WriteHeaderToFile(BinaryWriter writer)
         {
-            writer.Write(ByteArrayMerging(GetByte(Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc"), GetByte(Program.nameProgram),
-                    dictionary[1][1037], GetByte(statusData.FsId), GetByte((byte)ecrCtrl.Info.FfdVersion), GetByte(maxShift), GetByte(lastDocNum)));
+            Stream stream = writer.BaseStream;
+            long _pos = stream.Position;
+            stream.Seek(0, SeekOrigin.Begin);
+            writer.Write(GetByte(CutString(Directory.GetCurrentDirectory() + @"\" + statusData.FsId + ".fnc", 53)));
+            writer.Write(GetByte(CutString(Program.nameProgram, 256)));
+            writer.Write(dictionary[1][1037]);
+            writer.Write(GetByte(CutString(statusData.FsId, 16)));
+            writer.Write(ByteArrayMerging(GetByte((byte)ecrCtrl.Info.FfdVersion), GetByte(maxShift), GetByte(lastDocNum)));
+            stream.Seek(_pos, SeekOrigin.Begin);
         }
 
         /// <summary>
@@ -264,8 +282,9 @@ namespace ReportFNSUtility
         /// <param name="writer">Поток записи</param>
         private void AddHeshToFile(BinaryWriter writer)
         {
+            WriteHeaderToFile(writer);
             //считаем хеш
-            uint hash = ReportHeader.ComputeHesh(writer);
+            uint hash = ReportFNS.ReportHeader.ComputeHesh(writer.BaseStream);
             //копируем в memorystream дерево тегов
             writer.BaseStream.Seek(354, SeekOrigin.Begin);
             MemoryStream memoryStream = new MemoryStream();
@@ -304,12 +323,18 @@ namespace ReportFNSUtility
         /// <returns>массив полученных массивов</returns>
         public byte[] ByteArrayMerging(params byte[][] aray)
         {
-            int length=0;
-            byte[] newArray = new byte[aray.Length];
+            int length = 0;
+            aray=aray.Where(x => x != null).ToArray();
+            foreach (var item in aray)
+            {
+                length += item.Length;
+            }
+            byte[] newArray = new byte[length];
+            length = 0;
             foreach (var item in aray)
             {
                 item.CopyTo(newArray, length);
-                length=item.Length;
+                length += item.Length;
             }
             return newArray;
         }
@@ -476,20 +501,20 @@ namespace ReportFNSUtility
             //Обращение к документам длительного хранения
             if (ecrCtrl.Fw16.FsDirect is Fs.Native.IArchive fsArc)
             {
-                if (fsArc.GetDocument(i + 1, out Fs.Native.ArchiveDoc ad) != Fs.Native.FsAnswer.Success)
+                if (fsArc.GetDocument(i + 1, out Fs.Native.ArchiveDoc ad) == Fs.Native.FsAnswer.Success)
                 {
                     if (ad.Data is Fs.Native.ArcRegChange ArcRegChange)
-                        writer.Write(ToTLVArcRegChange(i, fsArc, ad));
+                        writer.Write(GetTLV((short)tagFDn, ToTLVArcRegChange(i, fsArc, ad)));
                     else if (ad.Data is Fs.Native.ArcReg ArcReg)
-                        writer.Write(ToTLVArcReg(i, fsArc, ad));
+                        writer.Write(GetTLV((short)tagFDn, ToTLVArcReg(i, fsArc, ad)));
                     else if (ad.Data is Fs.Native.ArcReceipt ArcReceipt)
-                        writer.Write(ToTLVArcReceipt(i, fsArc, ad));
+                        writer.Write(GetTLV((short)tagFDn, ToTLVArcReceipt(i, fsArc, ad)));
                     else if (ad.Data is Fs.Native.ArcShift ArcShift)
-                        writer.Write(ToTLVArcShift(i, fsArc, ad));
+                        writer.Write(GetTLV((short)tagFDn, ToTLVArcShift(i, fsArc, ad)));
                     else if (ad.Data is Fs.Native.ArcReport ArcReport)
-                        writer.Write(ToTLVArcReport(i, fsArc, ad));
+                        writer.Write(GetTLV((short)tagFDn, ToTLVArcReport(i, fsArc, ad)));
                     else if (ad.Data is Fs.Native.ArcCloseFs ArcCloseFs)
-                        writer.Write(ToTLVArcCloseFs(i, fsArc, ad));
+                        writer.Write(GetTLV((short)tagFDn, ToTLVArcCloseFs(i, fsArc, ad)));
                     else
                     {
                         MessageBox.Show(ad.TlvTag.ToString() + " не имеет определения для записи в файл", "Пропущен архивный документ");
@@ -526,7 +551,7 @@ namespace ReportFNSUtility
                 File.Delete(way);
                 (ecrCtrl as IDisposable).Dispose();
                 ecrCtrl = new EcrCtrl();
-                fileStream.Close();
+                fileStream?.Close();
                 Form1.form.B_startParse.Enabled = true;
                 Form1.form.Invoke((MethodInvoker)delegate { Form1.form.B_startParse.Text = "Формировать отчет"; });
                 return null;
@@ -538,20 +563,21 @@ namespace ReportFNSUtility
         public void WriteReportStartParseFNS()
         {
             //выход из метода если не получили путь к файлу
-            if (TryGetWayToWrite() != null)
+            if ((fileStream = TryGetWayToWrite()) != null)
             {
                 ///Обновление информации о состоянии ККТ
                 SetCurrentStat(1, dictionary);
-                //вывод дружелюбного вывода
+                //вывод строки закгрузки
                 if (Form1.form == null)
                 {
                     Console.WriteLine("[||||||||||||||||Обработка|||||||||||||]");
                 }
                 //Открытие потока для записи
+                fileStream.Close();
                 fileStream = new FileStream(way, FileMode.Open);
                 writer = new BinaryWriter(fileStream);
                 //Написание заголовка
-                WriteHeaderToFile(writer);
+                writer.Write("".PadLeft(354).ToCharArray());
                 //Чтение всех документов
                 for (uint i = 0; i < lastDocNum; i++)
                 {
@@ -559,6 +585,7 @@ namespace ReportFNSUtility
                 }
                 //Дописывание хеша
                 AddHeshToFile(writer);
+                fileStream.Close();
                 //создание нового объекта для работы с ККТ
                 (ecrCtrl as IDisposable).Dispose();
                 if (Form1.form == null)
