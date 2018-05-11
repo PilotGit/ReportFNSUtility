@@ -238,14 +238,19 @@ namespace ReportFNSUtility
         /// </summary>
         /// <param name="fsArc">ссылка на объект IArchive</param>
         /// <param name="count">номер документа</param>
-        private byte[] GetAcknowledg(Fs.Native.IArchive fsArc, uint count)
+        private byte[] GetAcknowledg(Fs.Native.IArchive fsArc, uint count, Fs.Native.ArchiveDoc ad)
         {
-            fsArc.GetAcknowledge(count, out Fs.Native.ArcAck arcAck);
-            return GetTLV(((short)107),
-                GetTLV(((int)Fw16.Model.TLVTag.OfdTaxId), (this.OfdTaxId)),
-                GetTLV(((int)Fw16.Model.TLVTag.DateTime), GetByte(arcAck.DT)),
-                GetTLV(((int)Fw16.Model.TLVTag.OfdSignature), arcAck.Signature)
-                );
+
+            if (ad.Acknowledged)
+            {
+                fsArc.GetAcknowledge(count, out Fs.Native.ArcAck arcAck);
+                return GetTLV(((short)107),
+                    GetTLV(((int)Fw16.Model.TLVTag.OfdTaxId), (this.OfdTaxId)),
+                    GetTLV(((int)Fw16.Model.TLVTag.DateTime), GetByte(arcAck.DT)),
+                    GetTLV(((int)Fw16.Model.TLVTag.OfdSignature), arcAck.Signature)
+                    );
+            }
+            else return null;
         }
 
         public string CutString(string str,int len)
@@ -373,7 +378,7 @@ namespace ReportFNSUtility
                     TLV = ByteArrayMerging(TLV, GetTLV((short)v.Key, v.Value));
                 }
                 if (ad.Acknowledged)
-                    ByteArrayMerging(TLV, GetAcknowledg(fsArc, i + 1));
+                    ByteArrayMerging(TLV, GetAcknowledg(fsArc, i + 1, ad));
                 TLV = GetTLV((short)(ad.TlvTag + 100),
                     GetTLV((short)(ad.TlvTag), TLV
                         )
@@ -398,7 +403,7 @@ namespace ReportFNSUtility
                     TLV = ByteArrayMerging(TLV, GetTLV((short)v.Key, v.Value));
                 }
                 if (ad.Acknowledged)
-                    ByteArrayMerging(TLV, GetAcknowledg(fsArc, i + 1));
+                    ByteArrayMerging(TLV, GetAcknowledg(fsArc, i + 1, ad));
                 TLV = GetTLV((short)(ad.TlvTag + 100),
                     GetTLV((short)(ad.TlvTag), TLV
                         )
@@ -418,7 +423,7 @@ namespace ReportFNSUtility
                     GetTLV((int)Fw16.Model.TLVTag.FiscalNumber, GetByte((rcpt.Freq.FiscalNumber))),
                     GetTLV((int)Fw16.Model.TLVTag.FsId, this.FsId),
                     GetTLV((int)Fw16.Model.TLVTag.FsSignature, GetByte(rcpt.Freq.FiscalSignature, 0)),
-                    GetAcknowledg(fsArc, i)
+                    GetAcknowledg(fsArc, i + 1, ad)
                     );
             }
             return TLV;
@@ -438,7 +443,7 @@ namespace ReportFNSUtility
                     GetTLV((int)Fw16.Model.TLVTag.ShiftNumber, GetByte((uint)shift.Number)),
                     GetTLV((int)Fw16.Model.TLVTag.FiscalNumber, GetByte(shift.Freq.FiscalNumber)),
                     GetTLV((int)Fw16.Model.TLVTag.FsSignature, GetByte(shift.Freq.FiscalSignature, 0)),
-                    GetAcknowledg(fsArc, i)
+                    GetAcknowledg(fsArc, i + 1, ad)
                     );
             }
             return TLV;
@@ -456,7 +461,7 @@ namespace ReportFNSUtility
                       GetTLV((int)Fw16.Model.TLVTag.FirstNoAckDate, GetByte(arcReport.FirstNoAckDate)),
                       GetTLV((int)Fw16.Model.TLVTag.FiscalNumber, GetByte(arcReport.Freq.FiscalNumber)),
                       GetTLV((int)Fw16.Model.TLVTag.FsSignature, GetByte(arcReport.Freq.FiscalSignature, 0)),
-                      GetAcknowledg(fsArc, i)
+                      GetAcknowledg(fsArc, i + 1, ad)
                       );
             }
             return TLV;
@@ -481,7 +486,7 @@ namespace ReportFNSUtility
                       GetTLV((int)Fw16.Model.TLVTag.Location, dictionary.Values.Last()[1187]),
                       GetTLV((int)Fw16.Model.TLVTag.LocationAddress, dictionary.Values.Last()[1009]),
                       GetTLV((int)Fw16.Model.TLVTag.ShiftNumber, GetByte(maxShift)),
-                      GetAcknowledg(fsArc, i)
+                      GetAcknowledg(fsArc, i + 1, ad)
                       ));
             }
 
