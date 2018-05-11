@@ -533,7 +533,7 @@ namespace ReportFNSUtility
                 UInt16 len = reader.ReadUInt16();
                 reader.BaseStream.Seek(-4, SeekOrigin.Current);
                 fdLongStorage.Add(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(reader.ReadBytes(len + 4)));
-                Program.form?.GB_PreviewReport??.Invoke((MethodInvoker)delegate
+                Program.form?.GB_PreviewReport?.Invoke((MethodInvoker)delegate
                 {
                     STLV.ShowTree(fdLongStorage.Last(), nodes);
                 });
