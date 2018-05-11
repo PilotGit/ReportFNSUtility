@@ -121,10 +121,14 @@ namespace ReportFNSUtility
         /// </summary>
         public void B_UpdateStop_Click(object sender, EventArgs e)
         {
-            if (readReportThread?.IsAlive ?? false)
+            if ((readReportThread?.IsAlive ?? false) || (Program.reportFNS.treeOfTags.computeStats?.IsAlive ?? false))
             {
-                readReportThread?.Abort();
-                readReportThread.Join();
+                Program.reportFNS.treeOfTags.StopComputeStats();
+                if (readReportThread?.IsAlive ?? false)
+                {
+                    readReportThread?.Abort();
+                    readReportThread.Join();
+                }
                 B_UpdateStop.Text = "Обновить";
             }
             else
@@ -158,13 +162,17 @@ namespace ReportFNSUtility
                         }
                         catch (Exception ex)
                         {
-                            B_ShowNodes.Enabled = false;
-                            if (!(ex is ThreadAbortException))
-                                MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                            Program.form?.Invoke((MethodInvoker)delegate
+                            {
+                                B_ShowNodes.Enabled = false;
+                                if (!(ex is ThreadAbortException))
+                                    MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                                B_UpdateStop.Text = "Обновить";
+                            });
                         }
                         Program.form?.Invoke((MethodInvoker)delegate
                         {
-                            B_UpdateStop.Text = "Обновить";
+                            //B_UpdateStop.Text = "Обновить";
                             TV_TreeTags.Nodes.Clear();
                         });
                     });
