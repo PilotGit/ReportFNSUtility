@@ -194,7 +194,7 @@ namespace ReportFNSUtility
             /// </summary>
             /// <param name="stream">Поток данных</param>
             /// <returns>Uint, Хеш для переданного потока</returns>
-            public uint ComputeHesh(Stream stream)
+            public static uint ComputeHesh(Stream stream)
             {
                 long _pos = stream.Position;
                 stream.Seek(0, SeekOrigin.Begin);
