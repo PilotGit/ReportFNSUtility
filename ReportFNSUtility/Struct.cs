@@ -209,14 +209,12 @@ namespace ReportFNSUtility
         public class TreeOfTags
         {
             MemoryStream memoryStream;
-            Thread computeStats;
+            public Thread computeStats;
 
             PosAndLen[] Nodes;
-
-            Statistic stat;
+            public readonly Statistic stat;
 
             public uint CountDocs { get => (uint)Nodes.Length; }
-            public Statistic Stat { get => stat; }
 
             public TreeOfTags()
             {
@@ -230,11 +228,7 @@ namespace ReportFNSUtility
             public bool UpdateFromStream(BinaryReader stream)
             {
                 //подготовка переменных
-                if (computeStats?.IsAlive ?? false)
-                {
-                    computeStats?.Abort();
-                    computeStats?.Join();
-                }
+
                 memoryStream?.Close();
                 memoryStream = new MemoryStream();
                 //копирование потоков, создание потока чтения 
@@ -247,14 +241,15 @@ namespace ReportFNSUtility
                 List<PosAndLen> _tmpList = new List<PosAndLen>();
                 while (streamReader.BaseStream.Position != streamReader.BaseStream.Length)
                 {
-                    streamReader.ReadUInt16();
-                    Int16 len = streamReader.ReadInt16();
+                    UInt16 tag=streamReader.ReadUInt16();
+                    UInt16 len = streamReader.ReadUInt16();
+                    if (len > streamReader.BaseStream.Length - streamReader.BaseStream.Position) return false;
                     _tmpList.Add(new PosAndLen((memoryStream.Position - 4), (short)(len + 4)));
                     streamReader.BaseStream.Seek(len, SeekOrigin.Current);
                 }
                 Nodes = _tmpList.ToArray();
                 memoryStream.Seek(0, SeekOrigin.Begin);
-                computeStats = new Thread((ThreadStart)delegate { Stat.Reset(); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); Stat.UpdateFromStream(memoryStream, Nodes); Program.form.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); });
+                computeStats = new Thread((ThreadStart)delegate { stat.Reset(); Program.form?.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); }); stat.UpdateFromStream(memoryStream, Nodes); Program.form?.Invoke((MethodInvoker)delegate { Program.form.ReadStats(); Program.form.UpdateProgressBar(0); }); });
                 computeStats.Start();
                 return true;
             }
@@ -296,9 +291,29 @@ namespace ReportFNSUtility
                 }
                 else
                 {
-                    node = new TreeNode($"[{(int)tLVWrapper.Source.Tag}]   {tLVWrapper.Value}   {tLVWrapper.Description}");
+                    string _tmp="";
+                    if(tLVWrapper.Value is byte[] val)
+                    {
+                        foreach (var item in val)
+                        {
+                            _tmp += item.ToString("X2")+" ";
+                        }
+                        
+                    }
+                    node = new TreeNode($"[{(int)tLVWrapper.Source.Tag}]   {(_tmp.Length>0?_tmp:tLVWrapper.Value)}   {tLVWrapper.Description}");
                 }
                 return node;
+            }
+
+            public void StopComputeStats()
+            {
+
+                if (computeStats?.IsAlive ?? false)
+                {
+                    computeStats?.Abort();
+                    computeStats?.Join();
+                    Program.form?.Invoke((MethodInvoker)delegate { Program.form.UpdateProgressBar(0); });
+                }
             }
 
             public class PosAndLen
@@ -377,7 +392,7 @@ namespace ReportFNSUtility
                     {
                         for (int i = 0; i < nodes.Length; i++)
                         {
-                            Program.form.Invoke((MethodInvoker)delegate { Program.form.UpdateProgressBar(i + 1, nodes.Length); });
+                            Program.form?.Invoke((MethodInvoker)delegate { Program.form.UpdateProgressBar(i + 1, nodes.Length); });
                             Fs.Native.DocumentType docType = Fs.Native.DocumentType.NoDocument;
                             Fw16.Model.ReceiptKind receiptKind = Fw16.Model.ReceiptKind.NotAvailable;
                             decimal sum = 0;
@@ -429,7 +444,6 @@ namespace ReportFNSUtility
                     }
                     finally
                     {
-                        Program.form.Invoke((MethodInvoker)delegate { Program.form.UpdateProgressBar(0); });
                         memoryStream.Close();
                     }
                 }
@@ -512,20 +526,20 @@ namespace ReportFNSUtility
         {
             header = new ReportHeader(reader);
             TreeNodeCollection nodes = Program.form.TV_TreeTags.Nodes;
-            Program.form.Invoke((MethodInvoker)delegate { Program.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
+            Program.form?.Invoke((MethodInvoker)delegate { Program.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
                 reader.ReadUInt16();
                 UInt16 len = reader.ReadUInt16();
                 reader.BaseStream.Seek(-4, SeekOrigin.Current);
                 fdLongStorage.Add(new Fw16.Model.TLVWrapper<Fw16.Model.TLVTag>(reader.ReadBytes(len + 4)));
-                Program.form?.GB_PreviewReport?.Invoke((MethodInvoker)delegate
+                Program.form?.GB_PreviewReport??.Invoke((MethodInvoker)delegate
                 {
                     STLV.ShowTree(fdLongStorage.Last(), nodes);
                 });
-                Program.form.Invoke((MethodInvoker)delegate { Program.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
+                Program.form?.Invoke((MethodInvoker)delegate { Program.form.progressBar1.Value = (int)(((double)reader.BaseStream.Position / (double)reader.BaseStream.Length) * 100); });
             }
-            Program.form.Invoke((MethodInvoker)delegate
+            Program.form?.Invoke((MethodInvoker)delegate
             {
                 Program.form.progressBar1.Value = 0;
                 Program.form.B_UpdateStop.Text = "Обновить";
@@ -722,7 +736,7 @@ namespace ReportFNSUtility
             this.countShift = reader.ReadUInt32();
             this.countfiscalDoc = reader.ReadUInt32();
             this.hash = reader.ReadUInt32();
-            Program.form.Invoke((MethodInvoker)delegate
+            Program.form?.Invoke((MethodInvoker)delegate
             {
                 Program.form.TB_Name.Text = this.name;
                 Program.form.TB_Program.Text = this.programm;

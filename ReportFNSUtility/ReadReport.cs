@@ -25,7 +25,7 @@ namespace ReportFNSUtility
                 }
                 if (!Program.reportFNS.reportHeader.ChekHash(_fs))
                 {
-                    throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
+                    throw new Exception("Файл повреждён. Не корректная хеш сумма.");
                 }
                 if (!Program.reportFNS.treeOfTags.UpdateFromStream(new BinaryReader(_fs)))
                 {

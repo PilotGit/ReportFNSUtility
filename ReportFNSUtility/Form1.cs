@@ -17,6 +17,7 @@ namespace ReportFNSUtility
     public partial class Form1 : Form
     {
         Thread readReportThread, writeReportThread, showNodesThread;
+        public Thread computeStats;
         WriteReport writeReport;
         public static Form1 form = null;
         Fw16.EcrCtrl ecrCtrl;
@@ -31,6 +32,8 @@ namespace ReportFNSUtility
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
+            Program.reportFNS.treeOfTags.StopComputeStats();
+
             if (writeReportThread?.IsAlive ?? false)
             {
                 writeReportThread?.Abort();
@@ -89,7 +92,7 @@ namespace ReportFNSUtility
         }
         public void ReadStats()
         {
-            var _stat = Program.reportFNS.treeOfTags.Stat;
+            var _stat = Program.reportFNS.treeOfTags.stat;
             TB_CorrectionIncomeCount.Text = _stat[StatsName.correctionIncomeCount].ToString();
             TB_CorrectionIncomeSum.Text = _stat[StatsName.correctionIncomeSum].ToString();
             TB_CorrectionOutcomeCount.Text = _stat[StatsName.correctionOutcomeCount].ToString();
@@ -139,24 +142,27 @@ namespace ReportFNSUtility
                     {
                         try
                         {
-                            ClearHeder();
+                            Program.form?.Invoke((MethodInvoker)delegate { ClearHeder(); });
+
+                            Program.reportFNS.treeOfTags.StopComputeStats();
                             Program.reportReader.UpdateData(TB_Patch.Text);
                             if (Program.reportFNS.treeOfTags.CountDocs > 0)
                             {
-                                Program.form.Invoke((MethodInvoker)delegate
+                                Program.form?.Invoke((MethodInvoker)delegate
                                 {
                                     B_ShowNodes.Enabled = true;
                                     NUD_EndNumberDoc.Maximum = NUD_StartNumberDoc.Maximum = Program.reportFNS.treeOfTags.CountDocs;
                                 });
                             }
-                            Program.form.Invoke((MethodInvoker)delegate { ReadHeader(); });
+                            Program.form?.Invoke((MethodInvoker)delegate { ReadHeader(); });
                         }
                         catch (Exception ex)
                         {
                             B_ShowNodes.Enabled = false;
-                            MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                            if (!(ex is ThreadAbortException))
+                                MessageBox.Show(ex.Message, "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                         }
-                        Program.form.Invoke((MethodInvoker)delegate
+                        Program.form?.Invoke((MethodInvoker)delegate
                         {
                             B_UpdateStop.Text = "Обновить";
                             TV_TreeTags.Nodes.Clear();
@@ -167,7 +173,8 @@ namespace ReportFNSUtility
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    if (!(ex is ThreadAbortException))
+                        MessageBox.Show(ex.Message);
                 }
             }
         }
@@ -198,12 +205,12 @@ namespace ReportFNSUtility
                         {
                             if (!Program.reportReader.GetNodes(_start, _end))
                             {
-                                Program.form.Invoke((MethodInvoker)delegate
+                                Program.form?.Invoke((MethodInvoker)delegate
                                 {
                                     MessageBox.Show("Не удалось обновить дерево тегов согласно переданным параметрам.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 });
                             }
-                            Program.form.Invoke((MethodInvoker)delegate
+                            Program.form?.Invoke((MethodInvoker)delegate
                             {
                                 B_ShowNodes.Text = "Отобразить";
                                 UpdateProgressBar(0);
