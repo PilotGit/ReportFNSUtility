@@ -142,12 +142,12 @@ namespace ReportFNSUtility
                         B_ShowNodes.Text = "Отобразить";
                     }
                     B_ShowNodes.Enabled = false;
+                    ClearHeder();
+                    TV_TreeTags.Nodes.Clear();
                     readReportThread = new Thread((ThreadStart)delegate
                     {
                         try
                         {
-                            Program.form?.Invoke((MethodInvoker)delegate { ClearHeder(); });
-
                             Program.reportFNS.treeOfTags.StopComputeStats();
                             Program.reportReader.UpdateData(TB_Patch.Text);
                             if (Program.reportFNS.treeOfTags.CountDocs > 0)
@@ -170,11 +170,6 @@ namespace ReportFNSUtility
                                 B_UpdateStop.Text = "Обновить";
                             });
                         }
-                        Program.form?.Invoke((MethodInvoker)delegate
-                        {
-                            //B_UpdateStop.Text = "Обновить";
-                            TV_TreeTags.Nodes.Clear();
-                        });
                     });
                     readReportThread.Start();
                     B_UpdateStop.Text = "Остановить";
