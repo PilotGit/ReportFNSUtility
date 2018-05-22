@@ -8,36 +8,52 @@ using System.Windows.Forms;
 
 namespace ReportFNSUtility
 {
-
-    class ReadReport
+    class ReportReader
     {
         /// <summary>
-        /// Путь к файлу отчёта
+        /// Обновление данных в заголовке и дереве тегов из входной строки
         /// </summary>
-        String path;
-        /// <summary>
-        /// Двоичный reader потока файла отчёта
-        /// </summary>
-        public BinaryReader reader;
-        /// <summary>
-        /// Отчёт о счиывании данных с фискального накопителя
-        /// </summary>
-        ReportFS reportFS;
-
-
-        public ReadReport(string path)
+        /// <param name="path">Строка, указывающая абсолютный путь к файлу</param>
+        public void UpdateData(string path)
         {
-            this.path = path;
-
-                reader = new BinaryReader(new FileStream(path, FileMode.Open));
-
+            FileStream _fs = new FileStream(path, FileMode.Open);
+            try
+            {
+                if (!Program.reportFNS.reportHeader.UpdateFromStream(new BinaryReader(_fs)))
+                {
+                    throw new Exception("Файл повреждён. Не удалось считать заголовок.");
+                }
+                if (!Program.reportFNS.reportHeader.ChekHash(_fs))
+                {
+                    throw new Exception("Файл повреждён. Не корректная хеш сумма.");
+                }
+                if (!Program.reportFNS.treeOfTags.UpdateFromStream(new BinaryReader(_fs)))
+                {
+                    throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                _fs.Close();
+            }
         }
-
-        public int Read()
+        /// <summary>
+        /// Выводит документы в treeView
+        /// </summary>
+        /// <param name="startIndexDoc">Начальный индекс документа</param>
+        /// <param name="endIndexDoc">Конечный индекс документа</param>
+        /// <returns>УСпешность завершения операции</returns>
+        public bool GetNodes(UInt32 startIndexDoc, UInt32 endIndexDoc)
         {
-            reportFS = new ReportFS(reader);
-            reader.Close();
-            return 0;
+            foreach (var item in Program.reportFNS.treeOfTags.GetNodes(startIndexDoc, endIndexDoc))
+            {
+                Program.form.Invoke((MethodInvoker)delegate { Program.form.TV_TreeTags.Nodes.Add(item); });
+            }
+            return true;
         }
     }
 }
