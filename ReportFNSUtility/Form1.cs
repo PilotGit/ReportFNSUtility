@@ -298,6 +298,14 @@ namespace ReportFNSUtility
             }
         }
 
+        private void NUD_Validating(object sender, CancelEventArgs e)
+        {
+            if((sender as Control).Text == "") {
+                (sender as NumericUpDown).Value= (sender as NumericUpDown).Minimum;
+                (sender as Control).Text = (sender as NumericUpDown).Minimum.ToString();
+            }
+        }
+
         private void TB_fileName_Enter(object sender, EventArgs e)
         {
             if (TB_fileName.Text == "По умолчанию" && TB_fileName.ForeColor == SystemColors.ActiveCaption)

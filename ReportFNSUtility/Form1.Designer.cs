@@ -517,6 +517,7 @@
             0,
             0});
             this.NUD_EndNumberDoc.Name = "NUD_EndNumberDoc";
+            this.NUD_EndNumberDoc.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.NUD_EndNumberDoc.Size = new System.Drawing.Size(100, 20);
             this.NUD_EndNumberDoc.TabIndex = 9;
             this.NUD_EndNumberDoc.Value = new decimal(new int[] {
@@ -524,6 +525,7 @@
             0,
             0,
             0});
+            this.NUD_EndNumberDoc.Validating += new System.ComponentModel.CancelEventHandler(this.NUD_Validating);
             // 
             // NUD_StartNumberDoc
             // 
@@ -546,6 +548,7 @@
             0,
             0,
             0});
+            this.NUD_StartNumberDoc.Validating += new System.ComponentModel.CancelEventHandler(this.NUD_Validating);
             // 
             // label12
             // 
