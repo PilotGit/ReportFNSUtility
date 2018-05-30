@@ -94,17 +94,17 @@ namespace ReportFNSUtility
         {
             var _stat = Program.reportFNS.treeOfTags.stat;
             TB_CorrectionIncomeCount.Text = _stat[StatsName.correctionIncomeCount].ToString();
-            TB_CorrectionIncomeSum.Text = _stat[StatsName.correctionIncomeSum].ToString();
+            TB_CorrectionIncomeSum.Text = _stat[StatsName.correctionIncomeSum].ToString("0.00");
             TB_CorrectionOutcomeCount.Text = _stat[StatsName.correctionOutcomeCount].ToString();
-            TB_CorrectionOutcomeSum.Text = _stat[StatsName.correctionOutcomeSum].ToString();
+            TB_CorrectionOutcomeSum.Text = _stat[StatsName.correctionOutcomeSum].ToString("0.00");
             TB_IncomeBackCount.Text = _stat[StatsName.incomeBackCount].ToString();
-            TB_IncomeBackSum.Text = _stat[StatsName.incomeBackSum].ToString();
+            TB_IncomeBackSum.Text = _stat[StatsName.incomeBackSum].ToString("0.00");
             TB_IncomeCount.Text = _stat[StatsName.incomeCount].ToString();
-            TB_IncomeSum.Text = _stat[StatsName.incomeSum].ToString();
+            TB_IncomeSum.Text = _stat[StatsName.incomeSum].ToString("0.00");
             TB_OutcomeBackCount.Text = _stat[StatsName.outcomeBackCount].ToString();
-            TB_OutcomeBackSum.Text = _stat[StatsName.outcomeBackSum].ToString();
+            TB_OutcomeBackSum.Text = _stat[StatsName.outcomeBackSum].ToString("0.00");
             TB_OutcomeCount.Text = _stat[StatsName.outcomeCount].ToString();
-            TB_OutcomeSum.Text = _stat[StatsName.outcomeSum].ToString();
+            TB_OutcomeSum.Text = _stat[StatsName.outcomeSum].ToString("0.00");
         }
 
         ////////////////////////////////////////////////////////////////
