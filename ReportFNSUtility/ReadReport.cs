@@ -17,19 +17,22 @@ namespace ReportFNSUtility
         public void UpdateData(string path)
         {
             FileStream _fs = new FileStream(path, FileMode.Open);
+            MemoryStream stream = new MemoryStream();
+            _fs.CopyTo(stream);
+            _fs.Close();
             try
             {
-                if (!Program.reportFNS.reportHeader.UpdateFromStream(new BinaryReader(_fs)))
+                if (!Program.reportFNS.reportHeader.UpdateFromStream(new BinaryReader(stream)))
                 {
                     throw new Exception("Файл повреждён. Не удалось считать заголовок.");
                 }
-                if (!Program.reportFNS.reportHeader.ChekHash(_fs))
+                if (!Program.reportFNS.reportHeader.ChekHash(stream))
                 {
-                    throw new Exception("Файл повреждён. Не корректная хеш сумма.");
+                    throw new Exception("Файл повреждён. Некорректная контрольная сумма.");
                 }
-                if (!Program.reportFNS.treeOfTags.UpdateFromStream(new BinaryReader(_fs)))
+                if (!Program.reportFNS.treeOfTags.UpdateFromStream(new BinaryReader(stream)))
                 {
-                    throw new Exception("Файл повреждён. Не удалось считать дерево тегов.");
+                    throw new Exception("Файл повреждён. Не удалось считать документы.");
                 }
             }
             catch (Exception ex)
@@ -38,7 +41,7 @@ namespace ReportFNSUtility
             }
             finally
             {
-                _fs.Close();
+                stream.Close();
             }
         }
         /// <summary>

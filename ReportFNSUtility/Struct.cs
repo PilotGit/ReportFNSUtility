@@ -134,6 +134,7 @@ namespace ReportFNSUtility
                 //Проеверка длиннны потока на присутствие в ней заголовка.
                 if (stream.BaseStream.Length >= 358)
                 {
+                    stream.BaseStream.Seek(0, SeekOrigin.Begin);
                     //Считывание название документа
                     Encoding encoding = Encoding.GetEncoding(866);
                     byte[] name = new byte[53];
@@ -170,24 +171,31 @@ namespace ReportFNSUtility
             /// <returns>bool, совпадают ли хеши.</returns>
             public bool ChekHash(Stream stream)
             {
-                //подготовка
-                long _pos = stream.Position;
-                stream.Seek(0, SeekOrigin.Begin);
-                MemoryStream _tmpMemory = new MemoryStream();
-                byte[] _tmpBytes = new byte[354];
-                //копирование потока в поток памяти без хеша
-                stream.Read(_tmpBytes, 0, 354);
-                _tmpMemory.Write(_tmpBytes, 0, 354);
-                stream.Read(_tmpBytes, 0, 4);
-                UInt32 _hashInStream = BitConverter.ToUInt32(_tmpBytes, 0);
-                stream.CopyTo(_tmpMemory);
-                //Возвращаем позицию в потоке в исходную
-                stream.Seek(_pos, SeekOrigin.Begin);
-                //Вычисление хеша и закрытие потока
-                uint _hashCompute = ComputeHesh(_tmpMemory);
-                _tmpMemory.Close();
-                //Возврат результата сравнения
-                return _hashCompute == _hashInStream;
+                if (stream.Length >= 358)
+                {
+                    //подготовка
+                    long _pos = stream.Position;
+                    stream.Seek(0, SeekOrigin.Begin);
+                    MemoryStream _tmpMemory = new MemoryStream();
+                    byte[] _tmpBytes = new byte[354];
+                    //копирование потока в поток памяти без хеша
+                    stream.Read(_tmpBytes, 0, 354);
+                    _tmpMemory.Write(_tmpBytes, 0, 354);
+                    stream.Read(_tmpBytes, 0, 4);
+                    UInt32 _hashInStream = BitConverter.ToUInt32(_tmpBytes, 0);
+                    stream.CopyTo(_tmpMemory);
+                    //Возвращаем позицию в потоке в исходную
+                    stream.Seek(_pos, SeekOrigin.Begin);
+                    //Вычисление хеша и закрытие потока
+                    uint _hashCompute = ComputeHesh(_tmpMemory);
+                    _tmpMemory.Close();
+                    //Возврат результата сравнения
+                    return _hashCompute == _hashInStream;
+                }
+                else
+                {
+                    return false;
+                }
             }
             /// <summary>
             /// Возвращает хеш CRC-32 для переданного потока
