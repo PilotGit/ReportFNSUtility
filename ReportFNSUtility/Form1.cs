@@ -224,7 +224,7 @@ namespace ReportFNSUtility
                     }
                     else
                     {
-                        MessageBox.Show("Пожалуйста скорректируйте значения номеров \nдокументов которые вы хотите отобразить.\n - Начальное значение должно быть меньше конечного.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                        MessageBox.Show("Пожалуйста скорректируйте значения номеров \nдокументов, которые вы хотите отобразить.\n - Начальное значение должно быть меньше конечного.", "Внимание!", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
                     }
                 }
                 catch (Exception ex)
